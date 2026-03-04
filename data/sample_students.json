@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Arjun Verma",
+    "branch": "Computer Science Engineering",
+    "cgpa": 8.2,
+    "year": "3rd Year",
+    "leetcode": 120,
+    "github": 6,
+    "skills": ["Python","JavaScript","React","Git","SQL","DSA","HTML/CSS","Node.js"],
+    "expected_top_career": "Software Development Engineer"
+  },
+  {
+    "name": "Priya Nair",
+    "branch": "Data Science",
+    "cgpa": 9.0,
+    "year": "4th Year",
+    "leetcode": 45,
+    "github": 10,
+    "skills": ["Python","Machine Learning","Statistics","SQL","Data Analysis","R","Power BI"],
+    "expected_top_career": "Data Scientist / ML Engineer"
+  },
+  {
+    "name": "Rohit Sharma",
+    "branch": "Electronics & Communication",
+    "cgpa": 7.1,
+    "year": "Graduated",
+    "leetcode": 20,
+    "github": 3,
+    "skills": ["Linux","Networking","Docker","AWS","Git"],
+    "expected_top_career": "Cloud / DevOps Engineer"
+  }
+]

@@ -1,0 +1,1 @@
+C:\Users\karti\OneDrive\Desktop\claude\career-path-system\django_version\careercompass\settings.py

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerCompass — AI Career Path Recommender</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Career<span>Compass</span></div>
+  <div class="steps">
+    <div class="step active" id="s1">① Profile</div>
+    <div class="step" id="s2">② Analysis</div>
+    <div class="step" id="s3">③ Results</div>
+  </div>
+</nav>
+
+<!-- PAGE: HOME -->
+<div class="pg active" id="p-home">
+  <div class="con">
+    <div class="hero">
+      <h1>Find Your <span>Perfect Career Path</span><br/>with AI Precision</h1>
+      <p>Analyze your engineering profile. Get skill gap analysis, success probabilities, and a personalized roadmap.</p>
+      <button class="btn" onclick="show('p-form')">🚀 Analyze My Profile</button>
+      <button class="btn2" onclick="demo()">View Demo</button>
+      <div class="stats">
+        <div class="stat"><div class="num">15K+</div><div class="lbl">Students Analyzed</div></div>
+        <div class="stat"><div class="num">94%</div><div class="lbl">Match Accuracy</div></div>
+        <div class="stat"><div class="num">50+</div><div class="lbl">Career Paths</div></div>
+        <div class="stat"><div class="num">8</div><div class="lbl">Branches Covered</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: FORM -->
+<div class="pg" id="p-form">
+  <div class="con">
+    <div class="card">
+      <h2>📋 Your Engineering Profile</h2>
+      <p class="sub">Fill in your details — the more accurate, the better your recommendations.</p>
+      <div class="grid">
+        <div class="fg"><label>Full Name</label><input id="fn" placeholder="e.g. Rahul Sharma"/></div>
+        <div class="fg"><label>Branch</label>
+          <select id="fb">
+            <option value="">Select Branch</option>
+            <option>Computer Science Engineering</option>
+            <option>Information Technology</option>
+            <option>Electronics & Communication</option>
+            <option>Electrical Engineering</option>
+            <option>Mechanical Engineering</option>
+            <option>Data Science</option>
+          </select>
+        </div>
+        <div class="fg"><label>CGPA</label><input type="number" id="fg-cgpa" placeholder="e.g. 7.8" min="0" max="10" step="0.1"/></div>
+        <div class="fg"><label>Year of Study</label>
+          <select id="fy">
+            <option value="">Select Year</option>
+            <option>1st Year</option><option>2nd Year</option>
+            <option>3rd Year</option><option>4th Year</option>
+            <option>Graduated</option>
+          </select>
+        </div>
+        <div class="fg"><label>Work Preference</label>
+          <select id="fw">
+            <option value="">Select</option>
+            <option>Building Products (SDE)</option>
+            <option>Analyzing Data</option>
+            <option>Security & Networks</option>
+            <option>Research & Innovation</option>
+            <option>Consulting</option>
+          </select>
+        </div>
+        <div class="fg"><label>Experience</label>
+          <select id="fe">
+            <option value="">Select</option>
+            <option>No internships yet</option>
+            <option>1 Internship</option>
+            <option>2+ Internships</option>
+            <option>Freelance Projects</option>
+            <option>Open Source</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>Skills You Have (click to select)</label>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="fg"><label>LeetCode Problems Solved</label><input type="number" id="flc" placeholder="e.g. 150"/></div>
+        <div class="fg"><label>GitHub Repos</label><input type="number" id="fgh" placeholder="e.g. 8"/></div>
+      </div>
+      <div class="actions">
+        <button class="btn2" onclick="show('p-home')">← Back</button>
+        <button class="btn" onclick="analyze()">Analyze My Career Path →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: LOADING -->
+<div class="pg" id="p-load">
+  <div class="con">
+    <div class="spin-pg">
+      <div class="spinner"></div>
+      <h2>AI is Analyzing Your Profile...</h2>
+      <p>This takes just a few seconds</p>
+      <div class="ld-steps" id="ldsteps"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: RESULTS -->
+<div class="pg" id="p-res">
+  <div class="con">
+    <div class="rh">
+      <h2>🎯 Your Career Analysis</h2>
+      <p id="rsub">Here are your top career matches</p>
+    </div>
+    <div class="ccards" id="ccards"></div>
+    <div class="tabs">
+      <button class="tab active" onclick="stab('t-gap',this)">🔍 Skill Gap</button>
+      <button class="tab" onclick="stab('t-rm',this)">🗺️ Roadmap</button>
+      <button class="tab" onclick="stab('t-radar',this)">📊 Radar Chart</button>
+      <button class="tab" onclick="stab('t-sal',this)">💰 Salaries</button>
+    </div>
+    <div id="t-gap">
+      <div class="sc"><div class="st">✅ Skills You Already Have</div><div class="sh" id="shv"></div></div>
+      <div class="sc"><div class="st">❌ Missing Skills for Top Career</div><div class="sh" id="sms"></div>
+        <p class="tip">💡 Acquiring these can boost your match score by 20–30%</p>
+      </div>
+    </div>
+    <div id="t-rm" style="display:none">
+      <div class="sc"><div class="st">🗺️ Your 12-Week Learning Roadmap</div><div class="rm" id="rmcon"></div></div>
+    </div>
+    <div id="t-radar" style="display:none">
+      <div class="sc"><div class="st">📊 Skills Radar — You vs Required</div><div class="cht"><canvas id="rc"></canvas></div></div>
+    </div>
+    <div id="t-sal" style="display:none">
+      <div class="sc"><div class="st">💰 Salary Ranges by City</div><div class="sg" id="salgrid"></div></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn2" onclick="show('p-form')">← Re-analyze</button>
+      <button class="btn" onclick="alert('PDF export coming soon!')">📄 Download Report</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
