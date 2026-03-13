@@ -1,0 +1,260 @@
+{% extends "careers/base.html" %}
+{% load static %}
+{% block title %}Your Results — CareerCompass{% endblock %}
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+  <div class="container">
+
+    <!-- Result Header -->
+    <div class="result-hero">
+      <div class="result-hero-left">
+        <div class="result-congrats">🎉 Analysis Complete!</div>
+        <h1>Hi <span class="name-highlight">{{ profile.name }}</span>, here's your career match</h1>
+        <div class="profile-pills">
+          <span class="ppill">🎓 {{ profile.get_branch_display|default:"N/A" }}</span>
+          <span class="ppill">📊 {{ profile.cgpa }} CGPA</span>
+          <span class="ppill">💻 {{ profile.leetcode }} LC</span>
+          <span class="ppill">🐙 {{ profile.github }} repos</span>
+          {% if profile.skills %}<span class="ppill">🛠️ {{ profile.skills|length }} skills</span>{% endif %}
+        </div>
+      </div>
+      <div class="result-hero-right">
+        <div class="top-match-badge">
+          <div class="tmb-icon">{{ top.icon }}</div>
+          <div class="tmb-name">{{ top.career }}</div>
+          <div class="tmb-score">{{ top.score }}% match</div>
+          <div class="tmb-sal">{{ top.avg_salary }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Career Cards -->
+    <div class="result-section">
+      <div class="rs-title">All Career Matches</div>
+      <div class="match-cards">
+        {% for r in results %}
+        <div class="match-card {% if forloop.first %}is-top{% endif %}" onclick="focusCareer({{ forloop.counter0 }})">
+          {% if forloop.first %}<div class="match-crown">🏆 Best Match</div>{% endif %}
+          <div class="mc-top">
+            <span class="mc-icon">{{ r.icon }}</span>
+            <div class="mc-info">
+              <div class="mc-name">{{ r.career }}</div>
+              <div class="mc-salary">{{ r.avg_salary }}</div>
+            </div>
+            <div class="mc-score-badge">{{ r.score }}%</div>
+          </div>
+          <div class="mc-bar-bg">
+            <div class="mc-bar" data-p="{{ r.score }}" style="width:0%"></div>
+          </div>
+          <div class="mc-demand">{{ r.demand_trend }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('gap', this)">🔍 Skill Gap</button>
+      <button class="tab-btn" onclick="switchTab('roadmap', this)">🗺️ Roadmap</button>
+      <button class="tab-btn" onclick="switchTab('radar', this)">📊 Chart</button>
+      <button class="tab-btn" onclick="switchTab('salary', this)">💰 Salaries</button>
+    </div>
+
+    <!-- TAB: Skill Gap -->
+    <div class="tab-panel active" id="tab-gap">
+      <div class="gap-grid">
+        <div class="gap-col have">
+          <div class="gap-col-header">
+            <span class="gap-icon">✅</span>
+            <div>
+              <div class="gap-col-title">Skills You Have</div>
+              <div class="gap-col-sub">{{ top.skills_have|length }} matching skills</div>
+            </div>
+          </div>
+          <div class="skill-tags">
+            {% for s in top.skills_have %}
+            <span class="stag green">✓ {{ s }}</span>
+            {% empty %}
+            <span class="stag blue">Keep learning!</span>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="gap-col missing">
+          <div class="gap-col-header">
+            <span class="gap-icon">📚</span>
+            <div>
+              <div class="gap-col-title">Skills to Learn</div>
+              <div class="gap-col-sub">for {{ top.career }}</div>
+            </div>
+          </div>
+          <div class="skill-tags">
+            {% for s in top.skills_missing %}
+            <span class="stag red">✗ {{ s }}</span>
+            {% empty %}
+            <span class="stag green">🎉 All skills covered!</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="gap-tip">
+        💡 <strong>Pro tip:</strong> Focus on the top 2–3 missing skills first — that alone can boost your match score by 20–30%!
+      </div>
+    </div>
+
+    <!-- TAB: Roadmap -->
+    <div class="tab-panel" id="tab-roadmap">
+      <div class="roadmap-header">
+        <h3>Your 12-week plan for <em>{{ top.career }}</em></h3>
+        <p>Follow these steps to land your dream role</p>
+      </div>
+      <div class="roadmap-list">
+        {% for step in top.roadmap %}
+        <div class="rm-item">
+          <div class="rm-timeline">
+            <div class="rm-dot">{{ forloop.counter }}</div>
+            {% if not forloop.last %}<div class="rm-line"></div>{% endif %}
+          </div>
+          <div class="rm-content">
+            <div class="rm-week">{{ step.week }}</div>
+            <div class="rm-title">{{ step.title }}</div>
+            <div class="rm-desc">{{ step.desc }}</div>
+            <div class="rm-resources">
+              {% for res in step.resources %}
+              <span class="rm-res">{{ res }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TAB: Radar -->
+    <div class="tab-panel" id="tab-radar">
+      <div class="radar-wrap">
+        <div class="radar-title">Your skills vs what's needed</div>
+        <div class="radar-chart-box">
+          <canvas id="radarChart"></canvas>
+        </div>
+        <div class="radar-legend">
+          <span class="rl-item purple">● Required level</span>
+          <span class="rl-item teal">● Your level</span>
+        </div>
+        <p class="radar-note">The gap shows your growth opportunity — not a weakness! 🌱</p>
+      </div>
+    </div>
+
+    <!-- TAB: Salary -->
+    <div class="tab-panel" id="tab-salary">
+      <div class="salary-header">
+        <h3>💰 {{ top.career }} salaries across India</h3>
+        <p>Typical ranges for 0–5 years experience</p>
+      </div>
+      <div class="salary-grid">
+        {% for s in top.salary %}
+        <div class="sal-card">
+          <div class="sal-city">📍 {{ s.city }}</div>
+          <div class="sal-range">{{ s.range }}</div>
+          <div class="sal-exp">{{ s.exp }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="sal-note">📌 Salaries vary by company size, your specific skills, and experience level.</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="result-actions">
+      <a href="{% url 'analyze' %}" class="btn-outline">← Re-analyse</a>
+      <a href="{% url 'history' %}" class="btn-secondary">📜 View All Results</a>
+      <a href="{% url 'analyze' %}" class="btn-primary">🚀 New Analysis</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate score bars after page loads
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.mc-bar').forEach(b => {
+      b.style.width = b.dataset.p + '%';
+    });
+  }, 300);
+});
+
+// Tab switching
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'radar') setTimeout(renderRadar, 50);
+}
+
+// Radar Chart — data safely passed from view as JSON
+const RADAR_LABELS   = {{ radar_labels|safe }};
+const RADAR_REQUIRED = {{ radar_required|safe }};
+const USER_SKILLS    = {{ profile_skills_json|safe }};
+let radarChart = null;
+
+function renderRadar() {
+  if (radarChart) { radarChart.destroy(); radarChart = null; }
+  const userScores = RADAR_REQUIRED.map(req =>
+    Math.max(2, Math.round(req * 0.35 + (USER_SKILLS.length / 12) * req * 0.65))
+  );
+
+  // Use theme-aware colors
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor   = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+  const labelColor  = isDark ? '#94a3b8' : '#64748b';
+  const legendColor = isDark ? '#cbd5e1' : '#374151';
+
+  radarChart = new Chart(document.getElementById('radarChart').getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: RADAR_LABELS,
+      datasets: [
+        {
+          label: 'Required',
+          data: RADAR_REQUIRED,
+          borderColor: 'rgba(129,140,248,0.9)',
+          backgroundColor: 'rgba(129,140,248,0.12)',
+          pointBackgroundColor: '#818cf8',
+          borderWidth: 2,
+        },
+        {
+          label: 'Your Level',
+          data: userScores,
+          borderColor: 'rgba(45,212,191,0.9)',
+          backgroundColor: 'rgba(45,212,191,0.12)',
+          pointBackgroundColor: '#2dd4bf',
+          borderWidth: 2,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0,
+          max: 10,
+          ticks: { display: false },
+          grid: { color: gridColor },
+          pointLabels: { color: labelColor, font: { size: 12, weight: '600' } },
+        }
+      },
+      plugins: {
+        legend: { labels: { color: legendColor, font: { size: 13 } } }
+      }
+    }
+  });
+}
+</script>
+{% endblock %}

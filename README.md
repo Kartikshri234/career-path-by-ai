@@ -1,67 +1,93 @@
-# 🎯 CareerCompass — AI Career Path Recommendation System
+# 🎯 CareerCompass — Django Edition
 
-An end-to-end system that analyzes an engineering student's profile and recommends the best career paths with skill gap analysis and a personalized learning roadmap.
+An upgraded version of the AI Career Path Recommendation System built with **Django + SQLite**.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Navigate into the project
+cd career-path-django
+
+# 2. Create & activate virtual environment
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # Mac/Linux
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run database migrations
+python manage.py migrate
+
+# 5. (Optional) Create admin superuser
+python manage.py createsuperuser
+
+# 6. Start the dev server
+python manage.py runserver
+```
+
+Then open **http://127.0.0.1:8000** in your browser.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-career-path-system/
-│
-├── frontend/
-│   ├── index.html              ← Main UI (open this in browser)
-│   ├── css/
-│   │   └── style.css           ← All styling (dark theme)
-│   └── js/
-│       ├── data.js             ← Career data, skills, roadmaps, salary info
-│       └── app.js              ← Scoring engine, UI logic, chart rendering
-│
-├── backend/
-│   ├── career_matcher.py       ← Core scoring algorithm (pure Python)
-│   └── api.py                  ← FastAPI REST API (optional)
-│
-├── data/
-│   └── sample_students.json    ← Test student profiles
-│
-└── README.md
+career-path-django/
+├── careercompass/              ← Django project config
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── careers/                    ← Main app
+│   ├── career_engine.py        ← Upgraded scoring engine (5 careers)
+│   ├── models.py               ← StudentProfile + AnalysisResult (saved to DB)
+│   ├── views.py                ← Home, Analyze, Results, History, API
+│   ├── forms.py                ← Django form with validation
+│   ├── urls.py                 ← All URL routes
+│   ├── admin.py                ← Django admin config
+│   ├── templates/careers/
+│   │   ├── base.html           ← Shared nav + layout
+│   │   ├── home.html           ← Landing page
+│   │   ├── form.html           ← Student profile form
+│   │   ├── results.html        ← Career analysis results
+│   │   └── history.html        ← All past analyses (NEW)
+│   └── static/careers/css/
+│       └── style.css           ← All styling
+├── manage.py
+└── requirements.txt
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🌐 URL Routes
 
-### Option A — Frontend Only (No setup needed)
-1. Open `frontend/index.html` in any browser
-2. Click **"View Demo"** to auto-fill a sample profile
-3. Click **"Analyze My Career Path"** to see results
-
-### Option B — Run Python Backend
-```bash
-# Install dependencies
-pip install fastapi uvicorn
-
-# Run the scoring engine directly
-cd backend
-python career_matcher.py
-
-# OR start the API server
-uvicorn api:app --reload
-# Visit: http://localhost:8000/docs
-```
+| URL                   | View       | Description                        |
+|-----------------------|------------|------------------------------------|
+| `/`                   | home       | Landing page                       |
+| `/analyze/`           | analyze    | Profile form (GET) + submit (POST) |
+| `/analyze/?demo=1`    | analyze    | Pre-filled demo profile            |
+| `/results/<id>/`      | results    | Career analysis results page       |
+| `/history/`           | history    | All saved analyses (NEW)           |
+| `/admin/`             | Django admin | Manage profiles & results        |
+| `/api/recommend/`     | api_recommend | POST JSON → ranked results      |
+| `/api/careers/`       | api_careers   | GET all career tracks           |
 
 ---
 
-## ✨ Features
+## ✨ Upgrades over original
 
-| Feature | Description |
-|---|---|
-| 🎯 Career Matching | Scores 5 career tracks based on your profile |
-| 🔍 Skill Gap Analysis | Shows skills you have vs. skills you need |
-| 🗺️ Learning Roadmap | 5-step 12-week plan for your top career |
-| 📊 Radar Chart | Visual skill comparison (you vs. required) |
-| 💰 Salary Insights | City-wise salary ranges in India |
-| 🤖 Demo Mode | Pre-filled sample to explore instantly |
+| Feature             | Original (HTML/FastAPI) | Django version         |
+|---------------------|-------------------------|------------------------|
+| Backend             | FastAPI / Static HTML   | Django 4.x             |
+| Database            | None                    | SQLite (auto-saved)    |
+| Form validation     | JS only                 | Django Forms + CSRF    |
+| History             | ❌                      | ✅ `/history/` page    |
+| Admin panel         | ❌                      | ✅ `/admin/`           |
+| Career tracks       | 4                       | 5 (PM added)           |
+| Demo mode           | JS button               | `?demo=1` URL param    |
+| API                 | FastAPI `/docs`         | `/api/recommend/`      |
 
 ---
 
@@ -69,64 +95,5 @@ uvicorn api:app --reload
 
 ```
 Match Score = (Skill Overlap × 60%) + (CGPA × 20%) + (LeetCode × 10%) + (GitHub × 10%)
+Score range: 18–98 (floor boost so no student gets 0)
 ```
-
-> Score is mapped to a display range of **18–98** so no student ever gets 0.
-
----
-
-## 🎓 Career Tracks Supported
-
-| Career | Avg Salary | Demand |
-|---|---|---|
-| Software Development Engineer | ₹8–35 LPA | Very High ↑ |
-| Data Scientist / ML Engineer | ₹10–45 LPA | High ↑ |
-| Cloud / DevOps Engineer | ₹9–40 LPA | High ↑ |
-| Cybersecurity Engineer | ₹8–32 LPA | Growing ↑ |
-| Product Manager (Tech) | ₹12–50 LPA | Moderate → |
-
----
-
-## 🧪 Sample Student Profiles
-
-Three test profiles are included in `data/sample_students.json`:
-
-- **Arjun Verma** — CSE, 8.2 CGPA, 120 LeetCode → expected: SDE
-- **Priya Nair** — Data Science, 9.0 CGPA, strong ML skills → expected: Data Scientist
-- **Rohit Sharma** — ECE, 7.1 CGPA, DevOps skills → expected: Cloud/DevOps
-
----
-
-## 🛣️ Roadmap — What to Build Next
-
-- [ ] Add more career tracks (Embedded, Research, Consulting)
-- [ ] Connect to real Claude API for AI-generated personalized roadmaps
-- [ ] PDF report export
-- [ ] User login & profile save
-- [ ] Real-time job market data via LinkedIn/Naukri API
-- [ ] Alumni matching feature
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Tech |
-|---|---|
-| Frontend | HTML, CSS, Vanilla JS, Chart.js |
-| Backend | Python, FastAPI |
-| Charts | Chart.js (Radar) |
-| Data | JSON |
-
----
-
-## 📡 API Endpoints
-
-| Method | Route | Description |
-|---|---|---|
-| GET | `/` | Health check |
-| POST | `/recommend` | Submit profile → get ranked careers |
-| GET | `/careers` | List all career tracks & required skills |
-
----
-
-*Built with ❤️ — career-path-by-ai*

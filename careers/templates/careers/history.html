@@ -1,0 +1,73 @@
+{% extends "careers/base.html" %}
+{% block title %}History — CareerCompass{% endblock %}
+
+{% block content %}
+<div class="history-page">
+  <div class="container">
+
+    <div class="page-header">
+      <a href="{% url 'home' %}" class="back-link">← Home</a>
+      <div class="page-header-text">
+        <h1>📜 Analysis History</h1>
+        <p>All past career analyses saved in the database</p>
+      </div>
+      <a href="{% url 'analyze' %}" class="btn-primary">+ New Analysis</a>
+    </div>
+
+    {% if analyses %}
+    <div class="history-stats">
+      <div class="hs-card">
+        <div class="hs-num">{{ analyses|length }}</div>
+        <div class="hs-lbl">Total Analyses</div>
+      </div>
+    </div>
+
+    <div class="history-list">
+      {% for a in analyses %}
+      <div class="history-card">
+        <div class="hc-left">
+          <div class="hc-avatar">{{ a.profile.name|slice:":1" }}</div>
+          <div class="hc-info">
+            <div class="hc-name">{{ a.profile.name }}</div>
+            <div class="hc-meta">
+              {% if a.profile.branch %}<span>{{ a.profile.get_branch_display }}</span>{% endif %}
+              {% if a.profile.year %}<span>· {{ a.profile.year }}</span>{% endif %}
+              <span>· CGPA {{ a.profile.cgpa }}</span>
+              <span>· {{ a.created_at|date:"d M Y" }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="hc-center">
+          <div class="hc-career-label">Top Career</div>
+          <div class="hc-career">{{ a.top_career }}</div>
+        </div>
+        <div class="hc-right">
+          <div class="hc-score-ring">
+            <svg viewBox="0 0 36 36" class="score-ring">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#e2e8f0" stroke-width="3"/>
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none" stroke="#6366f1" stroke-width="3"
+                    stroke-dasharray="{{ a.top_score }}, 100"
+                    stroke-linecap="round"/>
+            </svg>
+            <div class="ring-score">{{ a.top_score }}%</div>
+          </div>
+          <a href="{% url 'results' a.pk %}" class="hc-view-btn">View →</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="es-graphic">🔭</div>
+      <h2>No analyses yet</h2>
+      <p>Submit your first profile to see your career matches here.</p>
+      <a href="{% url 'analyze' %}" class="btn-primary" style="margin-top:24px;">🚀 Analyse My Profile</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
