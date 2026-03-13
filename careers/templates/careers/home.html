@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<!-- HERO -->
+<!-- HERO with inline quick-start form -->
 <section class="hero-section">
   <div class="hero-bg-shapes">
     <div class="shape shape-1"></div>
@@ -16,23 +16,118 @@
         <span class="badge-dot"></span>
         Free for all students · No sign-up needed
       </div>
-
       <h1 class="hero-title">
-        Find Your <span class="highlight">Dream Career</span><br>
-        in Tech 🚀
+        Find Your <span class="highlight">Dream Career</span><br>in Tech 🚀
       </h1>
       <p class="hero-sub">
-        Enter your skills, CGPA &amp; interests — get your personalized career roadmap with salary insights in under 30 seconds.
+        Fill in your details below and get your personalized career roadmap with salary insights in under 30 seconds.
       </p>
 
-      <div class="hero-actions">
-        <a href="{% url 'analyze' %}" class="btn-primary btn-lg">
-          <span>🎯</span> Analyse My Profile
-        </a>
-        <a href="{% url 'analyze' %}?demo=1" class="btn-outline btn-lg">
-          <span>▶</span> Watch Demo
-        </a>
+      <!-- ===== INLINE QUICK FORM ===== -->
+      <div class="quick-form-card">
+        <form method="post" action="{% url 'analyze' %}" id="quick-form">
+          {% csrf_token %}
+
+          <div class="qf-row">
+            <div class="qf-field">
+              <label class="qf-label">Your Name</label>
+              <input type="text" name="name" class="qf-input" placeholder="e.g. Priya Sharma" autocomplete="name"/>
+            </div>
+            <div class="qf-field">
+              <label class="qf-label">Branch</label>
+              <select name="branch" class="qf-input">
+                <option value="">Select branch</option>
+                <option value="CSE">Computer Science</option>
+                <option value="IT">Information Technology</option>
+                <option value="ECE">Electronics &amp; Communication</option>
+                <option value="EE">Electrical Engineering</option>
+                <option value="ME">Mechanical Engineering</option>
+                <option value="DS">Data Science</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="qf-field qf-field-sm">
+              <label class="qf-label">CGPA</label>
+              <input type="number" name="cgpa" class="qf-input" placeholder="7.8" min="0" max="10" step="0.1"/>
+            </div>
+            <div class="qf-field qf-field-sm">
+              <label class="qf-label">Year</label>
+              <select name="year" class="qf-input">
+                <option value="">Year</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+                <option value="grad">Graduated</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="qf-row">
+            <div class="qf-field qf-field-sm">
+              <label class="qf-label">💻 LeetCode Problems</label>
+              <input type="number" name="leetcode" class="qf-input" placeholder="0" min="0"/>
+            </div>
+            <div class="qf-field qf-field-sm">
+              <label class="qf-label">🐙 GitHub Repos</label>
+              <input type="number" name="github" class="qf-input" placeholder="0" min="0"/>
+            </div>
+            <div class="qf-field">
+              <label class="qf-label">What excites you?</label>
+              <select name="interest" class="qf-input">
+                <option value="">Pick one (optional)</option>
+                <option value="sde">🏗️ Building Products</option>
+                <option value="data">📊 Analysing Data</option>
+                <option value="sec">🔐 Security &amp; Networks</option>
+                <option value="res">🔬 Research &amp; Innovation</option>
+                <option value="consult">💡 Consulting</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Skills quick-pick -->
+          <div class="qf-skills-wrap">
+            <label class="qf-label">🛠️ Your Skills <span class="qf-skill-count" id="qfSkillCount">(tap to select)</span></label>
+            <div class="qf-chips" id="qfChips">
+              <div class="qf-chip" data-skill="Python">Python</div>
+              <div class="qf-chip" data-skill="Java">Java</div>
+              <div class="qf-chip" data-skill="C++">C++</div>
+              <div class="qf-chip" data-skill="JavaScript">JavaScript</div>
+              <div class="qf-chip" data-skill="React">React</div>
+              <div class="qf-chip" data-skill="Node.js">Node.js</div>
+              <div class="qf-chip" data-skill="SQL">SQL</div>
+              <div class="qf-chip" data-skill="HTML/CSS">HTML/CSS</div>
+              <div class="qf-chip" data-skill="Machine Learning">ML</div>
+              <div class="qf-chip" data-skill="Deep Learning">Deep Learning</div>
+              <div class="qf-chip" data-skill="Data Analysis">Data Analysis</div>
+              <div class="qf-chip" data-skill="Statistics">Statistics</div>
+              <div class="qf-chip" data-skill="Docker">Docker</div>
+              <div class="qf-chip" data-skill="AWS">AWS</div>
+              <div class="qf-chip" data-skill="Linux">Linux</div>
+              <div class="qf-chip" data-skill="Git">Git</div>
+              <div class="qf-chip" data-skill="DSA">DSA</div>
+              <div class="qf-chip" data-skill="System Design">System Design</div>
+              <div class="qf-chip" data-skill="Networking">Networking</div>
+              <div class="qf-chip" data-skill="Ethical Hacking">Ethical Hacking</div>
+              <div class="qf-chip" data-skill="REST APIs">REST APIs</div>
+              <div class="qf-chip" data-skill="MongoDB">MongoDB</div>
+              <div class="qf-chip" data-skill="Power BI">Power BI</div>
+              <div class="qf-chip" data-skill="Figma">Figma</div>
+              <div class="qf-chip" data-skill="Excel">Excel</div>
+              <div class="qf-chip" data-skill="Kubernetes">Kubernetes</div>
+              <div class="qf-chip" data-skill="R">R</div>
+              <div class="qf-chip" data-skill="MATLAB">MATLAB</div>
+            </div>
+            <div id="qf-hidden-skills"></div>
+          </div>
+
+          <button type="submit" class="qf-submit" id="qfSubmit">
+            <span id="qfText">🎯 Analyse My Career Path</span>
+            <span id="qfLoading" style="display:none">⏳ Analysing...</span>
+          </button>
+        </form>
       </div>
+      <!-- end quick form -->
 
       <div class="trust-bar">
         <div class="trust-item"><span class="trust-num">5</span><span class="trust-lbl">Career Tracks</span></div>
@@ -56,9 +151,7 @@
           <div class="cp-badge-top">🏆 Top Match</div>
         </div>
         <div class="cp-career">💻 Software Development Engineer</div>
-        <div class="cp-bar-wrap">
-          <div class="cp-bar" style="width:87%"></div>
-        </div>
+        <div class="cp-bar-wrap"><div class="cp-bar" style="width:87%"></div></div>
         <div class="cp-score">87% Match</div>
         <div class="cp-tags">
           <span class="cpt green">✓ Python</span>
@@ -82,7 +175,7 @@
         <div class="step-num">01</div>
         <div class="step-icon">📝</div>
         <h3>Fill Your Profile</h3>
-        <p>Enter your branch, CGPA, LeetCode count, GitHub repos and select your skills.</p>
+        <p>Enter your branch, CGPA, LeetCode count, GitHub repos and select your skills above.</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step-card">
@@ -108,49 +201,45 @@
     <div class="section-label-center">Career Tracks</div>
     <h2 class="section-title">5 in-demand careers we match you to</h2>
     <div class="career-grid">
-      <div class="cg-card">
-        <div class="cg-icon">💻</div>
-        <div class="cg-name">Software Dev Engineer</div>
-        <div class="cg-sal">₹8–35 LPA</div>
-        <div class="cg-demand high">Very High ↑</div>
-      </div>
-      <div class="cg-card">
-        <div class="cg-icon">🤖</div>
-        <div class="cg-name">Data Scientist / ML</div>
-        <div class="cg-sal">₹10–45 LPA</div>
-        <div class="cg-demand high">High ↑</div>
-      </div>
-      <div class="cg-card">
-        <div class="cg-icon">☁️</div>
-        <div class="cg-name">Cloud / DevOps</div>
-        <div class="cg-sal">₹9–40 LPA</div>
-        <div class="cg-demand high">High ↑</div>
-      </div>
-      <div class="cg-card">
-        <div class="cg-icon">🔐</div>
-        <div class="cg-name">Cybersecurity</div>
-        <div class="cg-sal">₹8–32 LPA</div>
-        <div class="cg-demand med">Growing ↑</div>
-      </div>
-      <div class="cg-card">
-        <div class="cg-icon">📋</div>
-        <div class="cg-name">Product Manager</div>
-        <div class="cg-sal">₹12–50 LPA</div>
-        <div class="cg-demand med">Moderate →</div>
-      </div>
+      <div class="cg-card"><div class="cg-icon">💻</div><div class="cg-name">Software Dev Engineer</div><div class="cg-sal">₹8–35 LPA</div><div class="cg-demand high">Very High ↑</div></div>
+      <div class="cg-card"><div class="cg-icon">🤖</div><div class="cg-name">Data Scientist / ML</div><div class="cg-sal">₹10–45 LPA</div><div class="cg-demand high">High ↑</div></div>
+      <div class="cg-card"><div class="cg-icon">☁️</div><div class="cg-name">Cloud / DevOps</div><div class="cg-sal">₹9–40 LPA</div><div class="cg-demand high">High ↑</div></div>
+      <div class="cg-card"><div class="cg-icon">🔐</div><div class="cg-name">Cybersecurity</div><div class="cg-sal">₹8–32 LPA</div><div class="cg-demand med">Growing ↑</div></div>
+      <div class="cg-card"><div class="cg-icon">📋</div><div class="cg-name">Product Manager</div><div class="cg-sal">₹12–50 LPA</div><div class="cg-demand med">Moderate →</div></div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-  <div class="container">
-    <div class="cta-card">
-      <h2>Ready to discover your path?</h2>
-      <p>Takes 2 minutes. No login needed. Results saved automatically.</p>
-      <a href="{% url 'analyze' %}" class="btn-primary btn-lg">🚀 Start Now — It's Free</a>
-    </div>
-  </div>
-</section>
+{% endblock %}
 
+{% block extra_js %}
+<script>
+// Quick-form skill chips
+document.querySelectorAll('.qf-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    chip.classList.toggle('active');
+    syncSkills();
+  });
+});
+
+function syncSkills() {
+  const container = document.getElementById('qf-hidden-skills');
+  container.innerHTML = '';
+  const active = document.querySelectorAll('.qf-chip.active');
+  active.forEach(chip => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'skills'; inp.value = chip.dataset.skill;
+    container.appendChild(inp);
+  });
+  const count = active.length;
+  document.getElementById('qfSkillCount').textContent =
+    count > 0 ? `(${count} selected ✓)` : '(tap to select)';
+}
+
+document.getElementById('quick-form').addEventListener('submit', function() {
+  document.getElementById('qfText').style.display = 'none';
+  document.getElementById('qfLoading').style.display = 'inline';
+  document.getElementById('qfSubmit').disabled = true;
+});
+</script>
 {% endblock %}
