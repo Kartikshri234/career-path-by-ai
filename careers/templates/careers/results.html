@@ -1,451 +1,228 @@
-<<<<<<< HEAD
 {% extends 'careers/base.html' %}
-{% block title %}Your Results{% endblock %}
+{% block title %}Results — CareerCompass{% endblock %}
 
 {% block nav_steps %}
-<div class="steps">
-  <div class="step done">① Profile</div>
-  <div class="step done">② Analysis</div>
-  <div class="step active">③ Results</div>
+<div class="steps-nav">
+  <span class="step-pill done">① Profile</span>
+  <span class="step-pill active">② Results</span>
 </div>
 {% endblock %}
 
 {% block extra_head %}
 <style>
-.rh{margin-bottom:30px;}
-.rh h2{font-size:1.8rem;font-weight:800;}
-.rh p{color:var(--m);margin-top:6px;}
+.results-page { padding: 40px 0 80px; }
 
-/* Career cards */
-.ccards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:30px;}
-.cc{background:var(--c);border-radius:16px;padding:24px;border:1.5px solid var(--item-border);
-    transition:all .25s,background .3s,color .3s;position:relative;overflow:hidden;}
-.cc:hover{transform:translateY(-4px);border-color:var(--p);}
-.cc.top{border-color:var(--p);}
-.cc.top::before{content:'🏆 Best Match';position:absolute;top:0;right:0;
-  background:var(--p);color:#fff;font-size:.7rem;font-weight:700;
-  padding:4px 12px;border-radius:0 16px 0 10px;}
-.ci{font-size:2rem;margin-bottom:12px;}
-.cn{font-size:1.05rem;font-weight:700;margin-bottom:6px;}
-.cd{font-size:.82rem;color:var(--m);margin-bottom:16px;line-height:1.5;}
-.mbg{background:var(--item-bg);border-radius:10px;height:8px;overflow:hidden;}
-.mb{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--p),var(--a));
-    transition:width 1s ease;width:0%;}
-.mp{font-size:1.4rem;font-weight:900;color:var(--p);margin-top:8px;}
-.ml{font-size:.75rem;color:var(--m);}
+/* ── Top summary ── */
+.result-summary {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap; margin-bottom: 32px;
+}
+.result-summary h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.result-summary p  { color: var(--text-2); font-size: .9rem; }
 
-/* Tabs */
-.tabs{display:flex;gap:4px;margin-bottom:24px;background:rgba(255,255,255,.03);
-      padding:4px;border-radius:12px;flex-wrap:wrap;}
-.tab{padding:10px 20px;border-radius:10px;font-size:.85rem;font-weight:600;
-     cursor:pointer;color:var(--m);transition:all .2s;border:none;background:transparent;}
-.tab.active{background:var(--p);color:#fff;}
+/* ── Match cards ── */
+.match-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.match-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  transition: border-color var(--transition), transform .2s;
+}
+.match-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.match-card.is-top { border-color: var(--primary); }
+.top-badge {
+  position: absolute; top: 0; right: 0;
+  background: var(--primary); color: #fff;
+  font-size: .68rem; font-weight: 700;
+  padding: 4px 12px; border-radius: 0 var(--radius) 0 var(--radius-sm);
+}
+.mc-icon { font-size: 1.8rem; margin-bottom: 10px; }
+.mc-name { font-size: .95rem; font-weight: 700; margin-bottom: 4px; }
+.mc-desc { font-size: .78rem; color: var(--text-2); line-height: 1.5; margin-bottom: 14px; }
+.mc-bar-bg { background: var(--surface2); border-radius: 4px; height: 6px; margin-bottom: 6px; overflow: hidden; }
+.mc-bar    { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0; transition: width 1s ease; }
+.mc-score  { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
+.mc-score-lbl { font-size: .72rem; color: var(--text-3); }
 
-/* Section cards */
-.sc{background:var(--c);border-radius:16px;padding:28px;border:1px solid var(--item-border);margin-bottom:20px;}
-.st{font-size:1.1rem;font-weight:700;margin-bottom:20px;}
-.sh{display:flex;flex-wrap:wrap;gap:8px;}
-.tip{margin-top:16px;font-size:.85rem;color:var(--m);}
+/* ── Tabs ── */
+.tab-nav {
+  display: flex; gap: 4px; padding: 4px;
+  background: var(--surface2); border-radius: var(--radius);
+  margin-bottom: 20px; flex-wrap: wrap;
+  border: 1px solid var(--border);
+}
+.tab-btn {
+  padding: 8px 18px; border-radius: var(--radius-sm);
+  font-size: .83rem; font-weight: 600;
+  color: var(--text-2); background: transparent;
+  transition: all var(--transition); border: none;
+}
+.tab-btn:hover  { color: var(--text); }
+.tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
 
-/* Roadmap */
-.rm{display:flex;flex-direction:column;}
-.ri{display:flex;gap:20px;padding:20px 0;border-left:2px solid rgba(108,99,255,.3);
-    padding-left:24px;position:relative;}
-.ri::before{content:'';position:absolute;left:-7px;top:24px;width:12px;height:12px;
-  border-radius:50%;background:var(--p);border:2px solid var(--c);}
-.rw{font-size:.75rem;color:var(--p);font-weight:700;white-space:nowrap;min-width:70px;}
-.rcb h4{font-size:.95rem;font-weight:700;margin-bottom:4px;}
-.rcb p{font-size:.82rem;color:var(--m);line-height:1.5;}
-.rrs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.rt{font-size:.75rem;padding:3px 10px;border-radius:10px;
-    background:rgba(108,99,255,.1);color:var(--p);border:1px solid rgba(108,99,255,.2);}
+/* ── Tab panels ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
-/* Radar */
-.cht{position:relative;height:280px;}
+/* ── Panel cards ── */
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 14px;
+}
+.panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tip-note { margin-top: 14px; font-size: .83rem; color: var(--text-2); }
 
-/* Salary */
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-.si{background:var(--item-bg);border-radius:12px;padding:16px;}
-.si .cy{font-size:.8rem;color:var(--m);font-weight:600;}
-.si .rg{font-size:1.1rem;font-weight:800;color:var(--g);margin-top:4px;}
-.si .ex{font-size:.75rem;color:var(--m);margin-top:2px;}
+/* ── Roadmap ── */
+.rm-list { display: flex; flex-direction: column; }
+.rm-row {
+  display: flex; gap: 16px;
+  padding: 16px 0 0 28px;
+  border-left: 2px solid var(--border-accent);
+  position: relative;
+  margin-bottom: 4px;
+}
+.rm-row::before {
+  content: '';
+  position: absolute; left: -7px; top: 20px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--primary); border: 2px solid var(--bg);
+}
+.rm-week { font-size: .72rem; font-weight: 700; color: var(--primary); white-space: nowrap; min-width: 72px; margin-top: 2px; }
+.rm-content { flex: 1; padding-bottom: 16px; }
+.rm-content h4 { font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+.rm-content p  { font-size: .8rem; color: var(--text-2); line-height: 1.5; margin-bottom: 8px; }
+.rm-resources { display: flex; flex-wrap: wrap; gap: 6px; }
+.rm-res { font-size: .72rem; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--primary-soft); color: var(--primary); }
 
-.result-actions{margin-top:30px;text-align:center;display:flex;gap:12px;justify-content:center;}
+/* ── Radar ── */
+.radar-box { height: 280px; position: relative; }
 
-@media(max-width:768px){
-  .ccards{grid-template-columns:1fr;}
-  .sg{grid-template-columns:1fr 1fr;}
+/* ── Salary ── */
+.salary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.sal-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.sal-city  { font-size: .75rem; color: var(--text-3); font-weight: 600; margin-bottom: 4px; }
+.sal-range { font-size: 1rem; font-weight: 800; color: var(--green); }
+.sal-exp   { font-size: .72rem; color: var(--text-3); margin-top: 2px; }
+
+/* ── Actions ── */
+.result-actions { display: flex; gap: 12px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
+
+@media(max-width: 768px) {
+  .match-cards { grid-template-columns: 1fr; }
+  .salary-grid { grid-template-columns: 1fr 1fr; }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="con">
-  <div class="rh">
-    <h2>🎯 Your Career Analysis</h2>
-    <p>Hi <strong>{{ profile.name }}</strong>! Based on your profile, here are your top career matches 🎉</p>
+<div class="results-page">
+<div class="container">
+
+  <div class="result-summary">
+    <div>
+      <h1>🎯 Your Career Analysis</h1>
+      <p>Hi <strong>{{ profile.name }}</strong> — here are your top career matches based on your profile.</p>
+    </div>
+    <a href="{% url 'profile_form' %}" class="btn-outline">← Re-analyse</a>
   </div>
 
-  <!-- Career match cards -->
-  <div class="ccards">
+  <!-- Match cards -->
+  <div class="match-cards">
     {% for rec in recommendations %}
-    <div class="cc {% if forloop.first %}top{% endif %}">
-      <div class="ci">{{ rec.icon }}</div>
-      <div class="cn">{{ rec.career }}</div>
-      <div class="cd">{{ rec.desc }}</div>
-      <div class="mbg"><div class="mb" data-p="{{ rec.score }}"></div></div>
-      <div class="mp">{{ rec.score }}%</div>
-      <div class="ml">Career Match Score</div>
+    <div class="match-card {% if forloop.first %}is-top{% endif %}">
+      {% if forloop.first %}<div class="top-badge">🏆 Best Match</div>{% endif %}
+      <div class="mc-icon">{{ rec.icon }}</div>
+      <div class="mc-name">{{ rec.career }}</div>
+      <div class="mc-desc">{{ rec.desc }}</div>
+      <div class="mc-bar-bg"><div class="mc-bar" data-p="{{ rec.score }}"></div></div>
+      <div class="mc-score">{{ rec.score }}%</div>
+      <div class="mc-score-lbl">Career Match Score</div>
     </div>
     {% endfor %}
   </div>
 
   <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="stab('t-gap',this)">🔍 Skill Gap</button>
-    <button class="tab" onclick="stab('t-rm',this)">🗺️ Roadmap</button>
-    <button class="tab" onclick="stab('t-radar',this)">📊 Radar Chart</button>
-    <button class="tab" onclick="stab('t-sal',this)">💰 Salaries</button>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('gap',   this)">🔍 Skill Gap</button>
+    <button class="tab-btn"        onclick="switchTab('rm',    this)">🗺️ Roadmap</button>
+    <button class="tab-btn"        onclick="switchTab('radar', this)">📊 Radar</button>
+    <button class="tab-btn"        onclick="switchTab('sal',   this)">💰 Salaries</button>
   </div>
 
   <!-- Skill Gap -->
-  <div id="t-gap">
-    <div class="sc">
-      <div class="st">✅ Skills You Already Have</div>
-      <div class="sh">
+  <div class="tab-panel active" id="tab-gap">
+    <div class="panel-card">
+      <div class="panel-title">✅ Skills You Already Have</div>
+      <div class="tags-row">
         {% for s in top.skills_have %}
-          <span class="tag hv">✓ {{ s }}</span>
+          <span class="tag tag-green">✓ {{ s }}</span>
         {% empty %}
-          <span style="color:var(--m)">Keep building skills!</span>
+          <span class="tag tag-blue">Keep building skills!</span>
         {% endfor %}
       </div>
     </div>
-    <div class="sc">
-      <div class="st">❌ Missing Skills for Top Career</div>
-      <div class="sh">
+    <div class="panel-card">
+      <div class="panel-title">📚 Skills to Learn Next</div>
+      <div class="tags-row">
         {% for s in top.skills_missing %}
-          <span class="tag ms">✗ {{ s }}</span>
+          <span class="tag tag-red">✗ {{ s }}</span>
         {% empty %}
-          <span style="color:var(--a)">🎉 All core skills covered!</span>
+          <span class="tag tag-green">🎉 All core skills covered!</span>
         {% endfor %}
       </div>
-      <p class="tip">💡 Acquiring these can boost your match score by 20–30%</p>
+      <p class="tip-note">💡 Focusing on 2–3 missing skills can boost your match score by 20–30%</p>
     </div>
   </div>
 
   <!-- Roadmap -->
-  <div id="t-rm" style="display:none">
-    <div class="sc">
-      <div class="st">🗺️ Your 12-Week Learning Roadmap</div>
-      <div class="rm">
+  <div class="tab-panel" id="tab-rm">
+    <div class="panel-card">
+      <div class="panel-title">🗺️ Your 12-Week Learning Roadmap</div>
+      <div class="rm-list">
         {% for step in top.roadmap %}
-        <div class="ri">
-          <div class="rw">{{ step.week }}</div>
-          <div class="rcb">
+        <div class="rm-row">
+          <div class="rm-week">{{ step.week }}</div>
+          <div class="rm-content">
             <h4>{{ step.title }}</h4>
             <p>{{ step.desc }}</p>
-            <div class="rrs">
-              {% for r in step.resources %}<span class="rt">{{ r }}</span>{% endfor %}
-=======
-{% extends "careers/base.html" %}
-{% load static %}
-{% block title %}Your Results — CareerCompass{% endblock %}
-{% block extra_head %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-{% endblock %}
-
-{% block content %}
-<div class="results-page">
-  <div class="container">
-
-    <!-- ===== RESULT HERO ===== -->
-    <div class="result-hero">
-      <div class="result-hero-left">
-        <div class="result-congrats">🎉 Analysis Complete!</div>
-        <h1>Hi <span class="name-highlight">{{ profile.name }}</span>, here's your career match</h1>
-        <div class="profile-pills">
-          <span class="ppill">🎓 {{ profile.get_branch_display|default:"N/A" }}</span>
-          <span class="ppill">📊 {{ profile.cgpa }} CGPA</span>
-          <span class="ppill">💻 {{ profile.leetcode }} LC Problems</span>
-          <span class="ppill">🐙 {{ profile.github }} GitHub Repos</span>
-          {% if profile.skills %}<span class="ppill">🛠️ {{ profile.skills|length }} Skills</span>{% endif %}
-        </div>
-      </div>
-      <div class="result-hero-right">
-        <div class="top-match-badge">
-          <div class="tmb-icon">{{ top.icon }}</div>
-          <div class="tmb-name">{{ top.career }}</div>
-          <div class="tmb-score">{{ top.score }}% match</div>
-          <div class="tmb-sal">{{ top.avg_salary }}</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== SCORE OVERVIEW ===== -->
-    <div class="score-overview">
-      {% for r in results %}
-      <div class="so-item {% if forloop.first %}so-top{% endif %}" onclick="jumpToCareer({{ forloop.counter0 }})">
-        <div class="so-icon">{{ r.icon }}</div>
-        <div class="so-info">
-          <div class="so-name">{{ r.career }}</div>
-          <div class="so-bar-wrap">
-            <div class="so-bar" data-p="{{ r.score }}" style="width:0%"></div>
-          </div>
-        </div>
-        <div class="so-score {% if forloop.first %}so-score-top{% endif %}">{{ r.score }}%</div>
-      </div>
-      {% endfor %}
-    </div>
-
-    <!-- ===== CAREER DETAIL CARDS ===== -->
-    <div class="career-detail-section">
-      <div class="rs-title">🏆 Your Top Career Matches</div>
-      <div class="match-cards">
-        {% for r in results %}
-        <div class="match-card {% if forloop.first %}is-top{% endif %}" id="career-{{ forloop.counter0 }}">
-          {% if forloop.first %}<div class="match-crown">🏆 Best Match</div>{% endif %}
-
-          <div class="mc-top">
-            <span class="mc-icon">{{ r.icon }}</span>
-            <div class="mc-info">
-              <div class="mc-name">{{ r.career }}</div>
-              <div class="mc-desc">{{ r.desc }}</div>
-              <div class="mc-salary">💰 {{ r.avg_salary }} &nbsp;·&nbsp; 📈 {{ r.demand_trend }}</div>
-            </div>
-            <div class="mc-score-badge">{{ r.score }}%</div>
-          </div>
-
-          <div class="mc-bar-bg">
-            <div class="mc-bar" data-p="{{ r.score }}" style="width:0%"></div>
-          </div>
-
-          <!-- Mini skill gap inline -->
-          <div class="mc-skills-row">
-            <div class="mc-skills-have">
-              {% for s in r.skills_have %}<span class="mcs green">✓ {{ s }}</span>{% endfor %}
-              {% if not r.skills_have %}<span class="mcs muted">No matching skills yet</span>{% endif %}
-            </div>
-            <div class="mc-skills-missing">
-              {% for s in r.skills_missing %}<span class="mcs red">✗ {{ s }}</span>{% endfor %}
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-<<<<<<< HEAD
-  </div>
-
-  <!-- Radar chart -->
-  <div id="t-radar" style="display:none">
-    <div class="sc">
-      <div class="st">📊 Skills Radar — You vs Required</div>
-      <div class="cht"><canvas id="rc"></canvas></div>
-    </div>
-  </div>
-
-  <!-- Salaries -->
-  <div id="t-sal" style="display:none">
-    <div class="sc">
-      <div class="st">💰 Salary Ranges — {{ top.career }}</div>
-      <div class="sg">
-        {% for s in top.salary %}
-        <div class="si">
-          <div class="cy">📍 {{ s.city }}</div>
-          <div class="rg">{{ s.range }}</div>
-          <div class="ex">{{ s.exp }}</div>
-=======
-
-    <!-- ===== DEEP DIVE TABS (TOP CAREER) ===== -->
-    <div class="deepdive-header">
-      <div class="rs-title">🔬 Deep Dive: <span style="color:var(--primary)">{{ top.career }}</span></div>
-      <p class="deepdive-sub">Detailed breakdown for your best-matched career</p>
-    </div>
-
-    <div class="tab-nav">
-      <button class="tab-btn active" onclick="switchTab('gap',     this)">🔍 Skill Gap</button>
-      <button class="tab-btn"        onclick="switchTab('roadmap', this)">🗺️ Roadmap</button>
-      <button class="tab-btn"        onclick="switchTab('radar',   this)">📊 Radar Chart</button>
-      <button class="tab-btn"        onclick="switchTab('salary',  this)">💰 Salaries</button>
-    </div>
-
-    <!-- TAB: Skill Gap -->
-    <div class="tab-panel active" id="tab-gap">
-      <div class="gap-summary">
-        <div class="gs-stat">
-          <div class="gs-num green">{{ top.skills_have|length }}</div>
-          <div class="gs-lbl">Skills Matched</div>
-        </div>
-        <div class="gs-divider"></div>
-        <div class="gs-stat">
-          <div class="gs-num red">{{ top.skills_missing|length }}</div>
-          <div class="gs-lbl">Skills to Learn</div>
-        </div>
-        <div class="gs-divider"></div>
-        <div class="gs-stat">
-          <div class="gs-num primary">{{ top.score }}%</div>
-          <div class="gs-lbl">Overall Match</div>
-        </div>
-      </div>
-
-      <div class="gap-grid">
-        <div class="gap-col have">
-          <div class="gap-col-header">
-            <span class="gap-icon">✅</span>
-            <div>
-              <div class="gap-col-title">Skills You Have</div>
-              <div class="gap-col-sub">{{ top.skills_have|length }} of {{ top.skills_have|length|add:top.skills_missing|length }} required skills</div>
-            </div>
-          </div>
-          <div class="skill-tags">
-            {% for s in top.skills_have %}
-            <span class="stag green">✓ {{ s }}</span>
-            {% empty %}
-            <span class="stag blue">Start adding skills!</span>
-            {% endfor %}
-          </div>
-        </div>
-
-        <div class="gap-col missing">
-          <div class="gap-col-header">
-            <span class="gap-icon">📚</span>
-            <div>
-              <div class="gap-col-title">Skills to Learn</div>
-              <div class="gap-col-sub">to become a {{ top.career }}</div>
-            </div>
-          </div>
-          <div class="skill-tags">
-            {% for s in top.skills_missing %}
-            <span class="stag red">✗ {{ s }}</span>
-            {% empty %}
-            <span class="stag green">🎉 You have all required skills!</span>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-
-      <div class="gap-tip">
-        💡 <strong>Pro tip:</strong> Focus on the top 2–3 missing skills first — that alone can boost your match score by 20–30%! Learning one new relevant skill takes 2–4 weeks of consistent practice.
-      </div>
-    </div>
-
-    <!-- TAB: Roadmap -->
-    <div class="tab-panel" id="tab-roadmap">
-      <div class="roadmap-header">
-        <h3>Your 12-week plan for <em>{{ top.career }}</em></h3>
-        <p>A structured, week-by-week guide to land your dream role</p>
-      </div>
-      <div class="roadmap-list">
-        {% for step in top.roadmap %}
-        <div class="rm-item">
-          <div class="rm-timeline">
-            <div class="rm-dot">{{ forloop.counter }}</div>
-            {% if not forloop.last %}<div class="rm-line"></div>{% endif %}
-          </div>
-          <div class="rm-content">
-            <div class="rm-week">{{ step.week }}</div>
-            <div class="rm-title">{{ step.title }}</div>
-            <div class="rm-desc">{{ step.desc }}</div>
             <div class="rm-resources">
-              {% for res in step.resources %}
-              <span class="rm-res">📖 {{ res }}</span>
-              {% endfor %}
+              {% for r in step.resources %}<span class="rm-res">{{ r }}</span>{% endfor %}
             </div>
           </div>
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
         </div>
         {% endfor %}
       </div>
     </div>
-<<<<<<< HEAD
   </div>
 
-  <div class="result-actions">
-    <a href="{% url 'profile_form' %}" class="btn2">← Re-analyze</a>
-    <a href="{% url 'home' %}" class="btn">🏠 Home</a>
-  </div>
-</div>
-
-<script>
-// ── Animate match bars ──
-setTimeout(() => {
-  document.querySelectorAll('.mb').forEach(b => {
-    b.style.width = b.dataset.p + '%';
-  });
-}, 200);
-
-// ── Tabs ──
-function stab(id, btn) {
-  ['t-gap','t-rm','t-radar','t-sal'].forEach(x => {
-    document.getElementById(x).style.display = 'none';
-  });
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).style.display = 'block';
-  btn.classList.add('active');
-  if (id === 't-radar') setTimeout(renderRadar, 50);
-}
-
-// ── Radar chart ──
-let radarInstance = null;
-const userSkills = {{ all_skills_json|safe }};
-const results    = {{ results_json|safe }};
-
-// Radar data for top career (hard-coded per career name from data.js)
-const RADAR_DATA = {
-  "Software Development Engineer":  { labels: ["Coding","System Design","CS Basics","Problem Solving","Communication","Projects"], required: [9,7,8,9,6,7] },
-  "Data Scientist / ML Engineer":   { labels: ["Python","Statistics","ML Knowledge","Data Viz","Research","Problem Solving"],      required: [9,8,9,7,8,8] },
-  "Cloud / DevOps Engineer":        { labels: ["Linux","Cloud Platforms","Scripting","Networking","CI/CD","Security"],             required: [8,9,7,8,8,7] },
-  "Cybersecurity Engineer":         { labels: ["Networking","Linux","Ethical Hacking","Scripting","Web Security","Forensics"],     required: [9,8,9,7,8,6] },
-  "Product Manager (Tech)":         { labels: ["Strategy","SQL","UX/Figma","Communication","Analytics","Execution"],              required: [8,7,8,9,8,8] },
-};
-
-function renderRadar() {
-  if (radarInstance) { radarInstance.destroy(); radarInstance = null; }
-  const topName = results[0]?.career;
-  const rd = RADAR_DATA[topName];
-  if (!rd) return;
-
-  const userScores = rd.required.map(r => Math.max(2, Math.round(r * 0.35 + (userSkills.length / 12) * r * 0.65)));
-
-  radarInstance = new Chart(document.getElementById('rc').getContext('2d'), {
-    type: 'radar',
-    data: {
-      labels: rd.labels,
-      datasets: [
-        { label: 'Required',   data: rd.required,  borderColor:'rgba(108,99,255,.8)', backgroundColor:'rgba(108,99,255,.1)', pointBackgroundColor:'#6C63FF' },
-        { label: 'Your Level', data: userScores,    borderColor:'rgba(67,198,172,.8)',  backgroundColor:'rgba(67,198,172,.1)',  pointBackgroundColor:'#43C6AC' },
-      ]
-    },
-    options: {
-    responsive: true, maintainAspectRatio: false,
-    scales: { r: { min:0, max:10, ticks:{ display:false },
-      grid:{ color: document.documentElement.getAttribute('data-theme')==='light' ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.07)' },
-        pointLabels:{ color: document.documentElement.getAttribute('data-theme')==='light' ? '#555e72' : '#8892a4', font:{ size:12 } } } },
-      plugins: { legend: { labels: { color: document.documentElement.getAttribute('data-theme')==='light' ? '#1a1a2e' : '#e0e0e0' } } }
-=======
-
-    <!-- TAB: Radar -->
-    <div class="tab-panel" id="tab-radar">
-      <div class="radar-wrap">
-        <div class="radar-title">Your Skills vs Required Level for <strong>{{ top.career }}</strong></div>
-        <div class="radar-chart-box">
-          <canvas id="radarChart"></canvas>
-        </div>
-        <div class="radar-legend">
-          <span class="rl-item purple">● Required level</span>
-          <span class="rl-item teal">● Your current level</span>
-        </div>
-        <p class="radar-note">🌱 The gap shows your growth opportunity — not a weakness! Each area you improve boosts your score.</p>
-      </div>
+  <!-- Radar -->
+  <div class="tab-panel" id="tab-radar">
+    <div class="panel-card">
+      <div class="panel-title">📊 Skills Radar — You vs Required</div>
+      <div class="radar-box"><canvas id="rc"></canvas></div>
     </div>
+  </div>
 
-    <!-- TAB: Salary -->
-    <div class="tab-panel" id="tab-salary">
-      <div class="salary-header">
-        <h3>💰 {{ top.career }} Salary Guide — India</h3>
-        <p>Typical ranges for 0–5 years of experience</p>
-      </div>
+  <!-- Salary -->
+  <div class="tab-panel" id="tab-sal">
+    <div class="panel-card">
+      <div class="panel-title">💰 Salary Ranges — {{ top.career }}</div>
       <div class="salary-grid">
         {% for s in top.salary %}
         <div class="sal-card">
@@ -455,119 +232,61 @@ function renderRadar() {
         </div>
         {% endfor %}
       </div>
-      <div class="sal-note">
-        📌 Salaries vary by company tier (FAANG vs startup), your specific skill stack, and experience. Upskilling in 2–3 key areas can jump your package significantly.
-      </div>
-
-      <!-- salary bar chart -->
-      <div class="sal-chart-wrap">
-        <div class="radar-title" style="margin-bottom:16px">All Careers — Salary Comparison</div>
-        <canvas id="salaryChart" height="120"></canvas>
-      </div>
     </div>
-
-    <!-- ===== ACTIONS ===== -->
-    <div class="result-actions">
-      <a href="{% url 'analyze' %}" class="btn-outline">← Re-analyse</a>
-      <a href="{% url 'history' %}" class="btn-secondary">📜 View History</a>
-      <a href="{% url 'home' %}"    class="btn-primary">🏠 Back to Home</a>
-    </div>
-
   </div>
+
+  <div class="result-actions">
+    <a href="{% url 'profile_form' %}" class="btn-ghost">← Re-analyse</a>
+    <a href="{% url 'home' %}"         class="btn-primary">🏠 Home</a>
+  </div>
+
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Animate bars
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.querySelectorAll('.mc-bar, .so-bar').forEach(b => {
-      b.style.width = b.dataset.p + '%';
-    });
-  }, 300);
-});
+setTimeout(() => {
+  document.querySelectorAll('.mc-bar').forEach(b => { b.style.width = b.dataset.p + '%'; });
+}, 200);
 
-// Jump to a career card
-function jumpToCareer(idx) {
-  const el = document.getElementById('career-' + idx);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-// Tab switching
 function switchTab(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
-  if (id === 'radar')  setTimeout(renderRadar, 50);
-  if (id === 'salary') setTimeout(renderSalaryChart, 50);
+  if (id === 'radar') setTimeout(renderRadar, 50);
 }
 
-// Radar Chart
-const RADAR_LABELS   = {{ radar_labels|safe }};
-const RADAR_REQUIRED = {{ radar_required|safe }};
-const USER_SKILLS    = {{ profile_skills_json|safe }};
-let radarChart = null;
+let radarInst = null;
+const userSkills = {{ all_skills_json|safe }};
+const results    = {{ results_json|safe }};
+
+const RADAR_DATA = {
+  "Software Development Engineer":  { labels:["Coding","System Design","CS Basics","Problem Solving","Communication","Projects"],  required:[9,7,8,9,6,7] },
+  "Data Scientist / ML Engineer":   { labels:["Python","Statistics","ML","Data Viz","Research","Problem Solving"],                  required:[9,8,9,7,8,8] },
+  "Cloud / DevOps Engineer":        { labels:["Linux","Cloud","Scripting","Networking","CI/CD","Security"],                        required:[8,9,7,8,8,7] },
+  "Cybersecurity Engineer":         { labels:["Networking","Linux","Ethical Hacking","Scripting","Web Security","Forensics"],      required:[9,8,9,7,8,6] },
+  "Product Manager (Tech)":         { labels:["Strategy","SQL","UX/Figma","Communication","Analytics","Execution"],               required:[8,7,8,9,8,8] },
+};
 
 function renderRadar() {
-  if (radarChart) { radarChart.destroy(); radarChart = null; }
-  const userScores = RADAR_REQUIRED.map(req =>
-    Math.max(2, Math.round(req * 0.35 + (USER_SKILLS.length / 12) * req * 0.65))
-  );
+  if (radarInst) { radarInst.destroy(); radarInst = null; }
+  const rd = RADAR_DATA[results[0]?.career]; if (!rd) return;
   const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  const gridColor  = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
-  const labelColor = isDark ? '#6ee7b7' : '#047857';
-
-  radarChart = new Chart(document.getElementById('radarChart').getContext('2d'), {
-    type: 'radar',
-    data: {
-      labels: RADAR_LABELS,
-      datasets: [
-        { label: 'Required',    data: RADAR_REQUIRED, borderColor: 'rgba(52,211,153,0.9)',  backgroundColor: 'rgba(52,211,153,0.12)',  pointBackgroundColor: '#34d399', borderWidth: 2 },
-        { label: 'Your Level',  data: userScores,     borderColor: 'rgba(34,211,238,0.9)',  backgroundColor: 'rgba(34,211,238,0.12)', pointBackgroundColor: '#22d3ee', borderWidth: 2 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { min:0, max:10, ticks:{display:false}, grid:{color:gridColor}, pointLabels:{color:labelColor, font:{size:12,weight:'600'}} } },
-      plugins: { legend: { labels: { color: labelColor, font:{size:13} } } }
-    }
-  });
-}
-
-// Salary bar chart
-const ALL_RESULTS = [
-  {% for r in results %}{ label: "{{ r.career|truncatechars:20 }}", icon: "{{ r.icon }}", score: {{ r.score }} },{% endfor %}
-];
-let salChart = null;
-
-function renderSalaryChart() {
-  if (salChart) { salChart.destroy(); salChart = null; }
-  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-  const labelColor = isDark ? '#6ee7b7' : '#047857';
-  const gridColor  = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-
-  salChart = new Chart(document.getElementById('salaryChart').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: ALL_RESULTS.map(r => r.icon + ' ' + r.label),
-      datasets: [{
-        label: 'Match Score (%)',
-        data: ALL_RESULTS.map(r => r.score),
-        backgroundColor: ALL_RESULTS.map((r, i) => i === 0 ? 'rgba(52,211,153,0.85)' : 'rgba(52,211,153,0.35)'),
-        borderColor:     ALL_RESULTS.map((r, i) => i === 0 ? '#34d399' : 'rgba(52,211,153,0.5)'),
-        borderWidth: 2, borderRadius: 8,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: true,
-      scales: {
-        y: { min:0, max:100, ticks:{color:labelColor}, grid:{color:gridColor} },
-        x: { ticks:{color:labelColor}, grid:{display:false} }
-      },
-      plugins: { legend:{display:false} }
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
+  const userScores = rd.required.map(r => Math.max(2, Math.round(r * 0.35 + (userSkills.length / 12) * r * 0.65)));
+  const gridColor  = isDark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+  const labelColor = isDark ? '#94a3b8' : '#475569';
+  radarInst = new Chart(document.getElementById('rc').getContext('2d'), {
+    type:'radar',
+    data:{ labels:rd.labels, datasets:[
+      { label:'Required',   data:rd.required,  borderColor:'rgba(99,102,241,.8)',  backgroundColor:'rgba(99,102,241,.08)', pointBackgroundColor:'#6366f1', borderWidth:2 },
+      { label:'Your Level', data:userScores,    borderColor:'rgba(34,211,238,.8)',  backgroundColor:'rgba(34,211,238,.08)', pointBackgroundColor:'#22d3ee', borderWidth:2 },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{ r:{ min:0, max:10, ticks:{display:false}, grid:{color:gridColor}, pointLabels:{color:labelColor, font:{size:12}} }},
+      plugins:{ legend:{ labels:{ color:labelColor }}}
     }
   });
 }

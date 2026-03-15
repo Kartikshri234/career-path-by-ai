@@ -1,54 +1,78 @@
-<<<<<<< HEAD
 {% extends 'careers/base.html' %}
-{% block title %}Analysis History{% endblock %}
+{% block title %}History — CareerCompass{% endblock %}
 
 {% block extra_head %}
 <style>
-.pg-title{margin-bottom:30px;}
-.pg-title h2{font-size:1.8rem;font-weight:800;}
-.pg-title p{color:var(--m);margin-top:6px;}
-.hist-item{background:var(--c);border-radius:16px;padding:24px;
-  border:1px solid var(--item-border);margin-bottom:16px;transition:all .2s,background .3s;}
-.hist-item:hover{border-color:rgba(108,99,255,.3);}
-.hist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.hist-name{font-size:1.1rem;font-weight:700;}
-.hist-meta{font-size:.8rem;color:var(--m);}
-.hist-recs{display:flex;flex-wrap:wrap;gap:10px;}
-.hist-rec{display:flex;align-items:center;gap:8px;background:var(--item-bg);
-  border-radius:10px;padding:8px 14px;border:1px solid var(--item-border);}
-.rec-name{font-size:.82rem;font-weight:600;}
-.rec-score{font-size:.82rem;font-weight:800;color:var(--p);}
-.hist-rec.rank-1{border-color:rgba(108,99,255,.4);}
-.empty-state{text-align:center;padding:60px 20px;color:var(--m);}
-.empty-state a{color:var(--p);}
-.skills-preview{font-size:.78rem;color:var(--m);margin-top:8px;}
+.history-page { padding: 40px 0 80px; }
+
+.page-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.page-top h1 { font-size: 1.5rem; font-weight: 800; }
+.page-top p  { color: var(--text-2); font-size: .88rem; margin-top: 2px; }
+
+.history-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 12px;
+  transition: border-color var(--transition);
+}
+.history-item:hover { border-color: var(--border-accent); }
+
+.hi-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 14px; gap: 12px;
+}
+.hi-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.hi-meta { font-size: .78rem; color: var(--text-3); }
+.hi-skills { font-size: .75rem; color: var(--text-3); margin-top: 4px; }
+
+.hi-recs { display: flex; flex-wrap: wrap; gap: 8px; }
+.hi-rec {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+}
+.hi-rec.top { border-color: var(--primary); background: var(--primary-soft); }
+.hi-rec-name  { font-size: .78rem; font-weight: 600; color: var(--text); }
+.hi-rec-score { font-size: .78rem; font-weight: 800; color: var(--primary); }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="con">
-  <div class="pg-title">
-    <h2>🗄️ Analysis History</h2>
-    <p>Your last 20 career analyses, stored in the database.</p>
+<div class="history-page">
+<div class="container">
+
+  <div class="page-top">
+    <div>
+      <h1>📜 Analysis History</h1>
+      <p>Your last 20 career analyses, saved automatically.</p>
+    </div>
+    <a href="{% url 'profile_form' %}" class="btn-primary">+ New Analysis</a>
   </div>
 
   {% if profiles %}
     {% for profile in profiles %}
-    <div class="hist-item">
-      <div class="hist-head">
+    <div class="history-item">
+      <div class="hi-head">
         <div>
-          <div class="hist-name">{{ profile.name }}</div>
-          <div class="hist-meta">{{ profile.branch }} · CGPA {{ profile.cgpa }} · {{ profile.year }} · {{ profile.created_at|date:"M j, Y, g:i a" }}</div>
-          <div class="skills-preview">
-            Skills: {{ profile.skills|join:", "|truncatechars:80 }}
-          </div>
+          <div class="hi-name">{{ profile.name }}</div>
+          <div class="hi-meta">{{ profile.branch }} · CGPA {{ profile.cgpa }} · {{ profile.year }} · {{ profile.created_at|date:"M j, Y, g:i a" }}</div>
+          {% if profile.skills %}
+          <div class="hi-skills">Skills: {{ profile.skills|join:", "|truncatechars:80 }}</div>
+          {% endif %}
         </div>
       </div>
-      <div class="hist-recs">
+      <div class="hi-recs">
         {% for rec in profile.recommendations.all %}
-        <div class="hist-rec {% if rec.rank == 1 %}rank-1{% endif %}">
-          <div class="rec-name">{{ rec.career }}</div>
-          <div class="rec-score">{{ rec.score }}%</div>
+        <div class="hi-rec {% if rec.rank == 1 %}top{% endif %}">
+          <span class="hi-rec-name">{{ rec.career }}</span>
+          <span class="hi-rec-score">{{ rec.score }}%</span>
         </div>
         {% endfor %}
       </div>
@@ -56,82 +80,13 @@
     {% endfor %}
   {% else %}
     <div class="empty-state">
-      <div style="font-size:3rem;margin-bottom:16px;">📭</div>
-      <p>No analyses yet. <a href="{% url 'profile_form' %}">Analyze your profile now →</a></p>
+      <div class="es-icon">📭</div>
+      <h3>No analyses yet</h3>
+      <p>Submit your first profile to see results here.</p>
+      <a href="{% url 'profile_form' %}" class="btn-primary">🚀 Analyse My Profile</a>
     </div>
   {% endif %}
-=======
-{% extends "careers/base.html" %}
-{% block title %}History — CareerCompass{% endblock %}
 
-{% block content %}
-<div class="history-page">
-  <div class="container">
-
-    <div class="page-header">
-      <a href="{% url 'home' %}" class="back-link">← Home</a>
-      <div class="page-header-text">
-        <h1>📜 Analysis History</h1>
-        <p>All past career analyses saved in the database</p>
-      </div>
-      <a href="{% url 'analyze' %}" class="btn-primary">+ New Analysis</a>
-    </div>
-
-    {% if analyses %}
-    <div class="history-stats">
-      <div class="hs-card">
-        <div class="hs-num">{{ analyses|length }}</div>
-        <div class="hs-lbl">Total Analyses</div>
-      </div>
-    </div>
-
-    <div class="history-list">
-      {% for a in analyses %}
-      <div class="history-card">
-        <div class="hc-left">
-          <div class="hc-avatar">{{ a.profile.name|slice:":1" }}</div>
-          <div class="hc-info">
-            <div class="hc-name">{{ a.profile.name }}</div>
-            <div class="hc-meta">
-              {% if a.profile.branch %}<span>{{ a.profile.get_branch_display }}</span>{% endif %}
-              {% if a.profile.year %}<span>· {{ a.profile.year }}</span>{% endif %}
-              <span>· CGPA {{ a.profile.cgpa }}</span>
-              <span>· {{ a.created_at|date:"d M Y" }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="hc-center">
-          <div class="hc-career-label">Top Career</div>
-          <div class="hc-career">{{ a.top_career }}</div>
-        </div>
-        <div class="hc-right">
-          <div class="hc-score-ring">
-            <svg viewBox="0 0 36 36" class="score-ring">
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none" stroke="#e2e8f0" stroke-width="3"/>
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none" stroke="#6366f1" stroke-width="3"
-                    stroke-dasharray="{{ a.top_score }}, 100"
-                    stroke-linecap="round"/>
-            </svg>
-            <div class="ring-score">{{ a.top_score }}%</div>
-          </div>
-          <a href="{% url 'results' a.pk %}" class="hc-view-btn">View →</a>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-
-    {% else %}
-    <div class="empty-state">
-      <div class="es-graphic">🔭</div>
-      <h2>No analyses yet</h2>
-      <p>Submit your first profile to see your career matches here.</p>
-      <a href="{% url 'analyze' %}" class="btn-primary" style="margin-top:24px;">🚀 Analyse My Profile</a>
-    </div>
-    {% endif %}
-
-  </div>
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
+</div>
 </div>
 {% endblock %}

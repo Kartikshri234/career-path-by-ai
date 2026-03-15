@@ -1,52 +1,79 @@
 {% extends 'careers/base.html' %}
-{% block title %}All Career Tracks{% endblock %}
+{% block title %}Career Tracks — CareerCompass{% endblock %}
 
 {% block extra_head %}
 <style>
-.pg-title{margin-bottom:30px;}
-.pg-title h2{font-size:1.8rem;font-weight:800;}
-.pg-title p{color:var(--m);margin-top:6px;}
-.career-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
-.ccard{background:var(--c);border-radius:16px;padding:28px;border:1.5px solid var(--card-border);transition:all .25s,background .3s;}
-.ccard:hover{border-color:var(--p);transform:translateY(-3px);}
-.ccard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
-.ccard-name{font-size:1.1rem;font-weight:700;}
-.ccard-trend{font-size:.75rem;padding:4px 10px;border-radius:20px;
-  background:rgba(74,222,128,.12);color:var(--g);font-weight:600;}
-.ccard-salary{font-size:1.2rem;font-weight:800;color:var(--a);margin-bottom:12px;}
-.skill-list{display:flex;flex-wrap:wrap;gap:6px;}
-.sk{font-size:.75rem;padding:4px 10px;border-radius:10px;
-    background:rgba(108,99,255,.1);color:var(--p);border:1px solid rgba(108,99,255,.15);}
-.ccard-actions{margin-top:20px;}
-@media(max-width:768px){.career-grid{grid-template-columns:1fr;}}
+.careers-page { padding: 40px 0 80px; }
+
+.page-top { margin-bottom: 28px; }
+.page-top h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+.page-top p  { color: var(--text-2); font-size: .9rem; }
+
+.careers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.career-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color var(--transition), transform .2s;
+}
+.career-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+
+.cc-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 10px;
+}
+.cc-name   { font-size: 1rem; font-weight: 700; }
+.cc-demand {
+  font-size: .72rem; font-weight: 600; padding: 3px 10px;
+  border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
+}
+.cc-salary { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
+.cc-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.cc-skill  {
+  font-size: .72rem; padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-soft); color: var(--primary);
+  border: 1px solid var(--border-accent);
+}
+
+@media(max-width: 768px) {
+  .careers-grid { grid-template-columns: 1fr; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="con">
-  <div class="pg-title">
-    <h2>🗂️ Available Career Tracks</h2>
-    <p>Explore all the career paths CareerCompass can evaluate for you.</p>
+<div class="careers-page">
+<div class="container">
+
+  <div class="page-top">
+    <h1>🗂️ Career Tracks</h1>
+    <p>All five career paths CareerCompass evaluates for you.</p>
   </div>
 
-  <div class="career-grid">
+  <div class="careers-grid">
     {% for name, profile in careers.items %}
-    <div class="ccard">
-      <div class="ccard-head">
-        <div class="ccard-name">{{ profile.icon }} {{ name }}</div>
-        <div class="ccard-trend">{{ profile.demand_trend }}</div>
+    <div class="career-card">
+      <div class="cc-top">
+        <div class="cc-name">{{ profile.icon }} {{ name }}</div>
+        <div class="cc-demand">{{ profile.demand_trend }}</div>
       </div>
-      <div class="ccard-salary">{{ profile.avg_salary }}</div>
-      <div class="skill-list">
+      <div class="cc-salary">{{ profile.avg_salary }}</div>
+      <div class="cc-skills">
         {% for skill in profile.required_skills %}
-          <span class="sk">{{ skill }}</span>
+          <span class="cc-skill">{{ skill }}</span>
         {% endfor %}
       </div>
-      <div class="ccard-actions">
-        <a href="{% url 'profile_form' %}" class="btn2" style="font-size:.82rem;padding:8px 18px;">Analyze for This →</a>
-      </div>
+      <a href="{% url 'profile_form' %}" class="btn-outline" style="font-size:.82rem;padding:8px 18px;">Analyse for This →</a>
     </div>
     {% endfor %}
   </div>
+
+</div>
 </div>
 {% endblock %}
