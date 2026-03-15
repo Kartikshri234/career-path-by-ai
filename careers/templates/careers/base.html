@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<<<<<<< HEAD
   <title>{% block title %}CareerCompass{% endblock %} — AI Career Path Recommender</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <style>
@@ -116,10 +117,25 @@
       .toggle-label{display:none;}
     }
   </style>
+=======
+  <title>{% block title %}CareerCompass 🧭{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'careers/css/style.css' %}"/>
+  <!-- Apply saved theme instantly before paint to avoid flash -->
+  <script>
+    (function(){
+      var t = localStorage.getItem('cc-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+>>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
   {% block extra_head %}{% endblock %}
 </head>
 <body>
 
+<<<<<<< HEAD
 <nav>
   <a class="logo" href="{% url 'home' %}">Career<span>Compass</span></a>
   <div class="nav-links">
@@ -163,5 +179,78 @@
   }
 </script>
 
+=======
+<nav class="navbar">
+  <a href="{% url 'home' %}" class="nav-logo">
+    <div class="logo-icon">🧭</div>
+    <span>Career<strong>Compass</strong></span>
+  </a>
+
+  <div class="nav-center">
+    <a href="{% url 'home' %}"     class="nav-item">Home</a>
+    <a href="{% url 'analyze' %}"  class="nav-item">Analyse</a>
+    <a href="{% url 'history' %}"  class="nav-item">History</a>
+  </div>
+
+  <div class="nav-right">
+    <!-- Dark / Light toggle -->
+    <button class="theme-toggle" id="themeBtn" title="Toggle dark/light mode" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span>
+    </button>
+    <a href="{% url 'analyze' %}?demo=1" class="nav-demo-btn">✨ Demo</a>
+    <a href="{% url 'analyze' %}"        class="nav-cta-btn">Get Started →</a>
+  </div>
+
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="{% url 'home' %}">🏠 Home</a>
+  <a href="{% url 'analyze' %}">🔍 Analyse Profile</a>
+  <a href="{% url 'history' %}">📜 History</a>
+  <a href="{% url 'analyze' %}?demo=1">✨ Try Demo</a>
+</div>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>🧭 CareerCompass — Built for students, by students</span>
+    <span>Free forever · Django + SQLite</span>
+  </div>
+</footer>
+
+<script>
+/* ── Theme toggle ── */
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeIcon').textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('cc-theme', t);
+}
+
+function toggleTheme() {
+  const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(curr === 'dark' ? 'light' : 'dark');
+}
+
+// Set correct icon on load
+(function(){
+  var t = localStorage.getItem('cc-theme') || 'dark';
+  document.getElementById('themeIcon').textContent = t === 'dark' ? '☀️' : '🌙';
+})();
+
+/* ── Mobile menu ── */
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('open');
+}
+</script>
+
+{% block extra_js %}{% endblock %}
+>>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
 </body>
 </html>

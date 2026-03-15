@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'careers/base.html' %}
 {% block title %}Your Profile{% endblock %}
 
@@ -159,5 +160,273 @@ select option{background:var(--c);color:var(--t);}
     }
   });
   updateHiddenInputs();
+=======
+{% extends "careers/base.html" %}
+{% block title %}Analyse My Profile — CareerCompass{% endblock %}
+
+{% block content %}
+<div class="form-page">
+  <div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <a href="{% url 'home' %}" class="back-link">← Back</a>
+      <div class="page-header-text">
+        <h1>📋 Tell us about yourself</h1>
+        <p>Takes about 2 minutes. The more you fill in, the better your match!</p>
+      </div>
+      <button type="button" class="demo-btn" onclick="loadDemo()">✨ Load Demo</button>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    {% if form.errors %}
+    <div class="alert-error">
+      ⚠️ Please fix the highlighted fields and try again.
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'analyze' %}" id="profile-form">
+      {% csrf_token %}
+
+      <!-- STEP 1: Academic -->
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-num">1</div>
+          <div>
+            <div class="fs-title">🎓 Academic Details</div>
+            <div class="fs-sub">Tell us where you're studying</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label" for="fn">Your Name</label>
+            <input type="text" name="name" id="fn" class="field-input"
+                   value="{{ form.name.value|default:'' }}"
+                   placeholder="e.g. Priya Sharma" autocomplete="name"/>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="fb">Branch / Stream</label>
+            <select name="branch" id="fb" class="field-input">
+              <option value="">Select your branch</option>
+              <option value="CSE"  {% if form.branch.value == 'CSE'  %}selected{% endif %}>Computer Science Engineering</option>
+              <option value="IT"   {% if form.branch.value == 'IT'   %}selected{% endif %}>Information Technology</option>
+              <option value="ECE"  {% if form.branch.value == 'ECE'  %}selected{% endif %}>Electronics &amp; Communication</option>
+              <option value="EE"   {% if form.branch.value == 'EE'   %}selected{% endif %}>Electrical Engineering</option>
+              <option value="ME"   {% if form.branch.value == 'ME'   %}selected{% endif %}>Mechanical Engineering</option>
+              <option value="DS"   {% if form.branch.value == 'DS'   %}selected{% endif %}>Data Science</option>
+              <option value="Other"{% if form.branch.value == 'Other'%}selected{% endif %}>Other</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="fg-cgpa">
+              CGPA <span class="field-hint">(out of 10)</span>
+            </label>
+            <input type="number" name="cgpa" id="fg-cgpa" class="field-input"
+                   value="{{ form.cgpa.value|default:'' }}"
+                   placeholder="e.g. 7.8" min="0" max="10" step="0.1"/>
+            {% if form.cgpa.errors %}<span class="field-error">{{ form.cgpa.errors.0 }}</span>{% endif %}
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="fy">Year of Study</label>
+            <select name="year" id="fy" class="field-input">
+              <option value="">Select year</option>
+              <option value="1st" {% if form.year.value == '1st' %}selected{% endif %}>1st Year</option>
+              <option value="2nd" {% if form.year.value == '2nd' %}selected{% endif %}>2nd Year</option>
+              <option value="3rd" {% if form.year.value == '3rd' %}selected{% endif %}>3rd Year</option>
+              <option value="4th" {% if form.year.value == '4th' %}selected{% endif %}>4th Year</option>
+              <option value="grad"{% if form.year.value == 'grad'%}selected{% endif %}>Graduated</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Experience -->
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-num">2</div>
+          <div>
+            <div class="fs-title">💼 Experience &amp; Interests</div>
+            <div class="fs-sub">Help us understand your background</div>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label" for="fw">What excites you most?</label>
+            <select name="interest" id="fw" class="field-input">
+              <option value="">Pick one!</option>
+              <option value="sde"    {% if form.interest.value == 'sde'    %}selected{% endif %}>🏗️ Building Products (SDE)</option>
+              <option value="data"   {% if form.interest.value == 'data'   %}selected{% endif %}>📊 Analysing Data</option>
+              <option value="sec"    {% if form.interest.value == 'sec'    %}selected{% endif %}>🔐 Security &amp; Networks</option>
+              <option value="res"    {% if form.interest.value == 'res'    %}selected{% endif %}>🔬 Research &amp; Innovation</option>
+              <option value="consult"{% if form.interest.value == 'consult'%}selected{% endif %}>💡 Consulting</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="fe">Work Experience</label>
+            <select name="experience" id="fe" class="field-input">
+              <option value="">Select</option>
+              <option value="none" {% if form.experience.value == 'none' %}selected{% endif %}>😊 No internships yet</option>
+              <option value="one"  {% if form.experience.value == 'one'  %}selected{% endif %}>🌟 1 Internship</option>
+              <option value="multi"{% if form.experience.value == 'multi'%}selected{% endif %}>🚀 2+ Internships</option>
+              <option value="free" {% if form.experience.value == 'free' %}selected{% endif %}>💻 Freelance Projects</option>
+              <option value="oss"  {% if form.experience.value == 'oss'  %}selected{% endif %}>🌍 Open Source Contributor</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="flc">
+              LeetCode Problems <span class="field-hint">put 0 if none</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="input-icon">💻</span>
+              <input type="number" name="leetcode" id="flc" class="field-input has-icon"
+                     value="{{ form.leetcode.value|default:'' }}"
+                     placeholder="e.g. 120" min="0"/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="fgh">
+              GitHub Repos <span class="field-hint">put 0 if none</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="input-icon">🐙</span>
+              <input type="number" name="github" id="fgh" class="field-input has-icon"
+                     value="{{ form.github.value|default:'' }}"
+                     placeholder="e.g. 8" min="0"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Skills -->
+      <div class="form-section">
+        <div class="fs-header">
+          <div class="fs-num">3</div>
+          <div>
+            <div class="fs-title">🛠️ Your Skills</div>
+            <div class="fs-sub">Tap all skills you've used — even basics count!</div>
+          </div>
+          <div class="skill-counter" id="skillCounter">0 selected</div>
+        </div>
+
+        <!-- Each chip stores its value in data-skill; NO inner span for the checkmark -->
+        <div class="skills-grid" id="chips">
+          {% for skill in skills %}
+          <div class="skill-chip{% if skill in selected_skills %} active{% endif %}"
+               data-skill="{{ skill }}"
+               onclick="toggleSkill(this)">{{ skill }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Hidden checkboxes synced by JS -->
+        <div id="skill-inputs" style="display:none">
+          {% for skill in skills %}
+          <input type="checkbox" name="skills" value="{{ skill }}"
+                 id="sk-{{ forloop.counter }}"
+                 {% if skill in selected_skills %}checked{% endif %}>
+          {% endfor %}
+        </div>
+
+        <div class="skills-tip">
+          💡 The more skills you select, the more accurate your career match will be. Don't be shy!
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="form-submit-area">
+        <button type="submit" class="btn-primary btn-xl" id="submitBtn">
+          <span id="submitText">🚀 Analyse My Career Path</span>
+          <span id="submitLoading" style="display:none">⏳ Analysing...</span>
+        </button>
+        <p class="submit-note">Results are saved automatically. Takes under 2 seconds.</p>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const DEMO = {
+  name:'Arjun Verma', branch:'CSE', cgpa:'8.2', year:'3rd',
+  leetcode:'120', github:'6',
+  skills:['Python','JavaScript','React','Git','SQL','DSA','HTML/CSS','Node.js']
+};
+
+/* Toggle a skill chip on/off and sync its hidden checkbox */
+function toggleSkill(chipEl) {
+  const skill = chipEl.dataset.skill;
+  chipEl.classList.toggle('active');
+  const cb = document.querySelector(`#skill-inputs input[value="${CSS.escape(skill)}"]`);
+  if (cb) cb.checked = chipEl.classList.contains('active');
+  updateSkillCounter();
+  updateProgress();
+}
+
+function updateSkillCounter() {
+  const count = document.querySelectorAll('.skill-chip.active').length;
+  const el = document.getElementById('skillCounter');
+  el.textContent = count + ' selected';
+  el.className = 'skill-counter' + (count > 0 ? ' has-skills' : '');
+}
+
+function updateProgress() {
+  const fields  = ['fn','fg-cgpa','flc','fgh'];
+  const selects = ['fb','fy'];
+  let filled = 0;
+  const total = fields.length + selects.length + 1; // +1 for skills
+  fields.forEach(id  => { if (document.getElementById(id)?.value.trim()) filled++; });
+  selects.forEach(id => { if (document.getElementById(id)?.value) filled++; });
+  if (document.querySelectorAll('.skill-chip.active').length > 0) filled++;
+  document.getElementById('progressBar').style.width =
+    Math.round((filled / total) * 100) + '%';
+}
+
+function loadDemo() {
+  document.getElementById('fn').value      = DEMO.name;
+  document.getElementById('fb').value      = DEMO.branch;
+  document.getElementById('fg-cgpa').value = DEMO.cgpa;
+  document.getElementById('fy').value      = DEMO.year;
+  document.getElementById('flc').value     = DEMO.leetcode;
+  document.getElementById('fgh').value     = DEMO.github;
+
+  /* Match chips using data-skill attribute — 100% reliable */
+  document.querySelectorAll('.skill-chip').forEach(chip => {
+    const on = DEMO.skills.includes(chip.dataset.skill);
+    chip.classList.toggle('active', on);
+    const cb = document.querySelector(`#skill-inputs input[value="${CSS.escape(chip.dataset.skill)}"]`);
+    if (cb) cb.checked = on;
+  });
+
+  updateSkillCounter();
+  updateProgress();
+}
+
+/* Show loading state on submit to prevent double-clicks */
+document.getElementById('profile-form').addEventListener('submit', function() {
+  document.getElementById('submitText').style.display    = 'none';
+  document.getElementById('submitLoading').style.display = 'inline';
+  document.getElementById('submitBtn').disabled = true;
+});
+
+/* Update progress bar as user fills fields */
+document.querySelectorAll('.field-input').forEach(el => {
+  el.addEventListener('change', updateProgress);
+  el.addEventListener('input',  updateProgress);
+});
+
+/* Auto-load demo if URL has ?demo=1 */
+if (new URLSearchParams(location.search).get('demo') === '1') {
+  window.addEventListener('DOMContentLoaded', loadDemo);
+}
+
+/* Init counters */
+updateSkillCounter();
+updateProgress();
+>>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
 </script>
 {% endblock %}

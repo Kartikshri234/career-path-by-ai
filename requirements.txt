@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 Django>=4.2,<5.2
+=======
+Django>=4.2,<5.0
+>>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
