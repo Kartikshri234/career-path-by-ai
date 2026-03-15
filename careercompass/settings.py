@@ -1,15 +1,8 @@
-"""
-Django settings for CareerCompass project.
-"""
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-<<<<<<< HEAD
 SECRET_KEY = 'django-insecure-careercompass-change-this-in-production-xyz123'
-=======
-SECRET_KEY = 'django-insecure-careercompass-change-this-in-production'
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
 
 DEBUG = True
 
@@ -62,7 +55,6 @@ DATABASES = {
     }
 }
 
-<<<<<<< HEAD
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -77,11 +69,3 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-=======
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
->>>>>>> 85979af9c9ab7ae4dc87a2ca7b9ae268d7bb6f8b
