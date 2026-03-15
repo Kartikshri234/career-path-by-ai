@@ -1,133 +1,89 @@
 {% extends 'careers/base.html' %}
 {% block title %}Home — CareerCompass{% endblock %}
 
-{% block extra_head %}
-<style>
-/* ── HERO ── */
-.hero {
-  padding: 72px 0 56px;
-  text-align: center;
-}
-.hero-label {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 14px; border-radius: var(--radius-pill);
-  background: var(--primary-soft); color: var(--primary);
-  font-size: .78rem; font-weight: 600;
-  border: 1px solid var(--border-accent);
-  margin-bottom: 20px;
-}
-.hero h1 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 900;
-  line-height: 1.15;
-  letter-spacing: -.02em;
-  margin-bottom: 16px;
-}
-.hero h1 .gradient {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.hero p {
-  font-size: 1.05rem;
-  color: var(--text-2);
-  max-width: 480px;
-  margin: 0 auto 32px;
-  line-height: 1.7;
-}
-.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-/* ── STATS ── */
-.stats-row {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  margin: 48px 0;
-  flex-wrap: wrap;
-}
-.stat { text-align: center; }
-.stat-num { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
-.stat-lbl { font-size: .78rem; color: var(--text-3); font-weight: 500; margin-top: 2px; }
-
-/* ── FEATURES ── */
-.features {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 56px;
-}
-.feat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  transition: border-color var(--transition), transform .2s;
-}
-.feat-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
-.feat-icon { font-size: 1.6rem; margin-bottom: 12px; }
-.feat-title { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
-.feat-desc { font-size: .83rem; color: var(--text-2); line-height: 1.6; }
-
-@media(max-width: 768px) {
-  .features { grid-template-columns: 1fr; }
-  .hero h1 { font-size: 2rem; }
-  .stats-row { gap: 20px; }
-}
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="page-wrap">
 <div class="container">
 
+  <!-- ── HERO ── -->
   <div class="hero">
-    <div class="hero-label">✨ Free for all engineering students</div>
-    <h1>Discover Your <span class="gradient">Perfect Career</span><br>in Tech</h1>
-    <p>Enter your profile, get instant skill gap analysis, career match scores, salary insights and a personalised 12-week roadmap.</p>
-    <div class="hero-btns">
-      <a href="{% url 'profile_form' %}" class="btn-primary">🚀 Analyse My Profile</a>
-      <a href="{% url 'profile_form' %}?demo=1" class="btn-outline">View Demo</a>
+    <div class="hero-grid"></div>
+    <div class="container">
+      <div class="hero-badge reveal">
+        <span class="badge-pulse"></span>
+        ✨ Free for all engineering students
+      </div>
+
+      <h1 class="reveal">
+        🧭 Discover Your<br>
+        <span class="gradient-text">Perfect Career</span><br>
+        in Tech 🚀
+      </h1>
+
+      <p class="reveal">
+        🎯 Enter your profile, get instant skill gap analysis, career match scores,
+        salary insights and a personalised 12-week roadmap.
+      </p>
+
+      <div class="hero-btns reveal">
+        <a href="{% url 'profile_form' %}" class="btn-primary">🚀 Analyse My Profile</a>
+        <a href="{% url 'profile_form' %}?demo=1" class="btn-outline">👀 View Demo</a>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar reveal">
+        <div class="stat-item">
+          <span class="stat-num" data-count="5" data-suffix="">5</span>
+          <span class="stat-lbl">🛤️ Career Tracks</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num" data-count="94" data-suffix="%">94%</span>
+          <span class="stat-lbl">🎯 Match Accuracy</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">15K+</span>
+          <span class="stat-lbl">👨‍🎓 Analysed</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">Free</span>
+          <span class="stat-lbl">💚 Always</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Career Tracks</div></div>
-    <div class="stat"><div class="stat-num">94%</div><div class="stat-lbl">Match Accuracy</div></div>
-    <div class="stat"><div class="stat-num">15K+</div><div class="stat-lbl">Students Analysed</div></div>
-    <div class="stat"><div class="stat-num">Free</div><div class="stat-lbl">Always</div></div>
-  </div>
+  <!-- ── FEATURES ── -->
+  <div class="section-heading">✨ What You Get</div>
 
-  <div class="section-heading">What you get</div>
-
-  <div class="features">
-    <div class="feat-card">
-      <div class="feat-icon">🎯</div>
-      <div class="feat-title">Career Matching</div>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">🎯</div>
+      <div class="feat-title">🎯 Career Matching</div>
       <div class="feat-desc">Weighted scoring across 5 career tracks using your CGPA, LeetCode, GitHub and skills.</div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">🔍</div>
-      <div class="feat-title">Skill Gap Analysis</div>
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">🔍</div>
+      <div class="feat-title">🔍 Skill Gap Analysis</div>
       <div class="feat-desc">See exactly which skills you have vs which ones to learn for your dream career.</div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">🗺️</div>
-      <div class="feat-title">12-Week Roadmap</div>
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">🗺️</div>
+      <div class="feat-title">🗺️ 12-Week Roadmap</div>
       <div class="feat-desc">A personalised week-by-week plan with curated free and paid resources.</div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">📊</div>
-      <div class="feat-title">Radar Chart</div>
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">📊</div>
+      <div class="feat-title">📊 Radar Chart</div>
       <div class="feat-desc">Visual comparison of your skills vs what's required — know where to focus.</div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">💰</div>
-      <div class="feat-title">Salary Insights</div>
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">💰</div>
+      <div class="feat-title">💰 Salary Insights</div>
       <div class="feat-desc">City-wise salary ranges in India so you can set realistic expectations.</div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">🗄️</div>
-      <div class="feat-title">Saved History</div>
+    <div class="feat-card reveal">
+      <div class="feat-icon-wrap">🗄️</div>
+      <div class="feat-title">🗄️ Saved History</div>
       <div class="feat-desc">Every analysis is stored. Review your past reports anytime from History.</div>
     </div>
   </div>

@@ -9,38 +9,36 @@
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
 }
-.page-top h1 { font-size: 1.5rem; font-weight: 800; }
-.page-top p  { color: var(--text-2); font-size: .88rem; margin-top: 2px; }
 
 .history-item {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--r);
   padding: 20px 24px;
   margin-bottom: 12px;
-  transition: border-color var(--transition);
+  transition: border-color var(--t), transform var(--t);
 }
-.history-item:hover { border-color: var(--border-accent); }
+.history-item:hover { border-color: var(--border-i); transform: translateY(-2px); }
 
 .hi-head {
   display: flex; justify-content: space-between; align-items: flex-start;
   margin-bottom: 14px; gap: 12px;
 }
-.hi-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-.hi-meta { font-size: .78rem; color: var(--text-3); }
-.hi-skills { font-size: .75rem; color: var(--text-3); margin-top: 4px; }
+.hi-name { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--ink-100); }
+.hi-meta { font-size: .78rem; color: var(--ink-500); }
+.hi-skills { font-size: .75rem; color: var(--ink-500); margin-top: 4px; }
 
 .hi-recs { display: flex; flex-wrap: wrap; gap: 8px; }
 .hi-rec {
   display: flex; align-items: center; gap: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  border-radius: var(--r-pill);
 }
-.hi-rec.top { border-color: var(--primary); background: var(--primary-soft); }
-.hi-rec-name  { font-size: .78rem; font-weight: 600; color: var(--text); }
-.hi-rec-score { font-size: .78rem; font-weight: 800; color: var(--primary); }
+.hi-rec.top { border-color: var(--indigo); background: var(--indigo-soft); }
+.hi-rec-name  { font-family: var(--font-display); font-size: .78rem; font-weight: 600; color: var(--ink-200); }
+.hi-rec-score { font-family: var(--font-display); font-size: .78rem; font-weight: 800; color: var(--indigo); }
 </style>
 {% endblock %}
 
@@ -48,29 +46,32 @@
 <div class="history-page">
 <div class="container">
 
-  <div class="page-top">
+  <div class="page-top reveal">
     <div>
-      <h1>📜 Analysis History</h1>
-      <p>Your last 20 career analyses, saved automatically.</p>
+      <h1 class="page-title">📜 Analysis History</h1>
+      <p class="page-sub">🕐 Your last 20 career analyses, saved automatically.</p>
     </div>
-    <a href="{% url 'profile_form' %}" class="btn-primary">+ New Analysis</a>
+    <a href="{% url 'profile_form' %}" class="btn-primary">➕ New Analysis</a>
   </div>
+
+  <div class="section-heading">📋 Past Analyses</div>
 
   {% if profiles %}
     {% for profile in profiles %}
-    <div class="history-item">
+    <div class="history-item reveal">
       <div class="hi-head">
         <div>
-          <div class="hi-name">{{ profile.name }}</div>
-          <div class="hi-meta">{{ profile.branch }} · CGPA {{ profile.cgpa }} · {{ profile.year }} · {{ profile.created_at|date:"M j, Y, g:i a" }}</div>
+          <div class="hi-name">👤 {{ profile.name }}</div>
+          <div class="hi-meta">🏫 {{ profile.branch }} · 📈 CGPA {{ profile.cgpa }} · 📅 {{ profile.year }} · 🕐 {{ profile.created_at|date:"M j, Y, g:i a" }}</div>
           {% if profile.skills %}
-          <div class="hi-skills">Skills: {{ profile.skills|join:", "|truncatechars:80 }}</div>
+          <div class="hi-skills">🛠️ Skills: {{ profile.skills|join:", "|truncatechars:80 }}</div>
           {% endif %}
         </div>
       </div>
       <div class="hi-recs">
         {% for rec in profile.recommendations.all %}
         <div class="hi-rec {% if rec.rank == 1 %}top{% endif %}">
+          {% if rec.rank == 1 %}🏆{% endif %}
           <span class="hi-rec-name">{{ rec.career }}</span>
           <span class="hi-rec-score">{{ rec.score }}%</span>
         </div>
@@ -79,10 +80,10 @@
     </div>
     {% endfor %}
   {% else %}
-    <div class="empty-state">
-      <div class="es-icon">📭</div>
-      <h3>No analyses yet</h3>
-      <p>Submit your first profile to see results here.</p>
+    <div class="empty-state reveal">
+      <span class="es-icon">📭</span>
+      <h3>🤔 No Analyses Yet</h3>
+      <p>Submit your first profile to see your career matches here.</p>
       <a href="{% url 'profile_form' %}" class="btn-primary">🚀 Analyse My Profile</a>
     </div>
   {% endif %}

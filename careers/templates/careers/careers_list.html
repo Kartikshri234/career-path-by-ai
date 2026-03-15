@@ -5,10 +5,6 @@
 <style>
 .careers-page { padding: 40px 0 80px; }
 
-.page-top { margin-bottom: 28px; }
-.page-top h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-.page-top p  { color: var(--text-2); font-size: .9rem; }
-
 .careers-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -17,28 +13,39 @@
 .career-card {
   background: var(--surface);
   border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  transition: border-color var(--transition), transform .2s;
+  border-radius: var(--r-lg);
+  padding: 26px;
+  transition: border-color var(--t), transform var(--t-spring);
+  position: relative; overflow: hidden;
 }
-.career-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.career-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--grad-brand); opacity: 0; transition: opacity var(--t);
+}
+.career-card:hover { border-color: var(--border-i); transform: translateY(-3px); box-shadow: var(--shadow); }
+.career-card:hover::before { opacity: 1; }
 
 .cc-top {
   display: flex; justify-content: space-between;
   align-items: flex-start; margin-bottom: 10px;
 }
-.cc-name   { font-size: 1rem; font-weight: 700; }
+.cc-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; color: var(--ink-100); }
 .cc-demand {
-  font-size: .72rem; font-weight: 600; padding: 3px 10px;
-  border-radius: var(--radius-pill); background: var(--green-soft); color: var(--green);
+  font-family: var(--font-display); font-size: .7rem; font-weight: 700;
+  padding: 3px 12px; border-radius: var(--r-pill);
+  background: var(--emerald-soft); color: var(--emerald);
+  border: 1px solid rgba(52,211,153,.2);
 }
-.cc-salary { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 12px; }
-.cc-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.cc-salary {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 800;
+  color: var(--cyan); margin-bottom: 14px;
+}
+.cc-skills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
 .cc-skill  {
-  font-size: .72rem; padding: 3px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--primary-soft); color: var(--primary);
-  border: 1px solid var(--border-accent);
+  font-size: .72rem; padding: 4px 11px;
+  border-radius: var(--r-pill);
+  background: var(--indigo-soft); color: var(--indigo);
+  border: 1px solid var(--border-i); font-weight: 600;
 }
 
 @media(max-width: 768px) {
@@ -51,25 +58,29 @@
 <div class="careers-page">
 <div class="container">
 
-  <div class="page-top">
-    <h1>🗂️ Career Tracks</h1>
-    <p>All five career paths CareerCompass evaluates for you.</p>
+  <div class="reveal" style="margin-bottom:32px">
+    <h1 class="page-title">🗂️ Career Tracks</h1>
+    <p class="page-sub">🌟 All five career paths CareerCompass evaluates and matches for you.</p>
   </div>
+
+  <div class="section-heading">🚀 Explore Your Options</div>
 
   <div class="careers-grid">
     {% for name, profile in careers.items %}
-    <div class="career-card">
+    <div class="career-card reveal">
       <div class="cc-top">
         <div class="cc-name">{{ profile.icon }} {{ name }}</div>
-        <div class="cc-demand">{{ profile.demand_trend }}</div>
+        <div class="cc-demand">📈 {{ profile.demand_trend }}</div>
       </div>
-      <div class="cc-salary">{{ profile.avg_salary }}</div>
+      <div class="cc-salary">💰 {{ profile.avg_salary }}</div>
       <div class="cc-skills">
         {% for skill in profile.required_skills %}
           <span class="cc-skill">{{ skill }}</span>
         {% endfor %}
       </div>
-      <a href="{% url 'profile_form' %}" class="btn-outline" style="font-size:.82rem;padding:8px 18px;">Analyse for This →</a>
+      <a href="{% url 'profile_form' %}" class="btn-outline" style="font-size:.82rem;padding:8px 18px;">
+        ⚡ Analyse for This →
+      </a>
     </div>
     {% endfor %}
   </div>

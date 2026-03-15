@@ -10,123 +10,7 @@
 
 {% block extra_head %}
 <style>
-.results-page { padding: 40px 0 80px; }
-
-/* ── Top summary ── */
-.result-summary {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; flex-wrap: wrap; margin-bottom: 32px;
-}
-.result-summary h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
-.result-summary p  { color: var(--text-2); font-size: .9rem; }
-
-/* ── Match cards ── */
-.match-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 32px;
-}
-.match-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  position: relative;
-  transition: border-color var(--transition), transform .2s;
-}
-.match-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
-.match-card.is-top { border-color: var(--primary); }
-.top-badge {
-  position: absolute; top: 0; right: 0;
-  background: var(--primary); color: #fff;
-  font-size: .68rem; font-weight: 700;
-  padding: 4px 12px; border-radius: 0 var(--radius) 0 var(--radius-sm);
-}
-.mc-icon { font-size: 1.8rem; margin-bottom: 10px; }
-.mc-name { font-size: .95rem; font-weight: 700; margin-bottom: 4px; }
-.mc-desc { font-size: .78rem; color: var(--text-2); line-height: 1.5; margin-bottom: 14px; }
-.mc-bar-bg { background: var(--surface2); border-radius: 4px; height: 6px; margin-bottom: 6px; overflow: hidden; }
-.mc-bar    { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0; transition: width 1s ease; }
-.mc-score  { font-size: 1.3rem; font-weight: 900; color: var(--primary); }
-.mc-score-lbl { font-size: .72rem; color: var(--text-3); }
-
-/* ── Tabs ── */
-.tab-nav {
-  display: flex; gap: 4px; padding: 4px;
-  background: var(--surface2); border-radius: var(--radius);
-  margin-bottom: 20px; flex-wrap: wrap;
-  border: 1px solid var(--border);
-}
-.tab-btn {
-  padding: 8px 18px; border-radius: var(--radius-sm);
-  font-size: .83rem; font-weight: 600;
-  color: var(--text-2); background: transparent;
-  transition: all var(--transition); border: none;
-}
-.tab-btn:hover  { color: var(--text); }
-.tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: var(--shadow-sm); }
-
-/* ── Tab panels ── */
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* ── Panel cards ── */
-.panel-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 14px;
-}
-.panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
-.tags-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.tip-note { margin-top: 14px; font-size: .83rem; color: var(--text-2); }
-
-/* ── Roadmap ── */
-.rm-list { display: flex; flex-direction: column; }
-.rm-row {
-  display: flex; gap: 16px;
-  padding: 16px 0 0 28px;
-  border-left: 2px solid var(--border-accent);
-  position: relative;
-  margin-bottom: 4px;
-}
-.rm-row::before {
-  content: '';
-  position: absolute; left: -7px; top: 20px;
-  width: 12px; height: 12px; border-radius: 50%;
-  background: var(--primary); border: 2px solid var(--bg);
-}
-.rm-week { font-size: .72rem; font-weight: 700; color: var(--primary); white-space: nowrap; min-width: 72px; margin-top: 2px; }
-.rm-content { flex: 1; padding-bottom: 16px; }
-.rm-content h4 { font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
-.rm-content p  { font-size: .8rem; color: var(--text-2); line-height: 1.5; margin-bottom: 8px; }
-.rm-resources { display: flex; flex-wrap: wrap; gap: 6px; }
-.rm-res { font-size: .72rem; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--primary-soft); color: var(--primary); }
-
-/* ── Radar ── */
-.radar-box { height: 280px; position: relative; }
-
-/* ── Salary ── */
-.salary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.sal-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-}
-.sal-city  { font-size: .75rem; color: var(--text-3); font-weight: 600; margin-bottom: 4px; }
-.sal-range { font-size: 1rem; font-weight: 800; color: var(--green); }
-.sal-exp   { font-size: .72rem; color: var(--text-3); margin-top: 2px; }
-
-/* ── Actions ── */
-.result-actions { display: flex; gap: 12px; justify-content: center; margin-top: 32px; flex-wrap: wrap; }
-
-@media(max-width: 768px) {
-  .match-cards { grid-template-columns: 1fr; }
-  .salary-grid { grid-template-columns: 1fr 1fr; }
-}
+.results-page { padding: 40px 0 96px; }
 </style>
 {% endblock %}
 
@@ -134,34 +18,36 @@
 <div class="results-page">
 <div class="container">
 
-  <div class="result-summary">
+  <div class="result-summary reveal">
     <div>
-      <h1>🎯 Your Career Analysis</h1>
-      <p>Hi <strong>{{ profile.name }}</strong> — here are your top career matches based on your profile.</p>
+      <h1 class="page-title">🎯 Your Career Analysis Results</h1>
+      <p class="page-sub">👋 Hi <strong>{{ profile.name }}</strong> — here are your top career matches based on your profile.</p>
     </div>
-    <a href="{% url 'profile_form' %}" class="btn-outline">← Re-analyse</a>
+    <a href="{% url 'profile_form' %}" class="btn-outline">🔄 Re-analyse</a>
   </div>
 
   <!-- Match cards -->
+  <div class="section-heading">🏆 Your Top Career Matches</div>
   <div class="match-cards">
     {% for rec in recommendations %}
-    <div class="match-card {% if forloop.first %}is-top{% endif %}">
+    <div class="match-card {% if forloop.first %}is-top{% endif %} reveal">
       {% if forloop.first %}<div class="top-badge">🏆 Best Match</div>{% endif %}
-      <div class="mc-icon">{{ rec.icon }}</div>
+      <span class="mc-icon">{{ rec.icon }}</span>
       <div class="mc-name">{{ rec.career }}</div>
       <div class="mc-desc">{{ rec.desc }}</div>
       <div class="mc-bar-bg"><div class="mc-bar" data-p="{{ rec.score }}"></div></div>
       <div class="mc-score">{{ rec.score }}%</div>
-      <div class="mc-score-lbl">Career Match Score</div>
+      <div class="mc-score-lbl">🎯 Career Match Score</div>
     </div>
     {% endfor %}
   </div>
 
   <!-- Tabs -->
-  <div class="tab-nav">
+  <div class="section-heading">📂 Deep Dive Into Your Results</div>
+  <div class="tab-nav reveal">
     <button class="tab-btn active" onclick="switchTab('gap',   this)">🔍 Skill Gap</button>
     <button class="tab-btn"        onclick="switchTab('rm',    this)">🗺️ Roadmap</button>
-    <button class="tab-btn"        onclick="switchTab('radar', this)">📊 Radar</button>
+    <button class="tab-btn"        onclick="switchTab('radar', this)">📊 Radar Chart</button>
     <button class="tab-btn"        onclick="switchTab('sal',   this)">💰 Salaries</button>
   </div>
 
@@ -173,7 +59,7 @@
         {% for s in top.skills_have %}
           <span class="tag tag-green">✓ {{ s }}</span>
         {% empty %}
-          <span class="tag tag-blue">Keep building skills!</span>
+          <span class="tag tag-blue">🌱 Keep building skills!</span>
         {% endfor %}
       </div>
     </div>
@@ -193,7 +79,7 @@
   <!-- Roadmap -->
   <div class="tab-panel" id="tab-rm">
     <div class="panel-card">
-      <div class="panel-title">🗺️ Your 12-Week Learning Roadmap</div>
+      <div class="panel-title">🗺️ Your Personalised 12-Week Learning Roadmap</div>
       <div class="rm-list">
         {% for step in top.roadmap %}
         <div class="rm-row">
@@ -202,7 +88,7 @@
             <h4>{{ step.title }}</h4>
             <p>{{ step.desc }}</p>
             <div class="rm-resources">
-              {% for r in step.resources %}<span class="rm-res">{{ r }}</span>{% endfor %}
+              {% for r in step.resources %}<span class="rm-res">📖 {{ r }}</span>{% endfor %}
             </div>
           </div>
         </div>
@@ -228,16 +114,17 @@
         <div class="sal-card">
           <div class="sal-city">📍 {{ s.city }}</div>
           <div class="sal-range">{{ s.range }}</div>
-          <div class="sal-exp">{{ s.exp }}</div>
+          <div class="sal-exp">🕐 {{ s.exp }}</div>
         </div>
         {% endfor %}
       </div>
     </div>
   </div>
 
-  <div class="result-actions">
-    <a href="{% url 'profile_form' %}" class="btn-ghost">← Re-analyse</a>
-    <a href="{% url 'home' %}"         class="btn-primary">🏠 Home</a>
+  <div class="result-actions reveal">
+    <a href="{% url 'profile_form' %}" class="btn-ghost">🔄 Re-analyse</a>
+    <a href="{% url 'history' %}"      class="btn-ghost">📜 View History</a>
+    <a href="{% url 'home' %}"         class="btn-primary">🏠 Back to Home</a>
   </div>
 
 </div>
@@ -246,19 +133,6 @@
 
 {% block extra_js %}
 <script>
-setTimeout(() => {
-  document.querySelectorAll('.mc-bar').forEach(b => { b.style.width = b.dataset.p + '%'; });
-}, 200);
-
-function switchTab(id, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'radar') setTimeout(renderRadar, 50);
-}
-
-let radarInst = null;
 const userSkills = {{ all_skills_json|safe }};
 const results    = {{ results_json|safe }};
 
@@ -270,6 +144,7 @@ const RADAR_DATA = {
   "Product Manager (Tech)":         { labels:["Strategy","SQL","UX/Figma","Communication","Analytics","Execution"],               required:[8,7,8,9,8,8] },
 };
 
+let radarInst = null;
 function renderRadar() {
   if (radarInst) { radarInst.destroy(); radarInst = null; }
   const rd = RADAR_DATA[results[0]?.career]; if (!rd) return;
@@ -285,8 +160,8 @@ function renderRadar() {
     ]},
     options:{
       responsive:true, maintainAspectRatio:false,
-      scales:{ r:{ min:0, max:10, ticks:{display:false}, grid:{color:gridColor}, pointLabels:{color:labelColor, font:{size:12}} }},
-      plugins:{ legend:{ labels:{ color:labelColor }}}
+      scales:{ r:{ min:0, max:10, ticks:{display:false}, grid:{color:gridColor}, pointLabels:{color:labelColor, font:{size:12,family:"'Syne',sans-serif"}} }},
+      plugins:{ legend:{ labels:{ color:labelColor, font:{family:"'DM Sans',sans-serif"} }}}
     }
   });
 }
