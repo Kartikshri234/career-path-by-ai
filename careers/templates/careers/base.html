@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}CareerCompass{% endblock %} — AI Career Path Recommender</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    /* ── RESET ── */
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    /* ── DARK THEME (default) ── */
+    :root,
+    [data-theme="dark"]{
+      --p:#6C63FF;--a:#43C6AC;
+      --d:#1a1a2e;--c:#16213e;
+      --t:#e0e0e0;--m:#8892a4;
+      --g:#4ade80;--r:#FF6584;--w:#fbbf24;
+      --nav-border:rgba(108,99,255,.2);
+      --card-border:rgba(108,99,255,.15);
+      --inp-bg:rgba(255,255,255,.05);
+      --inp-border:rgba(255,255,255,.1);
+      --chip-border:rgba(255,255,255,.1);
+      --item-bg:rgba(255,255,255,.04);
+      --item-border:rgba(255,255,255,.07);
+      --tog-bg:#2a2a4a;
+      --tog-knob:#6C63FF;
+      --tog-icon:'☀️';
+    }
+
+    /* ── LIGHT THEME ── */
+    [data-theme="light"]{
+      --p:#5B52E8;--a:#2aaa92;
+      --d:#f0f2f8;--c:#ffffff;
+      --t:#1a1a2e;--m:#555e72;
+      --g:#16a34a;--r:#e53e5a;--w:#d97706;
+      --nav-border:rgba(91,82,232,.15);
+      --card-border:rgba(91,82,232,.2);
+      --inp-bg:rgba(0,0,0,.04);
+      --inp-border:rgba(0,0,0,.15);
+      --chip-border:rgba(0,0,0,.12);
+      --item-bg:rgba(0,0,0,.03);
+      --item-border:rgba(0,0,0,.08);
+      --tog-bg:#e0deff;
+      --tog-knob:#5B52E8;
+      --tog-icon:'🌙';
+    }
+
+    /* ── SMOOTH TRANSITIONS ── */
+    body,nav,.card,.cc,.sc,.hist-item,.ccard,.feat,input,select{
+      transition:background .3s ease,color .3s ease,border-color .3s ease;
+    }
+
+    body{font-family:'Segoe UI',sans-serif;background:var(--d);color:var(--t);min-height:100vh;}
+
+    /* ── NAV ── */
+    nav{background:var(--c);padding:16px 40px;display:flex;justify-content:space-between;
+        align-items:center;border-bottom:1px solid var(--nav-border);position:sticky;top:0;z-index:100;
+        box-shadow:0 2px 12px rgba(0,0,0,.08);}
+    .logo{font-size:1.5rem;font-weight:800;color:var(--p);text-decoration:none;}
+    .logo span{color:var(--a);}
+    .nav-links{display:flex;gap:20px;align-items:center;}
+    .nav-links a{color:var(--m);text-decoration:none;font-size:.9rem;font-weight:600;transition:color .2s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--p);}
+    .steps{display:flex;gap:8px;}
+    .step{padding:6px 16px;border-radius:20px;font-size:.8rem;background:var(--item-bg);color:var(--m);}
+    .step.active{background:var(--p);color:#fff;}
+    .step.done{background:rgba(67,198,172,.2);color:var(--a);}
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle{
+      display:flex;align-items:center;gap:8px;cursor:pointer;
+      background:var(--tog-bg);border:none;border-radius:50px;
+      padding:6px 14px;transition:all .3s;
+    }
+    .theme-toggle:hover{opacity:.85;transform:scale(1.03);}
+    .toggle-track{
+      width:36px;height:20px;background:var(--tog-knob);border-radius:20px;
+      position:relative;transition:background .3s;
+    }
+    .toggle-knob{
+      width:14px;height:14px;background:#fff;border-radius:50%;
+      position:absolute;top:3px;transition:left .3s;
+    }
+    [data-theme="dark"] .toggle-knob{left:3px;}
+    [data-theme="light"] .toggle-knob{left:19px;}
+    .toggle-label{font-size:.8rem;font-weight:700;color:var(--m);white-space:nowrap;}
+
+    /* ── LAYOUT ── */
+    .con{max-width:1100px;margin:0 auto;padding:40px 20px;}
+
+    /* ── BUTTONS ── */
+    .btn{background:linear-gradient(135deg,var(--p),#8B5CF6);color:#fff;border:none;
+         padding:16px 40px;border-radius:50px;font-size:1rem;font-weight:700;cursor:pointer;
+         box-shadow:0 0 30px rgba(108,99,255,.4);transition:transform .2s;text-decoration:none;display:inline-block;}
+    .btn:hover{transform:translateY(-2px);}
+    .btn2{background:transparent;color:var(--p);border:2px solid var(--p);padding:12px 28px;
+          border-radius:50px;font-size:.9rem;font-weight:600;cursor:pointer;
+          transition:all .2s;text-decoration:none;display:inline-block;}
+    .btn2:hover{background:var(--p);color:#fff;}
+
+    /* ── CARDS ── */
+    .card{background:var(--c);border-radius:20px;padding:40px;border:1px solid var(--card-border);}
+
+    /* ── TAGS ── */
+    .tag{padding:6px 14px;border-radius:20px;font-size:.8rem;font-weight:600;}
+    .tag.hv{background:rgba(67,198,172,.15);color:var(--a);}
+    .tag.ms{background:rgba(255,101,132,.15);color:var(--r);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      nav{padding:12px 16px;gap:8px;}
+      .steps{display:none;}
+      .con{padding:20px 16px;}
+      .toggle-label{display:none;}
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="{% url 'home' %}">Career<span>Compass</span></a>
+  <div class="nav-links">
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'profile_form' %}">Analyze</a>
+    <a href="{% url 'careers_list' %}">Careers</a>
+    <a href="{% url 'history' %}">History</a>
+    <a href="{% url 'skill_roadmap' %}">🗺️ Roadmap</a>
+
+    <!-- ── DARK / LIGHT TOGGLE ── -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">
+      <div class="toggle-track"><div class="toggle-knob"></div></div>
+      <span class="toggle-label" id="tog-lbl">Dark Mode</span>
+    </button>
+  </div>
+  {% block nav_steps %}{% endblock %}
+</nav>
+
+{% block content %}{% endblock %}
+
+<script>
+  // ── Theme persistence ──
+  (function(){
+    const saved = localStorage.getItem('cc-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    updateLabel(saved);
+  })();
+
+  function toggleTheme(){
+    const html = document.documentElement;
+    const cur  = html.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('cc-theme', next);
+    updateLabel(next);
+  }
+
+  function updateLabel(theme){
+    const lbl = document.getElementById('tog-lbl');
+    if(lbl) lbl.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
+  }
+</script>
+
+</body>
+</html>

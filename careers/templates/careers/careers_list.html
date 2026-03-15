@@ -1,0 +1,52 @@
+{% extends 'careers/base.html' %}
+{% block title %}All Career Tracks{% endblock %}
+
+{% block extra_head %}
+<style>
+.pg-title{margin-bottom:30px;}
+.pg-title h2{font-size:1.8rem;font-weight:800;}
+.pg-title p{color:var(--m);margin-top:6px;}
+.career-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+.ccard{background:var(--c);border-radius:16px;padding:28px;border:1.5px solid var(--card-border);transition:all .25s,background .3s;}
+.ccard:hover{border-color:var(--p);transform:translateY(-3px);}
+.ccard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.ccard-name{font-size:1.1rem;font-weight:700;}
+.ccard-trend{font-size:.75rem;padding:4px 10px;border-radius:20px;
+  background:rgba(74,222,128,.12);color:var(--g);font-weight:600;}
+.ccard-salary{font-size:1.2rem;font-weight:800;color:var(--a);margin-bottom:12px;}
+.skill-list{display:flex;flex-wrap:wrap;gap:6px;}
+.sk{font-size:.75rem;padding:4px 10px;border-radius:10px;
+    background:rgba(108,99,255,.1);color:var(--p);border:1px solid rgba(108,99,255,.15);}
+.ccard-actions{margin-top:20px;}
+@media(max-width:768px){.career-grid{grid-template-columns:1fr;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="con">
+  <div class="pg-title">
+    <h2>🗂️ Available Career Tracks</h2>
+    <p>Explore all the career paths CareerCompass can evaluate for you.</p>
+  </div>
+
+  <div class="career-grid">
+    {% for name, profile in careers.items %}
+    <div class="ccard">
+      <div class="ccard-head">
+        <div class="ccard-name">{{ profile.icon }} {{ name }}</div>
+        <div class="ccard-trend">{{ profile.demand_trend }}</div>
+      </div>
+      <div class="ccard-salary">{{ profile.avg_salary }}</div>
+      <div class="skill-list">
+        {% for skill in profile.required_skills %}
+          <span class="sk">{{ skill }}</span>
+        {% endfor %}
+      </div>
+      <div class="ccard-actions">
+        <a href="{% url 'profile_form' %}" class="btn2" style="font-size:.82rem;padding:8px 18px;">Analyze for This →</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

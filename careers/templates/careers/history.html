@@ -1,0 +1,63 @@
+{% extends 'careers/base.html' %}
+{% block title %}Analysis History{% endblock %}
+
+{% block extra_head %}
+<style>
+.pg-title{margin-bottom:30px;}
+.pg-title h2{font-size:1.8rem;font-weight:800;}
+.pg-title p{color:var(--m);margin-top:6px;}
+.hist-item{background:var(--c);border-radius:16px;padding:24px;
+  border:1px solid var(--item-border);margin-bottom:16px;transition:all .2s,background .3s;}
+.hist-item:hover{border-color:rgba(108,99,255,.3);}
+.hist-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.hist-name{font-size:1.1rem;font-weight:700;}
+.hist-meta{font-size:.8rem;color:var(--m);}
+.hist-recs{display:flex;flex-wrap:wrap;gap:10px;}
+.hist-rec{display:flex;align-items:center;gap:8px;background:var(--item-bg);
+  border-radius:10px;padding:8px 14px;border:1px solid var(--item-border);}
+.rec-name{font-size:.82rem;font-weight:600;}
+.rec-score{font-size:.82rem;font-weight:800;color:var(--p);}
+.hist-rec.rank-1{border-color:rgba(108,99,255,.4);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--m);}
+.empty-state a{color:var(--p);}
+.skills-preview{font-size:.78rem;color:var(--m);margin-top:8px;}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="con">
+  <div class="pg-title">
+    <h2>🗄️ Analysis History</h2>
+    <p>Your last 20 career analyses, stored in the database.</p>
+  </div>
+
+  {% if profiles %}
+    {% for profile in profiles %}
+    <div class="hist-item">
+      <div class="hist-head">
+        <div>
+          <div class="hist-name">{{ profile.name }}</div>
+          <div class="hist-meta">{{ profile.branch }} · CGPA {{ profile.cgpa }} · {{ profile.year }} · {{ profile.created_at|date:"M j, Y, g:i a" }}</div>
+          <div class="skills-preview">
+            Skills: {{ profile.skills|join:", "|truncatechars:80 }}
+          </div>
+        </div>
+      </div>
+      <div class="hist-recs">
+        {% for rec in profile.recommendations.all %}
+        <div class="hist-rec {% if rec.rank == 1 %}rank-1{% endif %}">
+          <div class="rec-name">{{ rec.career }}</div>
+          <div class="rec-score">{{ rec.score }}%</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div style="font-size:3rem;margin-bottom:16px;">📭</div>
+      <p>No analyses yet. <a href="{% url 'profile_form' %}">Analyze your profile now →</a></p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'careers/base.html' %}
+{% block title %}Your Profile{% endblock %}
+
+{% block nav_steps %}
+<div class="steps">
+  <div class="step active">① Profile</div>
+  <div class="step">② Analysis</div>
+  <div class="step">③ Results</div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.card h2{font-size:1.5rem;font-weight:700;margin-bottom:8px;}
+.sub{color:var(--m);font-size:.9rem;margin-bottom:30px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.fg{display:flex;flex-direction:column;gap:8px;}
+.fg.full{grid-column:1/-1;}
+label{font-size:.85rem;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+input,select{background:var(--inp-bg);border:1px solid var(--inp-border);
+  color:var(--t);padding:12px 16px;border-radius:10px;font-size:.95rem;transition:border-color .2s,background .3s,color .3s;width:100%;}
+input:focus,select:focus{outline:none;border-color:var(--p);}
+select option{background:var(--c);color:var(--t);}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;}
+.chip{padding:8px 16px;border-radius:20px;font-size:.82rem;font-weight:600;
+      border:1.5px solid var(--chip-border);cursor:pointer;background:transparent;
+      color:var(--m);transition:all .2s;user-select:none;}
+.chip:hover{border-color:var(--p);color:var(--p);}
+.chip.on{background:rgba(108,99,255,.2);border-color:var(--p);color:var(--p);}
+.actions{margin-top:30px;display:flex;justify-content:flex-end;gap:12px;}
+.error-box{background:rgba(255,101,132,.1);border:1px solid rgba(255,101,132,.3);
+  border-radius:10px;padding:12px 16px;margin-bottom:20px;color:var(--r);font-size:.9rem;}
+@media(max-width:768px){.grid{grid-template-columns:1fr;}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="con">
+  <div class="card">
+    <h2>📋 Your Engineering Profile</h2>
+    <p class="sub">Fill in your details — the more accurate, the better your recommendations.</p>
+
+    {% if errors %}
+    <div class="error-box">Please fix the errors below and try again.</div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'analyze' %}">
+      {% csrf_token %}
+      <div class="grid">
+
+        <div class="fg">
+          <label>Full Name</label>
+          <input type="text" name="name" id="fn" placeholder="e.g. Rahul Sharma"
+                 value="{{ form.name.value|default:'' }}"/>
+        </div>
+
+        <div class="fg">
+          <label>Branch</label>
+          <select name="branch">
+            <option value="">Select Branch</option>
+            {% for val, label in form.fields.branch.choices %}
+              <option value="{{ val }}" {% if form.branch.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>CGPA</label>
+          <input type="number" name="cgpa" placeholder="e.g. 7.8" min="0" max="10" step="0.1"
+                 value="{{ form.cgpa.value|default:'' }}"/>
+        </div>
+
+        <div class="fg">
+          <label>Year of Study</label>
+          <select name="year">
+            <option value="">Select Year</option>
+            {% for val, label in form.fields.year.choices %}
+              <option value="{{ val }}" {% if form.year.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Work Preference</label>
+          <select name="work_pref">
+            {% for val, label in form.fields.work_pref.choices %}
+              <option value="{{ val }}" {% if form.work_pref.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Experience</label>
+          <select name="experience">
+            {% for val, label in form.fields.experience.choices %}
+              <option value="{{ val }}" {% if form.experience.value == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="fg full">
+          <label>Skills You Have (click to select)</label>
+          <div class="chips" id="chips-container">
+            {% for skill in all_skills %}
+              <div class="chip" data-skill="{{ skill }}" onclick="toggleSkill(this)">{{ skill }}</div>
+            {% endfor %}
+          </div>
+          {# Hidden inputs get injected by JS #}
+          <div id="skill-inputs"></div>
+        </div>
+
+        <div class="fg">
+          <label>LeetCode Problems Solved</label>
+          <input type="number" name="leetcode" placeholder="e.g. 150"
+                 value="{{ form.leetcode.value|default:'' }}"/>
+        </div>
+
+        <div class="fg">
+          <label>GitHub Repos</label>
+          <input type="number" name="github" placeholder="e.g. 8"
+                 value="{{ form.github.value|default:'' }}"/>
+        </div>
+
+      </div><!-- /grid -->
+
+      <div class="actions">
+        <a href="{% url 'home' %}" class="btn2">← Back</a>
+        <button type="submit" class="btn">Analyze My Career Path →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Pre-select skills (for demo or re-analysis)
+  const preSelect = {{ demo_skills|safe }};
+
+  function toggleSkill(el) {
+    el.classList.toggle('on');
+    updateHiddenInputs();
+  }
+
+  function updateHiddenInputs() {
+    const container = document.getElementById('skill-inputs');
+    container.innerHTML = '';
+    document.querySelectorAll('.chip.on').forEach(chip => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'skills';
+      inp.value = chip.dataset.skill;
+      container.appendChild(inp);
+    });
+  }
+
+  // Apply pre-selected skills
+  document.querySelectorAll('.chip').forEach(chip => {
+    if (preSelect.includes(chip.dataset.skill)) {
+      chip.classList.add('on');
+    }
+  });
+  updateHiddenInputs();
+</script>
+{% endblock %}
