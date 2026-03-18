@@ -29,6 +29,8 @@ media/
 .env.local
 .env.production
 *.env
+# Keep the example file — it has no real secrets
+!.env.example
 
 # ── IDE ──
 .vscode/

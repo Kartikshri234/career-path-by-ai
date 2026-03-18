@@ -1,4 +1,8 @@
 # CareerCompass — Python dependencies
 # Install with: pip install -r requirements.txt
 
+# Core framework
 Django>=4.2,<5.2
+
+# Environment variable management
+python-decouple==3.8

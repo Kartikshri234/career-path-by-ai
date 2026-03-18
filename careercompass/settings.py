@@ -1,26 +1,35 @@
 from pathlib import Path
+from decouple import config, Csv
 
 # ─────────────────────────────────────────────
 # CareerCompass — Django Settings
-# ⚠️  Development config only.
-#     Before deploying to production:
-#       1. Set DEBUG = False
-#       2. Set a strong SECRET_KEY (use environs or python-decouple)
-#       3. Set ALLOWED_HOSTS to your actual domain
-#       4. Switch DATABASES to PostgreSQL
-#       5. Set STATIC_ROOT and run collectstatic
+#
+# All sensitive values are loaded from a .env
+# file (development) or real environment variables
+# (production). Never hardcode secrets here.
+#
+# Quick start:
+#   1. Copy .env.example → .env
+#   2. Fill in your values in .env
+#   3. Run: python manage.py runserver
 # ─────────────────────────────────────────────
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ⚠️ Change this before going to production!
-SECRET_KEY = 'django-insecure-careercompass-change-this-in-production-xyz123'
 
-DEBUG = True
+# ══ SECURITY ══════════════════════════════════
+# Generate a new key with:
+#   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
 
-# In production: ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
-ALLOWED_HOSTS = ['*']
+# Set to False in production
+DEBUG = config('DEBUG', default=True, cast=bool)
 
+# e.g. ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
+
+
+# ══ APPLICATION ════════════════════════════════
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -61,13 +70,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'careercompass.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
+# ══ DATABASE ═══════════════════════════════════
+# Default: SQLite for local development
+# Set DATABASE_URL in .env for PostgreSQL, e.g.:
+#   DATABASE_URL=postgres://user:password@localhost:5432/careercompass_db
+_db_engine = config('DB_ENGINE', default='sqlite3')
+
+if _db_engine == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.postgresql',
+            'NAME':     config('DB_NAME',     default='careercompass_db'),
+            'USER':     config('DB_USER',     default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST':     config('DB_HOST',     default='localhost'),
+            'PORT':     config('DB_PORT',     default='5432'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
+# ══ PASSWORD VALIDATION ════════════════════════
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -75,12 +105,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'
-USE_I18N = True
-USE_TZ = True
 
-STATIC_URL = '/static/'
+# ══ INTERNATIONALISATION ═══════════════════════
+LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
+TIME_ZONE     = config('TIME_ZONE',     default='Asia/Kolkata')
+USE_I18N = True
+USE_TZ   = True
+
+
+# ══ STATIC FILES ═══════════════════════════════
+STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+
+# ══ MISC ═══════════════════════════════════════
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
