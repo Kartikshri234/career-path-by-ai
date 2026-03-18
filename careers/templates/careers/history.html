@@ -15,7 +15,7 @@
       <h1 class="page-title">📜 Analysis History</h1>
       <p class="page-sub">🕐 All your past career analyses, saved automatically.</p>
     </div>
-    <a href="{% url 'profile_form' %}" class="btn-primary">➕ New Analysis</a>
+    <a href="{% url 'profile_form' %}" class="btn-primary">➕ New</a>
   </div>
 
   {% if profiles %}
@@ -23,20 +23,24 @@
   <div class="history-controls reveal">
     <div class="history-search-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="history-search" placeholder="Search by name, branch, or career…" oninput="applyFilters()">
+      <input type="text" id="history-search" placeholder="Search name, branch, career…" oninput="applyFilters()">
     </div>
-    <select class="sort-select" id="sort-select" onchange="applyFilters()">
-      <option value="newest">Newest First</option>
-      <option value="oldest">Oldest First</option>
-      <option value="score">Highest Score</option>
-      <option value="name">Name A–Z</option>
-    </select>
-    <button class="filter-btn active" data-career="all"  onclick="setFilter('all',  this)">All</button>
-    <button class="filter-btn" data-career="sde"   onclick="setFilter('sde',   this)">💻 SDE</button>
-    <button class="filter-btn" data-career="data"  onclick="setFilter('data',  this)">🤖 Data / ML</button>
-    <button class="filter-btn" data-career="cloud" onclick="setFilter('cloud', this)">☁️ Cloud</button>
-    <button class="filter-btn" data-career="cyber" onclick="setFilter('cyber', this)">🔐 Cyber</button>
-    <button class="filter-btn" data-career="pm"    onclick="setFilter('pm',    this)">📋 PM</button>
+    <div class="controls-row2">
+      <select class="sort-select" id="sort-select" onchange="applyFilters()">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="score">Highest Score</option>
+        <option value="name">Name A–Z</option>
+      </select>
+      <div class="filter-chips">
+        <button class="filter-btn active" data-career="all"  onclick="setFilter('all',  this)">All</button>
+        <button class="filter-btn" data-career="sde"   onclick="setFilter('sde',   this)">💻 SDE</button>
+        <button class="filter-btn" data-career="data"  onclick="setFilter('data',  this)">🤖 ML</button>
+        <button class="filter-btn" data-career="cloud" onclick="setFilter('cloud', this)">☁️ Cloud</button>
+        <button class="filter-btn" data-career="cyber" onclick="setFilter('cyber', this)">🔐 Cyber</button>
+        <button class="filter-btn" data-career="pm"    onclick="setFilter('pm',    this)">📋 PM</button>
+      </div>
+    </div>
   </div>
 
   <div class="results-count reveal" id="results-count"></div>

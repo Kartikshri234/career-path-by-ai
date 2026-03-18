@@ -32,11 +32,15 @@
       Career<span>Compass</span>
     </a>
 
-    <div class="nav-links">
+    <!-- Hamburger (mobile only) -->
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-links" id="navLinks">
       <a href="{% url 'home' %}"         class="nav-link">Home</a>
       <a href="{% url 'profile_form' %}" class="nav-link">Analyse</a>
       <a href="{% url 'careers_list' %}" class="nav-link">Careers</a>
-      <a href="{% url 'history' %}"      class="nav-link">History</a>
       <a href="{% url 'skill_roadmap' %}" class="nav-link">Roadmap</a>
     </div>
 

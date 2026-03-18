@@ -304,6 +304,31 @@ window.addEventListener('pageshow', () => {
 });
 
 /* ══════════════════════════════════════════
+   MOBILE NAV
+══════════════════════════════════════════ */
+function toggleMobileNav() {
+  const links = document.getElementById('navLinks');
+  const btn   = document.getElementById('navHamburger');
+  const open  = links && links.classList.toggle('mobile-open');
+  if (btn) btn.classList.toggle('open', open);
+  // Close on outside click
+  if (open) {
+    setTimeout(() => {
+      document.addEventListener('click', closeMobileNavOutside, { once: true });
+    }, 10);
+  }
+}
+function closeMobileNavOutside(e) {
+  const links = document.getElementById('navLinks');
+  const btn   = document.getElementById('navHamburger');
+  const nav   = document.querySelector('.nav-inner');
+  if (nav && !nav.contains(e.target)) {
+    links && links.classList.remove('mobile-open');
+    btn && btn.classList.remove('open');
+  }
+}
+
+/* ══════════════════════════════════════════
    EXPOSE GLOBALS
 ══════════════════════════════════════════ */
 window.toggleTheme    = toggleTheme;
@@ -312,3 +337,4 @@ window.toggleSkill    = toggleSkill;
 window.updateHiddenInputs = updateHiddenInputs;
 window.showToast      = showToast;
 window.showAIThinking = showAIThinking;
+window.toggleMobileNav = toggleMobileNav;
