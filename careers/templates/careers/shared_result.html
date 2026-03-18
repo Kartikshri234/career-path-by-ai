@@ -1,0 +1,267 @@
+{% extends 'careers/base.html' %}
+{% load static %}
+{% block title %}{{ profile.name }}'s Career Analysis — CareerCompass{% endblock %}
+
+{% block extra_head %}
+<style>
+.results-page { padding: 40px 0 96px; }
+
+/* ── Shared Banner ── */
+.shared-banner {
+  background: var(--indigo-soft); border: 1px solid var(--border-i);
+  border-radius: var(--r); padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.shared-banner-icon { font-size: 1.6rem; flex-shrink: 0; }
+.shared-banner-text { flex: 1; min-width: 0; }
+.shared-banner-title {
+  font-family: var(--font-display); font-size: .9rem; font-weight: 700;
+  color: var(--indigo); margin-bottom: 2px;
+}
+.shared-banner-sub { font-size: .8rem; color: var(--ink-400); }
+.shared-banner-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: var(--r-pill);
+  background: var(--grad-brand); color: #fff;
+  font-family: var(--font-display); font-size: .82rem; font-weight: 700;
+  text-decoration: none; flex-shrink: 0;
+  box-shadow: var(--shadow-i);
+  transition: all var(--t-spring);
+}
+.shared-banner-cta:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(129,140,248,.35); }
+
+/* ── Score Breakdown (same as results page) ── */
+.score-breakdown {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.sb-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 7px 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); cursor: pointer;
+  font-family: var(--font-body); font-size: .78rem; font-weight: 600;
+  color: var(--ink-400); transition: all var(--t);
+}
+.sb-toggle:hover { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
+.sb-toggle[aria-expanded="true"] { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
+.sb-chevron { transition: transform .25s ease; display: inline-block; }
+.sb-toggle[aria-expanded="true"] .sb-chevron { transform: rotate(180deg); }
+.sb-body { margin-top: 10px; animation: fade-up .25s ease; }
+.sb-intro { font-size: .72rem; color: var(--ink-500); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
+.sb-rows { display: flex; flex-direction: column; gap: 8px; }
+.sb-row { display: grid; grid-template-columns: 1fr 1fr auto; align-items: center; gap: 8px; }
+.sb-label { display: flex; align-items: center; gap: 5px; font-size: .74rem; white-space: nowrap; }
+.sb-emoji { font-size: .8rem; }
+.sb-name { font-weight: 600; color: var(--ink-200); }
+.sb-weight { color: var(--ink-500); font-size: .68rem; }
+.sb-bar-wrap { background: var(--surface3); border-radius: 4px; height: 6px; overflow: hidden; min-width: 0; }
+.sb-bar { height: 100%; border-radius: 4px; width: 0; transition: width 1s cubic-bezier(.22,1,.36,1); }
+.sb-bar--skill { background: linear-gradient(90deg, var(--indigo), #a5b4fc); }
+.sb-bar--cgpa  { background: linear-gradient(90deg, var(--emerald), #6ee7b7); }
+.sb-bar--lc    { background: linear-gradient(90deg, var(--amber), #fde68a); }
+.sb-bar--gh    { background: linear-gradient(90deg, var(--violet), #e9d5ff); }
+.sb-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; white-space: nowrap; }
+.sb-pct  { font-size: .72rem; color: var(--ink-400); }
+.sb-pts  { font-family: var(--font-display); font-size: .72rem; font-weight: 800; color: var(--indigo); }
+.sb-footer { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: .7rem; color: var(--ink-500); text-align: center; }
+
+/* Share toast */
+.share-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 9999;
+  background: var(--surface3); border: 1px solid var(--indigo);
+  border-radius: var(--r-sm); padding: 11px 20px;
+  color: var(--ink-100); font-size: .85rem; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; pointer-events: none;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap; max-width: calc(100vw - 32px);
+  box-shadow: var(--shadow-i);
+}
+.share-toast.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 640px) {
+  .sb-row { grid-template-columns: 1fr auto; }
+  .sb-bar-wrap { display: none; }
+  .sb-right { flex-direction: row; gap: 6px; align-items: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+<div class="container">
+
+  <!-- ── Shared-by banner ── -->
+  <div class="shared-banner reveal">
+    <div class="shared-banner-icon">🔗</div>
+    <div class="shared-banner-text">
+      <div class="shared-banner-title">Shared by {{ profile.name }}</div>
+      <div class="shared-banner-sub">This is a read-only view of their CareerCompass analysis. Want to discover your own career path?</div>
+    </div>
+    <a href="{% url 'profile_form' %}" class="shared-banner-cta">🚀 Analyse My Profile</a>
+  </div>
+
+  <div class="result-summary reveal">
+    <div>
+      <h1 class="page-title">🎯 {{ profile.name }}'s Career Analysis</h1>
+      <p class="page-sub">🏫 {{ profile.branch }} · 📈 CGPA {{ profile.cgpa }} · 📅 {{ profile.year }} · 🕐 {{ profile.created_at|date:"M j, Y" }}</p>
+    </div>
+    <button class="btn-outline" id="share-btn" onclick="shareResults('{{ share_url }}', '{{ profile.name }}')">🔗 Share This</button>
+  </div>
+
+  <!-- Match cards -->
+  <div class="section-heading">🏆 Top Career Matches</div>
+  <div class="match-cards">
+    {% for rec in recommendations %}
+    <div class="match-card {% if forloop.first %}is-top{% endif %} reveal">
+      {% if forloop.first %}<div class="top-badge">🏆 Best Match</div>{% endif %}
+      <span class="mc-icon">{{ rec.icon }}</span>
+      <div class="mc-name">{{ rec.career }}</div>
+      <div class="mc-desc">{{ rec.desc }}</div>
+      <div class="mc-bar-bg"><div class="mc-bar" data-p="{{ rec.score }}"></div></div>
+      <div class="mc-score">{{ rec.score }}%</div>
+      <div class="mc-score-lbl">🎯 Career Match Score</div>
+
+      {% if rec.breakdown %}
+      <div class="score-breakdown">
+        <button class="sb-toggle" onclick="toggleBreakdown(this)" aria-expanded="false">
+          <span class="sb-toggle-text">📊 See score breakdown</span>
+          <span class="sb-chevron">▾</span>
+        </button>
+        <div class="sb-body" hidden>
+          <div class="sb-intro">How {{ profile.name }}'s {{ rec.score }}% was calculated:</div>
+          <div class="sb-rows">
+            <div class="sb-row">
+              <div class="sb-label"><span class="sb-emoji">🛠️</span><span class="sb-name">Skills Match</span><span class="sb-weight">({{ rec.breakdown.skill_weight }}% weight)</span></div>
+              <div class="sb-bar-wrap"><div class="sb-bar sb-bar--skill" style="width:{{ rec.breakdown.skill_pct }}%"></div></div>
+              <div class="sb-right"><span class="sb-pct">{{ rec.breakdown.skill_pct }}%</span><span class="sb-pts">+{{ rec.breakdown.skill_pts }}pts</span></div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-label"><span class="sb-emoji">📈</span><span class="sb-name">CGPA</span><span class="sb-weight">({{ rec.breakdown.cgpa_weight }}% weight)</span></div>
+              <div class="sb-bar-wrap"><div class="sb-bar sb-bar--cgpa" style="width:{{ rec.breakdown.cgpa_pct }}%"></div></div>
+              <div class="sb-right"><span class="sb-pct">{{ rec.breakdown.cgpa_pct }}%</span><span class="sb-pts">+{{ rec.breakdown.cgpa_pts }}pts</span></div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-label"><span class="sb-emoji">🧩</span><span class="sb-name">LeetCode</span><span class="sb-weight">({{ rec.breakdown.lc_weight }}% weight)</span></div>
+              <div class="sb-bar-wrap"><div class="sb-bar sb-bar--lc" style="width:{{ rec.breakdown.lc_pct }}%"></div></div>
+              <div class="sb-right"><span class="sb-pct">{{ rec.breakdown.lc_pct }}%</span><span class="sb-pts">+{{ rec.breakdown.lc_pts }}pts</span></div>
+            </div>
+            <div class="sb-row">
+              <div class="sb-label"><span class="sb-emoji">🐙</span><span class="sb-name">GitHub</span><span class="sb-weight">({{ rec.breakdown.gh_weight }}% weight)</span></div>
+              <div class="sb-bar-wrap"><div class="sb-bar sb-bar--gh" style="width:{{ rec.breakdown.gh_pct }}%"></div></div>
+              <div class="sb-right"><span class="sb-pct">{{ rec.breakdown.gh_pct }}%</span><span class="sb-pts">+{{ rec.breakdown.gh_pts }}pts</span></div>
+            </div>
+          </div>
+          <div class="sb-footer">Base score ({{ rec.breakdown.base_pts }}pts) + components = {{ rec.score }}%</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Skill Gap -->
+  <div class="section-heading">🔍 Skill Analysis</div>
+  <div class="panel-card reveal">
+    <div class="panel-title">✅ Skills {{ profile.name }} Has</div>
+    <div class="tags-row">
+      {% for s in top.skills_have %}
+        <span class="tag tag-green">✓ {{ s }}</span>
+      {% empty %}
+        <span class="tag tag-blue">🌱 Building skills!</span>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="panel-card reveal">
+    <div class="panel-title">📚 Skills to Learn for {{ top.career }}</div>
+    <div class="tags-row">
+      {% for s in top.skills_missing %}
+        <span class="tag tag-red">✗ {{ s }}</span>
+      {% empty %}
+        <span class="tag tag-green">🎉 All core skills covered!</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="result-actions reveal">
+    <button class="btn-outline" id="share-btn-bottom" onclick="shareResults('{{ share_url }}', '{{ profile.name }}')">🔗 Share This Analysis</button>
+    <a href="{% url 'profile_form' %}" class="btn-primary">🚀 Analyse My Own Profile</a>
+  </div>
+
+  <div class="share-toast" id="share-toast"></div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.userSkills = {{ all_skills_json|safe }};
+  window.results    = {{ results_json|safe }};
+</script>
+<script src="{% static 'careers/js/results.js' %}"></script>
+<script>
+async function shareResults(url, name) {
+  const toast = document.getElementById('share-toast');
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `🧭 ${name}'s Career Analysis — CareerCompass`,
+        text:  `Check out this career analysis on CareerCompass!`,
+        url:   url,
+      });
+      return;
+    } catch (e) {}
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch (e) {
+    const inp = document.createElement('input');
+    inp.value = url;
+    document.body.appendChild(inp);
+    inp.select();
+    document.execCommand('copy');
+    document.body.removeChild(inp);
+  }
+  toast.textContent = '🔗 Link copied to clipboard!';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+
+  ['share-btn','share-btn-bottom'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Copied!';
+    btn.style.borderColor = 'var(--emerald)';
+    btn.style.color = 'var(--emerald)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.borderColor=''; btn.style.color=''; }, 2500);
+  });
+}
+
+function toggleBreakdown(btn) {
+  const body = btn.nextElementSibling;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  if (open) {
+    btn.setAttribute('aria-expanded', 'false');
+    body.setAttribute('hidden', '');
+    btn.querySelector('.sb-toggle-text').textContent = '📊 See score breakdown';
+  } else {
+    btn.setAttribute('aria-expanded', 'true');
+    body.removeAttribute('hidden');
+    btn.querySelector('.sb-toggle-text').textContent = '▲ Hide breakdown';
+    requestAnimationFrame(() => {
+      body.querySelectorAll('.sb-bar').forEach(bar => {
+        const w = bar.style.width; bar.style.width = '0';
+        requestAnimationFrame(() => { bar.style.width = w; });
+      });
+    });
+  }
+}
+</script>
+{% endblock %}

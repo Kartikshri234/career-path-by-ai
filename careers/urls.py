@@ -9,6 +9,7 @@ urlpatterns = [
     path('history/',                  views.history,        name='history'),
     path('skill-roadmap/',            views.skill_roadmap,  name='skill_roadmap'),
     path('delete-profile/<int:profile_id>/', views.delete_profile, name='delete_profile'),
+    path('results/<uuid:token>/',            views.shared_result,  name='shared_result'),
 
     # API
     path('api/careers/',              views.api_careers,    name='api_careers'),

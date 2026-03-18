@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -24,8 +25,9 @@ class StudentProfile(models.Model):
     year       = models.CharField(max_length=20, blank=True)
     leetcode   = models.IntegerField(default=0)
     github     = models.IntegerField(default=0)
-    skills     = models.JSONField(default=list)
-    created_at = models.DateTimeField(auto_now_add=True)
+    skills       = models.JSONField(default=list)
+    share_token  = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at   = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']

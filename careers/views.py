@@ -83,10 +83,15 @@ def analyze(request):
 
     top = recommendations[0]
 
+    share_url = request.build_absolute_uri(
+        f'/results/{profile.share_token}/'
+    )
+
     return render(request, 'careers/results.html', {
         'profile':         profile,
         'recommendations': recommendations,
         'top':             top,
+        'share_url':       share_url,
         'all_skills_json': json.dumps(data['skills']),
         'results_json':    json.dumps([
             {'career': r['career'], 'score': r['score']} for r in recommendations
@@ -161,3 +166,34 @@ def api_careers(request):
         for name, p in CAREER_PROFILES.items()
     ]
     return JsonResponse(data, safe=False)
+
+
+def shared_result(request, token):
+    """Public, read-only shareable results page accessed via UUID token."""
+    profile = get_object_or_404(StudentProfile, share_token=token)
+
+    student_dict = {
+        'name':     profile.name,
+        'branch':   profile.branch,
+        'cgpa':     profile.cgpa,
+        'leetcode': profile.leetcode,
+        'github':   profile.github,
+        'skills':   profile.skills,
+    }
+    recommendations = recommend(student_dict)
+    top = recommendations[0]
+
+    share_url = request.build_absolute_uri(
+        f'/results/{profile.share_token}/'
+    )
+
+    return render(request, 'careers/shared_result.html', {
+        'profile':         profile,
+        'recommendations': recommendations,
+        'top':             top,
+        'share_url':       share_url,
+        'all_skills_json': json.dumps(profile.skills),
+        'results_json':    json.dumps([
+            {'career': r['career'], 'score': r['score']} for r in recommendations
+        ]),
+    })

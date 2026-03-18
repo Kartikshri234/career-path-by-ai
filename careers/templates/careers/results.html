@@ -12,12 +12,274 @@
 {% block extra_head %}
 <style>
 .results-page { padding: 40px 0 96px; }
+
+/* ───────────────────────────────────────
+   SCORE BREAKDOWN
+─────────────────────────────────────── */
+.score-breakdown {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.sb-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 7px 12px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); cursor: pointer;
+  font-family: var(--font-body); font-size: .78rem; font-weight: 600;
+  color: var(--ink-400); transition: all var(--t);
+}
+.sb-toggle:hover { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
+.sb-toggle[aria-expanded="true"] { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
+.sb-chevron { transition: transform .25s ease; display: inline-block; }
+.sb-toggle[aria-expanded="true"] .sb-chevron { transform: rotate(180deg); }
+
+.sb-body {
+  margin-top: 10px;
+  animation: fade-up .25s ease;
+}
+.sb-intro {
+  font-size: .72rem; color: var(--ink-500); margin-bottom: 10px;
+  font-weight: 600; text-transform: uppercase; letter-spacing: .4px;
+}
+.sb-rows { display: flex; flex-direction: column; gap: 8px; }
+.sb-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+.sb-label {
+  display: flex; align-items: center; gap: 5px;
+  font-size: .74rem; white-space: nowrap;
+}
+.sb-emoji { font-size: .8rem; }
+.sb-name { font-weight: 600; color: var(--ink-200); }
+.sb-weight { color: var(--ink-500); font-size: .68rem; }
+
+.sb-bar-wrap {
+  background: var(--surface3); border-radius: 4px; height: 6px;
+  overflow: hidden; min-width: 0;
+}
+.sb-bar {
+  height: 100%; border-radius: 4px;
+  width: 0; transition: width 1s cubic-bezier(.22,1,.36,1);
+}
+.sb-bar--skill { background: linear-gradient(90deg, var(--indigo), #a5b4fc); }
+.sb-bar--cgpa  { background: linear-gradient(90deg, var(--emerald), #6ee7b7); }
+.sb-bar--lc    { background: linear-gradient(90deg, var(--amber), #fde68a); }
+.sb-bar--gh    { background: linear-gradient(90deg, var(--violet), #e9d5ff); }
+
+.sb-right {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 1px; white-space: nowrap;
+}
+.sb-pct  { font-size: .72rem; color: var(--ink-400); }
+.sb-pts  {
+  font-family: var(--font-display); font-size: .72rem;
+  font-weight: 800; color: var(--indigo);
+}
+
+.sb-footer {
+  margin-top: 10px; padding-top: 8px;
+  border-top: 1px dashed var(--border);
+  font-size: .7rem; color: var(--ink-500); text-align: center;
+}
+
+@media (max-width: 640px) {
+  .sb-row { grid-template-columns: 1fr auto; }
+  .sb-bar-wrap { display: none; }
+  .sb-right { flex-direction: row; gap: 6px; align-items: center; }
+}
+
+/* ───────────────────────────────────────
+   SHARE TOAST
+─────────────────────────────────────── */
+.share-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 9999;
+  background: var(--surface3); border: 1px solid var(--indigo);
+  border-radius: var(--r-sm); padding: 11px 20px;
+  color: var(--ink-100); font-size: .85rem; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; pointer-events: none;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  white-space: nowrap; max-width: calc(100vw - 32px);
+  box-shadow: var(--shadow-i);
+}
+.share-toast.show {
+  opacity: 1; pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Shared page banner */
+.shared-banner {
+  background: var(--indigo-soft); border: 1px solid var(--border-i);
+  border-radius: var(--r); padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px; font-size: .88rem; color: var(--ink-300);
+}
+.shared-banner strong { color: var(--indigo); }
+
+/* ───────────────────────────────────────
+   PDF BUTTON LOADING STATE
+─────────────────────────────────────── */
+#pdf-btn.loading {
+  opacity: .6; pointer-events: none; cursor: wait;
+}
+
+/* ───────────────────────────────────────
+   SCORE COUNT-UP ANIMATION
+─────────────────────────────────────── */
+.mc-score {
+  /* Ensure the gradient text renders correctly during animation */
+  display: block;
+}
+.mc-score.counting {
+  /* Subtle pulse while counting */
+  animation: score-pulse 0.1s ease-in-out;
+}
+@keyframes score-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.05); }
+}
+
+/* ───────────────────────────────────────
+   CONFETTI CANVAS
+─────────────────────────────────────── */
+#confetti-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+/* ═══════════════════════════════════════
+   PRINT / PDF STYLES
+   Everything below only applies when
+   window.print() is called.
+═══════════════════════════════════════ */
+@media print {
+  /* ── Reset page ── */
+  @page {
+    size: A4;
+    margin: 16mm 14mm 16mm 14mm;
+  }
+
+  /* Force light colours — PDF readers use white bg */
+  :root {
+    --bg:        #ffffff !important;
+    --surface:   #ffffff !important;
+    --surface2:  #f8fafc !important;
+    --surface3:  #f1f5f9 !important;
+    --border:    rgba(0,0,0,.12) !important;
+    --border-i:  rgba(79,70,229,.3) !important;
+    --ink-100:   #0f172a !important;
+    --ink-200:   #1e293b !important;
+    --ink-300:   #334155 !important;
+    --ink-400:   #64748b !important;
+    --ink-500:   #94a3b8 !important;
+    --indigo:    #4f46e5 !important;
+    --indigo-soft: rgba(79,70,229,.08) !important;
+    --emerald:   #059669 !important;
+    --rose:      #e11d48 !important;
+    --amber:     #d97706 !important;
+    --violet:    #7c3aed !important;
+    --grad-brand: linear-gradient(135deg,#4f46e5,#06b6d4) !important;
+  }
+
+  /* Hide everything that's screen-only */
+  .nav, .steps-nav, .result-summary .btn-outline,
+  .tab-nav, .result-actions, .share-toast,
+  .sb-toggle, .score-breakdown .sb-toggle,
+  #confetti-canvas,
+  body::before { display: none !important; }
+
+  /* Show all tab panels at once */
+  .tab-panel       { display: block !important; margin-bottom: 20px; }
+  .tab-panel + .tab-panel { border-top: 1px solid #e2e8f0; padding-top: 16px; }
+
+  /* Expand all score breakdowns */
+  .sb-body         { display: block !important; }
+  .sb-body[hidden] { display: block !important; }
+  .score-breakdown { margin-top: 10px; }
+
+  /* Page flow */
+  body   { background: #fff !important; background-image: none !important; font-size: 13px; }
+  .results-page { padding: 0 !important; }
+  .container    { max-width: 100% !important; padding: 0 !important; }
+
+  /* Keep cards together, avoid mid-card page breaks */
+  .match-card, .panel-card, .sal-card, .rm-row { break-inside: avoid; }
+
+  /* Match cards: 3-col on A4 */
+  .match-cards { grid-template-columns: repeat(3,1fr) !important; gap: 10px !important; }
+
+  /* Animate bars: set to full width in print */
+  .mc-bar  { width: var(--p, 0%) !important; transition: none !important; }
+  .sb-bar  { transition: none !important; }
+
+  /* Salary grid */
+  .salary-grid { grid-template-columns: repeat(3,1fr) !important; }
+
+  /* PDF header — shown only in print */
+  .pdf-header { display: flex !important; }
+
+  /* Section headings */
+  .section-heading { break-before: auto; margin-top: 24px; }
+
+  /* Radar canvas — hide (can't render in PDF) */
+  #tab-radar { display: none !important; }
+
+  /* Roadmap dots */
+  .rm-row::before { background: #4f46e5 !important; border-color: #fff !important; }
+  .rm-week        { color: #4f46e5 !important; }
+
+  /* Tags */
+  .tag-green { background: #d1fae5 !important; color: #065f46 !important; }
+  .tag-red   { background: #fee2e2 !important; color: #991b1b !important; }
+  .tag-blue  { background: #dbeafe !important; color: #1e40af !important; }
+
+  /* Score bars actual fill for print */
+  .sb-bar--skill { background: #4f46e5 !important; }
+  .sb-bar--cgpa  { background: #059669 !important; }
+  .sb-bar--lc    { background: #d97706 !important; }
+  .sb-bar--gh    { background: #7c3aed !important; }
+
+  /* Match card gradient score bar */
+  .mc-bar { background: linear-gradient(90deg,#4f46e5,#06b6d4) !important; }
+
+  /* Top badge */
+  .top-badge { background: linear-gradient(135deg,#4f46e5,#06b6d4) !important; }
+
+  /* Score number gradient fallback for print */
+  .mc-score {
+    background: none !important;
+    -webkit-text-fill-color: #4f46e5 !important;
+    color: #4f46e5 !important;
+  }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="results-page">
 <div class="container">
+
+  <!-- PDF-only header (hidden on screen, shown in print) -->
+  <div class="pdf-header" style="display:none; align-items:center; justify-content:space-between; padding-bottom:14px; border-bottom:2px solid #4f46e5; margin-bottom:20px;">
+    <div>
+      <div style="font-size:1.3rem; font-weight:800; color:#0f172a; letter-spacing:-.02em;">CareerCompass</div>
+      <div style="font-size:.78rem; color:#64748b; margin-top:2px;">Career Analysis Report</div>
+    </div>
+    <div style="text-align:right; font-size:.75rem; color:#64748b;">
+      <div style="font-weight:700; color:#0f172a;">{{ profile.name }}</div>
+      <div>{{ profile.branch }} &middot; CGPA {{ profile.cgpa }} &middot; {{ profile.year }}</div>
+      <div>Generated {{ profile.created_at|date:"M j, Y" }}</div>
+    </div>
+  </div>
 
   <div class="result-summary reveal">
     <div>
@@ -37,8 +299,84 @@
       <div class="mc-name">{{ rec.career }}</div>
       <div class="mc-desc">{{ rec.desc }}</div>
       <div class="mc-bar-bg"><div class="mc-bar" data-p="{{ rec.score }}"></div></div>
-      <div class="mc-score">{{ rec.score }}%</div>
+      <div class="mc-score" data-score="{{ rec.score }}">0%</div>
       <div class="mc-score-lbl">🎯 Career Match Score</div>
+
+      <!-- ── Score Breakdown ── -->
+      {% if rec.breakdown %}
+      <div class="score-breakdown">
+        <button class="sb-toggle" onclick="toggleBreakdown(this)" aria-expanded="false">
+          <span class="sb-toggle-text">📊 See score breakdown</span>
+          <span class="sb-chevron">▾</span>
+        </button>
+        <div class="sb-body" hidden>
+          <div class="sb-intro">How your {{ rec.score }}% was calculated:</div>
+          <div class="sb-rows">
+            <!-- Skills -->
+            <div class="sb-row">
+              <div class="sb-label">
+                <span class="sb-emoji">🛠️</span>
+                <span class="sb-name">Skills Match</span>
+                <span class="sb-weight">({{ rec.breakdown.skill_weight }}% weight)</span>
+              </div>
+              <div class="sb-bar-wrap">
+                <div class="sb-bar sb-bar--skill" style="width:{{ rec.breakdown.skill_pct }}%"></div>
+              </div>
+              <div class="sb-right">
+                <span class="sb-pct">{{ rec.breakdown.skill_pct }}%</span>
+                <span class="sb-pts">+{{ rec.breakdown.skill_pts }}pts</span>
+              </div>
+            </div>
+            <!-- CGPA -->
+            <div class="sb-row">
+              <div class="sb-label">
+                <span class="sb-emoji">📈</span>
+                <span class="sb-name">CGPA</span>
+                <span class="sb-weight">({{ rec.breakdown.cgpa_weight }}% weight)</span>
+              </div>
+              <div class="sb-bar-wrap">
+                <div class="sb-bar sb-bar--cgpa" style="width:{{ rec.breakdown.cgpa_pct }}%"></div>
+              </div>
+              <div class="sb-right">
+                <span class="sb-pct">{{ rec.breakdown.cgpa_pct }}%</span>
+                <span class="sb-pts">+{{ rec.breakdown.cgpa_pts }}pts</span>
+              </div>
+            </div>
+            <!-- LeetCode -->
+            <div class="sb-row">
+              <div class="sb-label">
+                <span class="sb-emoji">🧩</span>
+                <span class="sb-name">LeetCode</span>
+                <span class="sb-weight">({{ rec.breakdown.lc_weight }}% weight)</span>
+              </div>
+              <div class="sb-bar-wrap">
+                <div class="sb-bar sb-bar--lc" style="width:{{ rec.breakdown.lc_pct }}%"></div>
+              </div>
+              <div class="sb-right">
+                <span class="sb-pct">{{ rec.breakdown.lc_pct }}%</span>
+                <span class="sb-pts">+{{ rec.breakdown.lc_pts }}pts</span>
+              </div>
+            </div>
+            <!-- GitHub -->
+            <div class="sb-row">
+              <div class="sb-label">
+                <span class="sb-emoji">🐙</span>
+                <span class="sb-name">GitHub</span>
+                <span class="sb-weight">({{ rec.breakdown.gh_weight }}% weight)</span>
+              </div>
+              <div class="sb-bar-wrap">
+                <div class="sb-bar sb-bar--gh" style="width:{{ rec.breakdown.gh_pct }}%"></div>
+              </div>
+              <div class="sb-right">
+                <span class="sb-pct">{{ rec.breakdown.gh_pct }}%</span>
+                <span class="sb-pts">+{{ rec.breakdown.gh_pts }}pts</span>
+              </div>
+            </div>
+          </div>
+          <div class="sb-footer">Base score ({{ rec.breakdown.base_pts }}pts) + components = {{ rec.score }}%</div>
+        </div>
+      </div>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
@@ -125,11 +463,20 @@
   <div class="result-actions reveal">
     <a href="{% url 'profile_form' %}" class="btn-ghost">🔄 Re-analyse</a>
     <a href="{% url 'history' %}"      class="btn-ghost">📜 View History</a>
+    {% if share_url %}
+    <button class="btn-outline" id="share-btn" onclick="shareResults('{{ share_url }}', '{{ profile.name }}')">🔗 Share Results</button>
+    {% endif %}
+    <button class="btn-outline" id="pdf-btn" onclick="downloadPDF()">📥 Download PDF</button>
     <a href="{% url 'home' %}"         class="btn-primary">🏠 Back to Home</a>
   </div>
 
+  <!-- Share toast -->
+  <div class="share-toast" id="share-toast"></div>
+
 </div>
 </div>
+
+<!-- Confetti canvas (injected by JS when score ≥ 80) -->
 {% endblock %}
 
 {% block extra_js %}
@@ -138,4 +485,271 @@
   window.results    = {{ results_json|safe }};
 </script>
 <script src="{% static 'careers/js/results.js' %}"></script>
+<script>
+/* ══════════════════════════════════════════════════════
+   ANIMATED SCORE COUNT-UP
+   Counts each .mc-score from 0 → target over ~1.2s
+   Triggered as each card scrolls into view.
+══════════════════════════════════════════════════════ */
+(function initScoreCountUp() {
+  const scoreEls = document.querySelectorAll('.mc-score[data-score]');
+  if (!scoreEls.length) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.score, 10);
+      if (isNaN(target)) return;
+
+      io.unobserve(el);
+
+      const duration = 1200; // ms
+      const startTime = performance.now();
+
+      function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+      }
+
+      function tick(now) {
+        const elapsed  = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased    = easeOutCubic(progress);
+        const current  = Math.round(eased * target);
+
+        el.textContent = current + '%';
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = target + '%';
+        }
+      }
+
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.3 });
+
+  scoreEls.forEach(el => io.observe(el));
+})();
+
+
+/* ══════════════════════════════════════════════════════
+   CONFETTI — fires when top match score ≥ 80
+   Pure JS canvas confetti, no external library needed.
+══════════════════════════════════════════════════════ */
+(function initConfetti() {
+  const topScore = window.results && window.results[0] ? window.results[0].score : 0;
+  if (topScore < 80) return;  // Only celebrate 80%+ scores
+
+  // Small delay so the page has settled before confetti bursts
+  setTimeout(launchConfetti, 900);
+})();
+
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'confetti-canvas';
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
+  document.body.appendChild(canvas);
+
+  const ctx    = canvas.getContext('2d');
+  const W      = canvas.width  = window.innerWidth;
+  const H      = canvas.height = window.innerHeight;
+
+  const COLORS = [
+    '#4f46e5', '#06b6d4', '#10b981', '#f59e0b',
+    '#ec4899', '#8b5cf6', '#ef4444', '#ffffff',
+  ];
+
+  const PARTICLE_COUNT = 120;
+  const particles = [];
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x:      Math.random() * W,
+      y:      Math.random() * H * -0.3 - 10,          // start above viewport
+      w:      Math.random() * 10 + 5,
+      h:      Math.random() * 5  + 3,
+      color:  COLORS[Math.floor(Math.random() * COLORS.length)],
+      vx:     (Math.random() - 0.5) * 4,
+      vy:     Math.random() * 4 + 2,
+      angle:  Math.random() * Math.PI * 2,
+      spin:   (Math.random() - 0.5) * 0.2,
+      opacity:1,
+    });
+  }
+
+  let frame = 0;
+  const MAX_FRAMES = 160;   // ~2.6s at 60fps
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+
+    const fadeStart = 100;
+    particles.forEach(p => {
+      p.x     += p.vx;
+      p.y     += p.vy;
+      p.angle += p.spin;
+      p.vy    += 0.07;      // gravity
+
+      if (frame > fadeStart) {
+        p.opacity = Math.max(0, 1 - (frame - fadeStart) / (MAX_FRAMES - fadeStart));
+      }
+
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (frame < MAX_FRAMES) {
+      requestAnimationFrame(draw);
+    } else {
+      canvas.remove();
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+
+/* ── Download PDF ── */
+function downloadPDF() {
+  const btn = document.getElementById('pdf-btn');
+
+  /* Button feedback */
+  btn.classList.add('loading');
+  btn.innerHTML = '⏳ Preparing...';
+
+  /* Expand all score breakdowns so they render in PDF */
+  document.querySelectorAll('.sb-body[hidden]').forEach(body => {
+    body.removeAttribute('hidden');
+    body._pdfOpened = true;
+    /* Instantly set bar widths (no CSS transition in print) */
+    body.querySelectorAll('.sb-bar').forEach(bar => {
+      const target = bar.style.width;
+      bar.style.transition = 'none';
+      bar.style.width = target;
+    });
+  });
+
+  /* Ensure mc-score shows final value (not mid-animation) */
+  document.querySelectorAll('.mc-score[data-score]').forEach(el => {
+    el.textContent = el.dataset.score + '%';
+  });
+
+  /* Ensure mc-bar widths are set via CSS var for print */
+  document.querySelectorAll('.mc-bar[data-p]').forEach(bar => {
+    bar.style.setProperty('--p', bar.dataset.p + '%');
+    bar.style.width = bar.dataset.p + '%';
+  });
+
+  /* Small delay so DOM paints, then print */
+  setTimeout(() => {
+    window.print();
+
+    /* Restore everything after print dialog closes */
+    setTimeout(() => {
+      document.querySelectorAll('.sb-body').forEach(body => {
+        if (body._pdfOpened) {
+          body.setAttribute('hidden', '');
+          body._pdfOpened = false;
+          /* Re-enable transitions */
+          body.querySelectorAll('.sb-bar').forEach(bar => {
+            bar.style.transition = '';
+          });
+          /* Reset toggle button text */
+          const toggle = body.previousElementSibling;
+          if (toggle) {
+            toggle.setAttribute('aria-expanded', 'false');
+            const txt = toggle.querySelector('.sb-toggle-text');
+            if (txt) txt.textContent = '📊 See score breakdown';
+          }
+        }
+      });
+      btn.classList.remove('loading');
+      btn.innerHTML = '📥 Download PDF';
+    }, 800);
+  }, 300);
+}
+
+/* ── Share Results ── */
+async function shareResults(url, name) {
+  const toast = document.getElementById('share-toast');
+  const btn   = document.getElementById('share-btn');
+
+  /* Try native Web Share API first (mobile) */
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `🧭 ${name}'s Career Analysis — CareerCompass`,
+        text:  `Check out my career analysis results on CareerCompass!`,
+        url:   url,
+      });
+      return;
+    } catch (e) { /* user cancelled, fall through to clipboard */ }
+  }
+
+  /* Fallback: copy to clipboard */
+  try {
+    await navigator.clipboard.writeText(url);
+    showShareToast(toast, '🔗 Link copied to clipboard!');
+  } catch (e) {
+    /* Final fallback: select a temp input */
+    const inp = document.createElement('input');
+    inp.value = url;
+    document.body.appendChild(inp);
+    inp.select();
+    document.execCommand('copy');
+    document.body.removeChild(inp);
+    showShareToast(toast, '🔗 Link copied!');
+  }
+
+  /* Button feedback */
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Copied!';
+    btn.style.borderColor = 'var(--emerald)';
+    btn.style.color = 'var(--emerald)';
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.style.borderColor = '';
+      btn.style.color = '';
+    }, 2500);
+  }
+}
+
+function showShareToast(toast, msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+/* ── Score Breakdown toggle ── */
+function toggleBreakdown(btn) {
+  const body = btn.nextElementSibling;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  if (open) {
+    btn.setAttribute('aria-expanded', 'false');
+    body.setAttribute('hidden', '');
+    btn.querySelector('.sb-toggle-text').textContent = '📊 See score breakdown';
+  } else {
+    btn.setAttribute('aria-expanded', 'true');
+    body.removeAttribute('hidden');
+    btn.querySelector('.sb-toggle-text').textContent = '▲ Hide breakdown';
+    /* Animate bars after reveal */
+    requestAnimationFrame(() => {
+      body.querySelectorAll('.sb-bar').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        requestAnimationFrame(() => { bar.style.width = w; });
+      });
+    });
+  }
+}
+</script>
 {% endblock %}

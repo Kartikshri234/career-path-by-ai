@@ -205,10 +205,49 @@ def score_career(career_name: str, profile: dict, student: dict) -> float:
     return min(round(18 + raw * 80), 98)
 
 
+def score_breakdown(profile: dict, student: dict) -> dict:
+    """Return individual component contributions (in score points, out of 100)."""
+    required = set(profile["required_skills"])
+    user_sk  = set(student.get("skills", []))
+    skill_overlap = len(required & user_sk) / len(required) if required else 0
+    cgpa_norm     = normalize(student.get("cgpa",     0), 10)
+    lc_norm       = normalize(student.get("leetcode", 0), 300)
+    gh_norm       = normalize(student.get("github",   0), 15)
+
+    base = 18  # minimum score
+    skill_pts = round(profile["weight_skill"] * skill_overlap * 80)
+    cgpa_pts  = round(profile["weight_cgpa"]  * cgpa_norm    * 80)
+    lc_pts    = round(profile["weight_lc"]    * lc_norm      * 80)
+    gh_pts    = round(profile["weight_gh"]    * gh_norm      * 80)
+
+    # Percentage of each required skill the student has
+    skill_pct = round(len(required & user_sk) / len(required) * 100) if required else 0
+    cgpa_pct  = round(cgpa_norm * 100)
+    lc_pct    = round(lc_norm   * 100)
+    gh_pct    = round(gh_norm   * 100)
+
+    return {
+        "skill_pts":  skill_pts,
+        "cgpa_pts":   cgpa_pts,
+        "lc_pts":     lc_pts,
+        "gh_pts":     gh_pts,
+        "base_pts":   base,
+        "skill_pct":  skill_pct,
+        "cgpa_pct":   cgpa_pct,
+        "lc_pct":     lc_pct,
+        "gh_pct":     gh_pct,
+        "skill_weight": profile["weight_skill_pct"],
+        "cgpa_weight":  profile["weight_cgpa_pct"],
+        "lc_weight":    profile["weight_lc_pct"],
+        "gh_weight":    profile["weight_gh_pct"],
+    }
+
+
 def recommend(student: dict) -> list:
     results = []
     for name, profile in CAREER_PROFILES.items():
-        sc = score_career(name, profile, student)
+        sc        = score_career(name, profile, student)
+        breakdown = score_breakdown(profile, student)
         have    = [s for s in student.get("skills", []) if s in profile["required_skills"]]
         missing = [s for s in profile["required_skills"] if s not in student.get("skills", [])]
         results.append({
@@ -216,6 +255,7 @@ def recommend(student: dict) -> list:
             "icon":           profile["icon"],
             "desc":           profile["desc"],
             "score":          sc,
+            "breakdown":      breakdown,
             "skills_have":    have,
             "skills_missing": missing,
             "avg_salary":     profile["avg_salary"],

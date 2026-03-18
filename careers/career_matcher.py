@@ -165,7 +165,7 @@ def _score_career(profile: dict, student: dict) -> int:
     required = set(profile["required_skills"])
     user_sk  = set(student.get("skills", []))
 
-    skill_overlap = len(required & user_sk) / len(required)
+    skill_overlap = len(required & user_sk) / len(required) if required else 0
     cgpa_norm     = _normalize(student.get("cgpa",    0), 10)
     lc_norm       = _normalize(student.get("leetcode", 0), 300)
     gh_norm       = _normalize(student.get("github",   0), 15)
@@ -179,21 +179,52 @@ def _score_career(profile: dict, student: dict) -> int:
     return min(round(18 + raw * 80), 98)
 
 
+def _score_breakdown(profile: dict, student: dict) -> dict:
+    """Return individual component contributions (in score points, out of 100)."""
+    required = set(profile["required_skills"])
+    user_sk  = set(student.get("skills", []))
+    skill_overlap = len(required & user_sk) / len(required) if required else 0
+    cgpa_norm     = _normalize(student.get("cgpa",     0), 10)
+    lc_norm       = _normalize(student.get("leetcode", 0), 300)
+    gh_norm       = _normalize(student.get("github",   0), 15)
+
+    skill_pts = round(profile["weight_skill"] * skill_overlap * 80)
+    cgpa_pts  = round(profile["weight_cgpa"]  * cgpa_norm    * 80)
+    lc_pts    = round(profile["weight_lc"]    * lc_norm      * 80)
+    gh_pts    = round(profile["weight_gh"]    * gh_norm      * 80)
+
+    return {
+        "skill_pts":    skill_pts,
+        "cgpa_pts":     cgpa_pts,
+        "lc_pts":       lc_pts,
+        "gh_pts":       gh_pts,
+        "base_pts":     18,
+        "skill_pct":    round(len(required & user_sk) / len(required) * 100) if required else 0,
+        "cgpa_pct":     round(cgpa_norm * 100),
+        "lc_pct":       round(lc_norm   * 100),
+        "gh_pct":       round(gh_norm   * 100),
+        "skill_weight": round(profile["weight_skill"] * 100),
+        "cgpa_weight":  round(profile["weight_cgpa"]  * 100),
+        "lc_weight":    round(profile["weight_lc"]    * 100),
+        "gh_weight":    round(profile["weight_gh"]    * 100),
+    }
+
+
 def recommend(student: dict) -> list:
     """
     Given a student dict with keys: name, branch, cgpa, leetcode, github, skills
     Returns a list of dicts sorted by score descending.
-    Each dict contains: career, score, skills_have, skills_missing,
-                        avg_salary, demand_trend, icon, desc
     """
     results = []
     for name, profile in CAREER_PROFILES.items():
-        sc      = _score_career(profile, student)
+        sc        = _score_career(profile, student)
+        breakdown = _score_breakdown(profile, student)
         have    = [s for s in student["skills"] if s in profile["required_skills"]]
         missing = [s for s in profile["required_skills"] if s not in student["skills"]]
         results.append({
             "career":          name,
             "score":           sc,
+            "breakdown":       breakdown,
             "skills_have":     have,
             "skills_missing":  missing,
             "avg_salary":      profile["avg_salary"],
