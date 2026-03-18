@@ -1,11 +1,24 @@
 from pathlib import Path
 
+# ─────────────────────────────────────────────
+# CareerCompass — Django Settings
+# ⚠️  Development config only.
+#     Before deploying to production:
+#       1. Set DEBUG = False
+#       2. Set a strong SECRET_KEY (use environs or python-decouple)
+#       3. Set ALLOWED_HOSTS to your actual domain
+#       4. Switch DATABASES to PostgreSQL
+#       5. Set STATIC_ROOT and run collectstatic
+# ─────────────────────────────────────────────
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ⚠️ Change this before going to production!
 SECRET_KEY = 'django-insecure-careercompass-change-this-in-production-xyz123'
 
 DEBUG = True
 
+# In production: ALLOWED_HOSTS = ['yourdomain.com', 'www.yourdomain.com']
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
