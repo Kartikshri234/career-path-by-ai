@@ -1,207 +1,10 @@
 {% extends 'careers/base.html' %}
+{% load static %}
 {% block title %}Career Tracks — CareerCompass{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
-<style>
-/* ══ PAGE ══ */
-.careers-page { padding: 40px 0 96px; }
-
-/* ══ HERO STATS ══ */
-.ct-hero-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 32px; }
-.hs-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px 20px; text-align: center; }
-.hs-num { font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; background: var(--grad-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.hs-lbl { font-size: .72rem; font-weight: 600; color: var(--ink-500); text-transform: uppercase; letter-spacing: .5px; margin-top: 3px; }
-
-/* ══ FILTER BAR ══ */
-.ct-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
-.cf-btn {
-  padding: 8px 18px; border-radius: var(--r-pill); font-size: .82rem; font-weight: 600;
-  border: 1.5px solid var(--border); background: transparent; color: var(--ink-400);
-  cursor: pointer; transition: all var(--t);
-}
-.cf-btn:hover  { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
-.cf-btn.active { background: var(--indigo-soft); border-color: var(--indigo); color: var(--indigo); }
-.cf-count { font-size: .75rem; color: var(--ink-500); padding: 0 2px; }
-
-/* No results */
-.no-cards { display: none; text-align: center; padding: 60px 20px; color: var(--ink-500); }
-.no-cards.show { display: block; }
-.no-cards span { font-size: 2.5rem; display: block; margin-bottom: 12px; }
-
-/* ══ CAREER CARDS ══ */
-.careers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.career-card {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--r-lg); overflow: hidden;
-  transition: border-color var(--t), box-shadow var(--t), transform var(--t-spring);
-  position: relative;
-}
-.career-card.filtered-out { display: none; }
-.career-card:hover { border-color: var(--border-i); box-shadow: var(--shadow-i); transform: translateY(-4px); }
-.career-card.open  { border-color: var(--indigo); box-shadow: var(--shadow-i); transform: none; }
-
-/* Per-career accent stripe */
-.career-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity var(--t); }
-.career-card:hover::before, .career-card.open::before { opacity: 1; }
-.cc-sde::before   { background: var(--grad-brand); }
-.cc-data::before  { background: linear-gradient(135deg,var(--violet),var(--cyan)); }
-.cc-cloud::before { background: linear-gradient(135deg,var(--emerald),var(--cyan)); }
-.cc-cyber::before { background: linear-gradient(135deg,var(--rose),var(--amber)); }
-.cc-pm::before    { background: linear-gradient(135deg,var(--amber),var(--pink)); }
-
-/* ── Card Header ── */
-.cc-header { padding: 22px 22px 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; cursor: pointer; user-select: none; }
-.cc-header-left { flex: 1; }
-.cc-icon-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-.cc-icon {
-  width: 48px; height: 48px; border-radius: var(--r-sm);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; flex-shrink: 0;
-  transition: transform var(--t-spring);
-}
-.career-card:hover .cc-icon, .career-card.open .cc-icon { transform: scale(1.1) rotate(-6deg); }
-.cc-sde   .cc-icon { background: var(--indigo-soft);  border: 1px solid var(--border-i); }
-.cc-data  .cc-icon { background: var(--violet-soft);  border: 1px solid rgba(192,132,252,.3); }
-.cc-cloud .cc-icon { background: var(--emerald-soft); border: 1px solid rgba(52,211,153,.3); }
-.cc-cyber .cc-icon { background: var(--rose-soft);    border: 1px solid rgba(251,113,133,.3); }
-.cc-pm    .cc-icon { background: var(--amber-soft);   border: 1px solid rgba(251,191,36,.3); }
-
-.cc-title-block { flex: 1; }
-.cc-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; color: var(--ink-100); margin-bottom: 3px; }
-.cc-desc { font-size: .81rem; color: var(--ink-400); line-height: 1.55; }
-
-/* Meta badges row */
-.cc-badges { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 22px 14px; }
-.cc-badge { font-size: .7rem; font-weight: 700; padding: 3px 11px; border-radius: var(--r-pill); }
-.cc-badge-salary  { background: var(--cyan-soft);    color: var(--cyan);    border: 1px solid rgba(34,211,238,.25); }
-.cc-badge-demand  { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
-.cc-badge-demand.moderate { background: var(--amber-soft); color: var(--amber); border-color: rgba(251,191,36,.25); }
-.cc-badge-demand.growing  { background: var(--violet-soft); color: var(--violet); border-color: rgba(192,132,252,.25); }
-.cc-badge-diff    { background: var(--surface2); color: var(--ink-400); border: 1px solid var(--border); }
-.cc-badge-diff.hard { background: var(--rose-soft); color: var(--rose); border-color: rgba(251,113,133,.25); }
-.cc-badge-time    { background: var(--indigo-soft); color: var(--indigo); border: 1px solid var(--border-i); }
-
-/* Skill pills row */
-.cc-skills { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 22px 16px; }
-.cc-skill { font-size: .72rem; padding: 4px 11px; border-radius: var(--r-pill); background: var(--indigo-soft); color: var(--indigo); border: 1px solid var(--border-i); font-weight: 600; }
-
-/* Chevron */
-.cc-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-.cc-expand-hint { font-size: .68rem; color: var(--ink-500); white-space: nowrap; }
-.cc-chevron {
-  width: 28px; height: 28px; border-radius: var(--r-xs);
-  background: var(--surface2); border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .7rem; color: var(--ink-400);
-  transition: transform .3s, background var(--t), border-color var(--t);
-}
-.career-card.open .cc-chevron { transform: rotate(180deg); background: var(--indigo-soft); border-color: var(--indigo); color: var(--indigo); }
-
-/* ══ EXPANDABLE DETAIL ══ */
-.cc-detail { border-top: 1px solid var(--border); display: none; animation: expandIn .25s ease; }
-.career-card.open .cc-detail { display: block; }
-@keyframes expandIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-
-/* Tabs */
-.cc-tabs { display: flex; gap: 0; padding: 0 22px; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
-.cc-tabs::-webkit-scrollbar { display: none; }
-.cc-tab {
-  padding: 11px 14px; font-size: .78rem; font-weight: 600;
-  color: var(--ink-500); background: transparent; border: none;
-  border-bottom: 2px solid transparent; cursor: pointer;
-  transition: all var(--t); white-space: nowrap; margin-bottom: -1px;
-}
-.cc-tab:hover  { color: var(--ink-200); }
-.cc-tab.active { color: var(--indigo); border-bottom-color: var(--indigo); }
-
-/* Tab panels */
-.cc-panel { display: none; padding: 20px 22px 22px; }
-.cc-panel.active { display: block; animation: fadeIn .18s ease; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-
-/* ── OVERVIEW TAB ── */
-.ov-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.ov-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; }
-.ov-stat-lbl { font-size: .65rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
-.ov-stat-val { font-family: var(--font-display); font-size: .9rem; font-weight: 700; color: var(--ink-100); }
-
-/* Growth path */
-.ov-growth { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 14px; }
-.ov-growth-lbl { font-size: .65rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
-.ov-growth-path { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-.ov-gp-step { font-size: .74rem; font-weight: 600; color: var(--ink-300); background: var(--surface); border: 1px solid var(--border); padding: 3px 10px; border-radius: 6px; }
-.ov-gp-arr { font-size: .7rem; color: var(--ink-500); }
-
-/* Day in life */
-.ov-day { background: var(--indigo-soft); border: 1px solid var(--border-i); border-radius: var(--r-sm); padding: 12px 14px; margin-bottom: 14px; }
-.ov-day-lbl { font-size: .65rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-.ov-day-text { font-size: .82rem; color: var(--ink-300); line-height: 1.6; }
-
-/* Scoring weights */
-.ov-scoring { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 14px; }
-.ov-scoring-lbl { font-size: .65rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
-.ov-score-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.ov-score-name { font-size: .76rem; color: var(--ink-400); min-width: 78px; }
-.ov-bar-bg { flex: 1; height: 5px; background: var(--border); border-radius: 4px; overflow: hidden; }
-.ov-bar-fill { height: 100%; border-radius: 4px; background: var(--grad-brand); transition: width 1s cubic-bezier(.4,0,.2,1); }
-.ov-bar-pct { font-size: .7rem; font-weight: 800; color: var(--indigo); min-width: 30px; text-align: right; }
-
-/* ── ROLES TAB ── */
-.roles-section { margin-bottom: 18px; }
-.roles-section-lbl { font-size: .68rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.roles-section-lbl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.role-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.role-chip { font-size: .8rem; font-weight: 600; padding: 6px 14px; border-radius: var(--r-pill); background: var(--surface2); border: 1.5px solid var(--border); color: var(--ink-300); transition: all var(--t); }
-.role-chip:hover { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
-.company-chip { font-size: .8rem; font-weight: 600; padding: 6px 14px; border-radius: var(--r-pill); background: var(--surface2); border: 1.5px solid var(--border); color: var(--ink-300); transition: all var(--t); }
-.company-chip:hover { border-color: var(--emerald); color: var(--emerald); background: var(--emerald-soft); }
-.cert-chip { font-size: .78rem; font-weight: 600; padding: 5px 12px; border-radius: var(--r-pill); background: var(--amber-soft); border: 1px solid rgba(251,191,36,.3); color: var(--amber); }
-
-/* ── ROADMAP TAB ── */
-.rm-timeline { position: relative; padding-left: 26px; }
-.rm-timeline::before { content: ''; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 2px; background: var(--border-i); border-radius: 2px; }
-.rm-item { position: relative; padding-bottom: 18px; }
-.rm-dot { position: absolute; left: -26px; top: 2px; width: 28px; height: 28px; border-radius: 50%; background: var(--indigo); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .68rem; font-weight: 800; box-shadow: 0 0 0 3px var(--indigo-glow); z-index: 1; }
-.rm-week { font-size: .66rem; font-weight: 700; color: var(--indigo); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
-.rm-title { font-family: var(--font-display); font-size: .88rem; font-weight: 700; color: var(--ink-100); margin-bottom: 4px; }
-.rm-desc { font-size: .78rem; color: var(--ink-400); line-height: 1.55; margin-bottom: 6px; }
-.rm-res-row { display: flex; flex-wrap: wrap; gap: 5px; }
-.rm-res { font-size: .68rem; padding: 2px 9px; border-radius: 6px; background: var(--indigo-soft); color: var(--indigo); font-weight: 600; border: 1px solid var(--border-i); }
-
-/* ── SALARY TAB ── */
-.sal-bar-section { margin-bottom: 16px; }
-.sal-bar-lbl { font-size: .68rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 10px; }
-.sal-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-.sal-bar-city { font-size: .78rem; color: var(--ink-400); min-width: 76px; }
-.sal-bar-bg { flex: 1; height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
-.sal-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg,var(--emerald),var(--cyan)); transition: width 1s ease; }
-.sal-bar-val { font-size: .74rem; font-weight: 700; color: var(--emerald); min-width: 90px; text-align: right; }
-.sal-card-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.sal-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 12px 10px; text-align: center; transition: all var(--t); }
-.sal-card:hover { border-color: var(--emerald); transform: translateY(-2px); }
-.sal-city { font-size: .66rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
-.sal-range { font-family: var(--font-display); font-size: .88rem; font-weight: 800; color: var(--emerald); }
-.sal-exp { font-size: .66rem; color: var(--ink-500); margin-top: 3px; }
-
-/* ── SKILLS TAB ── */
-.sk-full-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.sk-full-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--r-pill); font-size: .8rem; font-weight: 600; background: var(--indigo-soft); color: var(--indigo); border: 1.5px solid var(--border-i); transition: all var(--t); }
-.sk-full-chip:hover { transform: scale(1.05); box-shadow: var(--shadow-i); }
-
-/* ── RADAR TAB ── */
-.radar-wrap { height: 230px; position: relative; }
-
-/* ── CTA STRIP ── */
-.cc-cta { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border-top: 1px solid var(--border); padding: 14px 22px; gap: 12px; flex-wrap: wrap; }
-.cc-cta-text { font-size: .8rem; color: var(--ink-400); }
-.cc-cta-text strong { color: var(--ink-200); }
-.cc-cta-btns { display: flex; gap: 8px; }
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px) { .careers-grid { grid-template-columns: 1fr; } .ct-hero-stats { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:560px) { .ov-stat-grid { grid-template-columns: 1fr; } .sal-card-grid { grid-template-columns: 1fr 1fr; } }
-</style>
+<link rel="stylesheet" href="{% static 'careers/css/careers_list.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -224,12 +27,12 @@
   <!-- Filter Bar -->
   <div class="ct-filters reveal">
     <span style="font-size:.78rem;color:var(--ink-500);font-weight:600;">Filter:</span>
-    <button class="cf-btn active" data-filter="all"        onclick="applyFilter(this)">🌐 All Tracks <span class="cf-count" id="cnt-all"></span></button>
-    <button class="cf-btn"        data-filter="very_high"  onclick="applyFilter(this)">🔥 Very High Demand</button>
-    <button class="cf-btn"        data-filter="high"       onclick="applyFilter(this)">📈 High Demand</button>
-    <button class="cf-btn"        data-filter="salary_top" onclick="applyFilter(this)">💰 Top Salary</button>
+    <button class="cf-btn active" data-filter="all"         onclick="applyFilter(this)">🌐 All Tracks</button>
+    <button class="cf-btn"        data-filter="very_high"   onclick="applyFilter(this)">🔥 Very High Demand</button>
+    <button class="cf-btn"        data-filter="high"        onclick="applyFilter(this)">📈 High Demand</button>
+    <button class="cf-btn"        data-filter="salary_top"  onclick="applyFilter(this)">💰 Top Salary</button>
     <button class="cf-btn"        data-filter="medium_diff" onclick="applyFilter(this)">🌱 Medium Difficulty</button>
-    <button class="cf-btn"        data-filter="hard_diff"  onclick="applyFilter(this)">🔥 Hard / Advanced</button>
+    <button class="cf-btn"        data-filter="hard_diff"   onclick="applyFilter(this)">🔥 Hard / Advanced</button>
   </div>
 
   <div class="no-cards" id="no-cards">
@@ -239,19 +42,15 @@
 
   <div class="section-heading reveal">🚀 Click any card to explore full details</div>
 
-  <!-- Career Cards Grid -->
   <div class="careers-grid" id="careers-grid">
-
     {% for name, profile in careers.items %}
     {% with forloop.counter as idx %}
-    <div class="career-card reveal
-        {% if idx == 1 %}cc-sde{% elif idx == 2 %}cc-data{% elif idx == 3 %}cc-cloud{% elif idx == 4 %}cc-cyber{% else %}cc-pm{% endif %}"
+    <div class="career-card reveal {% if idx == 1 %}cc-sde{% elif idx == 2 %}cc-data{% elif idx == 3 %}cc-cloud{% elif idx == 4 %}cc-cyber{% else %}cc-pm{% endif %}"
          id="card-{{ idx }}"
          data-demand-level="{{ profile.demand_level }}"
          data-salary-level="{{ profile.salary_level }}"
          data-difficulty="{{ profile.difficulty|lower }}">
 
-      <!-- ── CARD HEADER (clickable) ── -->
       <div class="cc-header" onclick="toggleCard('card-{{ idx }}', {{ idx }})">
         <div class="cc-header-left">
           <div class="cc-icon-row">
@@ -268,7 +67,6 @@
         </div>
       </div>
 
-      <!-- Meta badges -->
       <div class="cc-badges">
         <span class="cc-badge cc-badge-salary">💰 {{ profile.avg_salary }}</span>
         <span class="cc-badge cc-badge-demand {% if profile.demand_level == 'moderate' %}moderate{% elif profile.demand_level == 'growing' %}growing{% endif %}">📈 {{ profile.demand_trend }}</span>
@@ -276,17 +74,13 @@
         <span class="cc-badge cc-badge-time">⏱ {{ profile.time_to_ready }}</span>
       </div>
 
-      <!-- Skill chips -->
       <div class="cc-skills">
         {% for skill in profile.required_skills %}
           <span class="cc-skill">{{ skill }}</span>
         {% endfor %}
       </div>
 
-      <!-- ══ EXPANDABLE DETAIL ══ -->
       <div class="cc-detail" id="detail-{{ idx }}">
-
-        <!-- TABS -->
         <div class="cc-tabs">
           <button class="cc-tab active" onclick="switchTab({{ idx }},'overview',this)">📋 Overview</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'roles',this)">💼 Roles</button>
@@ -296,7 +90,7 @@
           <button class="cc-tab"        onclick="switchTab({{ idx }},'radar',this)">📊 Radar</button>
         </div>
 
-        <!-- ── OVERVIEW PANEL ── -->
+        <!-- Overview -->
         <div class="cc-panel active" id="panel-{{ idx }}-overview">
           <div class="ov-stat-grid">
             <div class="ov-stat"><div class="ov-stat-lbl">💰 Salary Range</div><div class="ov-stat-val">{{ profile.avg_salary }}</div></div>
@@ -304,14 +98,10 @@
             <div class="ov-stat"><div class="ov-stat-lbl">⚡ Difficulty</div><div class="ov-stat-val">{{ profile.difficulty }}</div></div>
             <div class="ov-stat"><div class="ov-stat-lbl">⏱ Time to Job-Ready</div><div class="ov-stat-val">{{ profile.time_to_ready }}</div></div>
           </div>
-
-          <!-- Day in life -->
           <div class="ov-day">
             <div class="ov-day-lbl">☀️ A Day in the Life</div>
             <div class="ov-day-text">{{ profile.day_in_life }}</div>
           </div>
-
-          <!-- Growth path -->
           <div class="ov-growth">
             <div class="ov-growth-lbl">📈 Career Growth Path</div>
             <div class="ov-growth-path">
@@ -321,58 +111,28 @@
               {% endfor %}
             </div>
           </div>
-
-          <!-- Scoring weights -->
           <div class="ov-scoring">
             <div class="ov-scoring-lbl">⚖️ How You're Scored for This Career</div>
-            <div class="ov-score-row">
-              <span class="ov-score-name">Skill Match</span>
-              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_skill_pct }}%"></div></div>
-              <span class="ov-bar-pct">{{ profile.weight_skill_pct }}%</span>
-            </div>
-            <div class="ov-score-row">
-              <span class="ov-score-name">CGPA</span>
-              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_cgpa_pct }}%"></div></div>
-              <span class="ov-bar-pct">{{ profile.weight_cgpa_pct }}%</span>
-            </div>
-            <div class="ov-score-row">
-              <span class="ov-score-name">LeetCode</span>
-              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_lc_pct }}%"></div></div>
-              <span class="ov-bar-pct">{{ profile.weight_lc_pct }}%</span>
-            </div>
-            <div class="ov-score-row">
-              <span class="ov-score-name">GitHub</span>
-              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_gh_pct }}%"></div></div>
-              <span class="ov-bar-pct">{{ profile.weight_gh_pct }}%</span>
-            </div>
+            <div class="ov-score-row"><span class="ov-score-name">Skill Match</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_skill_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_skill_pct }}%</span></div>
+            <div class="ov-score-row"><span class="ov-score-name">CGPA</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_cgpa_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_cgpa_pct }}%</span></div>
+            <div class="ov-score-row"><span class="ov-score-name">LeetCode</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_lc_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_lc_pct }}%</span></div>
+            <div class="ov-score-row"><span class="ov-score-name">GitHub</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_gh_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_gh_pct }}%</span></div>
           </div>
         </div>
 
-        <!-- ── ROLES PANEL ── -->
+        <!-- Roles -->
         <div class="cc-panel" id="panel-{{ idx }}-roles">
           <div class="roles-section">
             <div class="roles-section-lbl">💼 Job Titles You Can Target</div>
-            <div class="role-chips">
-              {% for role in profile.job_roles %}
-                <span class="role-chip">{{ role }}</span>
-              {% endfor %}
-            </div>
+            <div class="role-chips">{% for role in profile.job_roles %}<span class="role-chip">{{ role }}</span>{% endfor %}</div>
           </div>
           <div class="roles-section">
             <div class="roles-section-lbl">🏢 Companies That Hire</div>
-            <div class="role-chips">
-              {% for company in profile.top_companies %}
-                <span class="company-chip">{{ company }}</span>
-              {% endfor %}
-            </div>
+            <div class="role-chips">{% for company in profile.top_companies %}<span class="company-chip">{{ company }}</span>{% endfor %}</div>
           </div>
           <div class="roles-section">
             <div class="roles-section-lbl">🏅 Certifications That Help</div>
-            <div class="role-chips">
-              {% for cert in profile.certifications %}
-                <span class="cert-chip">🎓 {{ cert }}</span>
-              {% endfor %}
-            </div>
+            <div class="role-chips">{% for cert in profile.certifications %}<span class="cert-chip">🎓 {{ cert }}</span>{% endfor %}</div>
           </div>
           <div class="ov-growth" style="margin-top:4px">
             <div class="ov-growth-lbl">📈 Career Growth Path</div>
@@ -385,7 +145,7 @@
           </div>
         </div>
 
-        <!-- ── ROADMAP PANEL ── -->
+        <!-- Roadmap -->
         <div class="cc-panel" id="panel-{{ idx }}-roadmap">
           <div class="rm-timeline">
             {% for step in profile.roadmap %}
@@ -400,22 +160,18 @@
           </div>
         </div>
 
-        <!-- ── SALARY PANEL ── -->
+        <!-- Salary -->
         <div class="cc-panel" id="panel-{{ idx }}-salary">
-          <!-- Bar chart -->
           <div class="sal-bar-section">
             <div class="sal-bar-lbl">📊 Salary by City</div>
             {% for s in profile.salary %}
             <div class="sal-bar-row">
               <span class="sal-bar-city">{{ s.city }}</span>
-              <div class="sal-bar-bg">
-                <div class="sal-bar-fill" style="width:{% if '80' in s.range or '150' in s.range or '70' in s.range or '80' in s.range %}100{% elif '60' in s.range or '55' in s.range or '50' in s.range %}90{% elif '45' in s.range or '40' in s.range %}78{% elif '35' in s.range or '38' in s.range %}65{% elif '30' in s.range or '32' in s.range %}55{% elif '28' in s.range or '25' in s.range %}45{% else %}35{% endif %}%"></div>
-              </div>
+              <div class="sal-bar-bg"><div class="sal-bar-fill" style="width:{% if '80' in s.range or '150' in s.range or '70' in s.range %}100{% elif '60' in s.range or '55' in s.range or '50' in s.range %}90{% elif '45' in s.range or '40' in s.range %}78{% elif '35' in s.range or '38' in s.range %}65{% elif '30' in s.range or '32' in s.range %}55{% elif '28' in s.range or '25' in s.range %}45{% else %}35{% endif %}%"></div></div>
               <span class="sal-bar-val">{{ s.range }}</span>
             </div>
             {% endfor %}
           </div>
-          <!-- Cards grid -->
           <div class="sal-card-grid">
             {% for s in profile.salary %}
             <div class="sal-card">
@@ -427,17 +183,14 @@
           </div>
         </div>
 
-        <!-- ── SKILLS PANEL ── -->
+        <!-- Skills -->
         <div class="cc-panel" id="panel-{{ idx }}-skills">
           <p style="font-size:.82rem;color:var(--ink-400);margin-bottom:14px;line-height:1.6">
             These are the <strong style="color:var(--ink-200)">{{ profile.required_skills|length }} core skills</strong>
             evaluated when matching you to <strong style="color:var(--indigo)">{{ name }}</strong>.
-            Each skill you have increases your match score.
           </p>
           <div class="sk-full-grid">
-            {% for skill in profile.required_skills %}
-              <span class="sk-full-chip">✦ {{ skill }}</span>
-            {% endfor %}
+            {% for skill in profile.required_skills %}<span class="sk-full-chip">✦ {{ skill }}</span>{% endfor %}
           </div>
           <div style="background:var(--amber-soft);border:1px solid rgba(251,191,36,.25);border-radius:var(--r-sm);padding:10px 14px;font-size:.79rem;color:var(--ink-300);line-height:1.6">
             💡 <strong>Tip:</strong> Focusing on 2–3 missing skills can boost your match score by 20–30 points.
@@ -445,15 +198,12 @@
           </div>
         </div>
 
-        <!-- ── RADAR PANEL ── -->
+        <!-- Radar -->
         <div class="cc-panel" id="panel-{{ idx }}-radar">
           <div class="radar-wrap"><canvas id="radar-{{ idx }}"></canvas></div>
-          <p style="font-size:.74rem;color:var(--ink-500);margin-top:10px;text-align:center">
-            Required competency levels across key areas for {{ name }}
-          </p>
+          <p style="font-size:.74rem;color:var(--ink-500);margin-top:10px;text-align:center">Required competency levels across key areas for {{ name }}</p>
         </div>
 
-        <!-- CTA strip -->
         <div class="cc-cta">
           <div class="cc-cta-text">See how well you match → <strong>Get your personalised score now</strong></div>
           <div class="cc-cta-btns">
@@ -461,105 +211,24 @@
             <a href="{% url 'profile_form' %}"        class="btn-primary" style="font-size:.8rem;padding:8px 18px;">⚡ Analyse My Profile</a>
           </div>
         </div>
-
-      </div><!-- /cc-detail -->
-    </div><!-- /career-card -->
+      </div>
+    </div>
     {% endwith %}
     {% endfor %}
-
-  </div><!-- /careers-grid -->
+  </div>
 
 </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<!-- Radar data for JS -->
 <script>
-/* ── Radar data ── */
-const RADAR = {
+window.RADAR_DATA = {
   {% for name, profile in careers.items %}{% with forloop.counter as idx %}
   {{ idx }}: { labels: {{ profile.radar_labels|safe }}, required: {{ profile.radar_required|safe }}, name: "{{ name|escapejs }}" },
   {% endwith %}{% endfor %}
 };
-let radarCharts = {};
-
-/* ══ FILTER ══ */
-function applyFilter(btn) {
-  document.querySelectorAll('.cf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const f = btn.dataset.filter;
-
-  let visible = 0;
-  document.querySelectorAll('.career-card').forEach(card => {
-    const demand  = card.dataset.demandLevel  || '';
-    const salary  = card.dataset.salaryLevel  || '';
-    const diff    = card.dataset.difficulty   || '';
-
-    let show = true;
-    if (f === 'very_high')   show = demand === 'very_high';
-    if (f === 'high')        show = demand === 'high' || demand === 'very_high';
-    if (f === 'salary_top')  show = salary === 'very_high' || salary === 'high';
-    if (f === 'medium_diff') show = diff === 'medium';
-    if (f === 'hard_diff')   show = diff === 'hard';
-
-    card.classList.toggle('filtered-out', !show);
-    if (show) visible++;
-  });
-
-  /* Show/hide "no results" message */
-  document.getElementById('no-cards').classList.toggle('show', visible === 0);
-}
-
-/* ══ TOGGLE CARD ══ */
-function toggleCard(cardId, idx) {
-  const card = document.getElementById(cardId);
-  const wasOpen = card.classList.contains('open');
-  document.querySelectorAll('.career-card').forEach(c => c.classList.remove('open'));
-  if (!wasOpen) {
-    card.classList.add('open');
-    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-  }
-}
-
-/* ══ TAB SWITCH ══ */
-function switchTab(idx, tabName, btn) {
-  const card = btn.closest('.career-card');
-  card.querySelectorAll('.cc-tab').forEach(t => t.classList.remove('active'));
-  card.querySelectorAll('.cc-panel').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(`panel-${idx}-${tabName}`).classList.add('active');
-  if (tabName === 'radar') renderRadar(idx);
-}
-
-/* ══ RADAR CHART ══ */
-function renderRadar(idx) {
-  if (radarCharts[idx]) return;
-  const data = RADAR[idx]; if (!data) return;
-  const dark       = document.documentElement.getAttribute('data-theme') !== 'light';
-  const gridColor  = dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
-  const labelColor = dark ? '#94a3b8' : '#475569';
-  radarCharts[idx] = new Chart(document.getElementById(`radar-${idx}`).getContext('2d'), {
-    type: 'radar',
-    data: {
-      labels: data.labels,
-      datasets: [{
-        label: 'Required Level', data: data.required,
-        borderColor: 'rgba(99,102,241,.85)', backgroundColor: 'rgba(99,102,241,.12)',
-        pointBackgroundColor: '#6366f1', borderWidth: 2, pointRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { min:0, max:10, ticks:{display:false}, grid:{color:gridColor}, pointLabels:{color:labelColor,font:{size:11,family:"'Syne',sans-serif"}} }},
-      plugins: { legend: { labels: { color:labelColor, font:{family:"'DM Sans',sans-serif",size:11} } } }
-    }
-  });
-}
-
-/* ══ REBUILD RADAR ON THEME TOGGLE ══ */
-document.getElementById('themeBtn')?.addEventListener('click', () => {
-  Object.values(radarCharts).forEach(c => c.destroy());
-  radarCharts = {};
-});
 </script>
+<script src="{% static 'careers/js/careers_list.js' %}"></script>
 {% endblock %}
