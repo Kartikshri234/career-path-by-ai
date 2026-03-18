@@ -18,14 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ══ SECURITY ══════════════════════════════════
-# Generate a new key with:
-#   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
-
-# Set to False in production
 DEBUG = config('DEBUG', default=True, cast=bool)
-
-# e.g. ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
 
 
@@ -42,6 +36,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← must be 2nd, right after SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,9 +67,6 @@ WSGI_APPLICATION = 'careercompass.wsgi.application'
 
 
 # ══ DATABASE ═══════════════════════════════════
-# Default: SQLite for local development
-# Set DATABASE_URL in .env for PostgreSQL, e.g.:
-#   DATABASE_URL=postgres://user:password@localhost:5432/careercompass_db
 _db_engine = config('DB_ENGINE', default='sqlite3')
 
 if _db_engine == 'postgresql':
@@ -116,6 +108,8 @@ USE_TZ   = True
 # ══ STATIC FILES ═══════════════════════════════
 STATIC_URL  = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# WhiteNoise: compress + fingerprint static files so browsers cache them correctly
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ══ MISC ═══════════════════════════════════════
