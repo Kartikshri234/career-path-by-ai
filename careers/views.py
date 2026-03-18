@@ -1,8 +1,8 @@
 import json
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 
 from .forms import StudentProfileForm
 from .models import StudentProfile, CareerRecommendation
@@ -99,12 +99,24 @@ def careers_list(request):
 
 
 def history(request):
-    profiles = StudentProfile.objects.prefetch_related('recommendations').order_by('-created_at')[:20]
+    # Removed the :20 cap — pagination is now handled in the template JS
+    profiles = StudentProfile.objects.prefetch_related('recommendations').order_by('-created_at')
     return render(request, 'careers/history.html', {'profiles': profiles})
 
 
 def skill_roadmap(request):
     return render(request, 'careers/skill_roadmap.html')
+
+
+@require_POST
+def delete_profile(request, profile_id):
+    """Delete a StudentProfile (and its recommendations via CASCADE) via AJAX."""
+    try:
+        profile = get_object_or_404(StudentProfile, id=profile_id)
+        profile.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
 @csrf_exempt
