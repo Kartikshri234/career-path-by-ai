@@ -4,6 +4,87 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'careers/css/history.css' %}">
+<style>
+/* ══════════════════════════════════════════
+   PROGRESS TRACKER SECTION
+══════════════════════════════════════════ */
+.progress-section {
+  background: var(--surface);
+  border: 1px solid var(--border-i);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.progress-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--grad-brand);
+}
+
+.progress-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 20px;
+}
+.progress-title {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+  color: var(--ink-100); display: flex; align-items: center; gap: 8px;
+}
+.progress-subtitle {
+  font-size: .78rem; color: var(--ink-500); margin-top: 2px;
+}
+
+/* Name selector pills */
+.progress-names {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.pn-pill {
+  padding: 5px 14px; border-radius: var(--r-pill);
+  font-size: .76rem; font-weight: 600;
+  border: 1.5px solid var(--border);
+  background: transparent; color: var(--ink-400);
+  cursor: pointer; transition: all var(--t);
+}
+.pn-pill:hover  { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
+.pn-pill.active { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); box-shadow: 0 0 0 2px var(--indigo-glow); }
+
+.progress-chart-wrap {
+  position: relative; height: 200px;
+}
+
+/* Stats row under chart */
+.progress-stats {
+  display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;
+}
+.ps-card {
+  flex: 1; min-width: 100px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 12px 16px; text-align: center;
+  transition: all var(--t);
+}
+.ps-card:hover { border-color: var(--border-i); }
+.ps-val {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 900;
+  background: var(--grad-brand); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
+.ps-val.up   { background: linear-gradient(135deg, var(--emerald), #6ee7b7); -webkit-background-clip: text; background-clip: text; }
+.ps-val.down { background: linear-gradient(135deg, var(--rose), #fda4af); -webkit-background-clip: text; background-clip: text; }
+.ps-lbl {
+  font-size: .68rem; font-weight: 700; color: var(--ink-500);
+  text-transform: uppercase; letter-spacing: .4px; margin-top: 3px;
+}
+
+/* empty state for chart */
+.progress-empty {
+  height: 200px; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 8px; color: var(--ink-500);
+}
+.progress-empty span { font-size: 2rem; }
+.progress-empty p { font-size: .84rem; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,6 +100,36 @@
   </div>
 
   {% if profiles %}
+
+  <!-- ══ PROGRESS TRACKER ══ -->
+  <div class="progress-section reveal" id="progress-section">
+    <div class="progress-header">
+      <div>
+        <div class="progress-title">📈 Score Progress Tracker</div>
+        <div class="progress-subtitle">Track how your career match score improves over time</div>
+      </div>
+      <div class="progress-names" id="progress-names"></div>
+    </div>
+    <div class="progress-chart-wrap">
+      <canvas id="progress-chart"></canvas>
+    </div>
+    <div class="progress-stats" id="progress-stats"></div>
+  </div>
+
+  <!-- Pass all history data to JS as JSON -->
+  <script id="history-data" type="application/json">
+    [
+      {% for profile in profiles %}
+      {
+        "name": "{{ profile.name|escapejs }}",
+        "date": "{{ profile.created_at|date:'Y-m-d' }}",
+        "dateTs": {{ profile.created_at|date:'U' }},
+        "topCareer": "{{ profile.recommendations.all.0.career|default:''|escapejs }}",
+        "topScore": {{ profile.recommendations.all.0.score|default:0 }}
+      }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    ]
+  </script>
 
   <div class="history-controls reveal">
     <div class="history-search-wrap">
