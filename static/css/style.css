@@ -871,7 +871,7 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
 .nav-hamburger {
   display: none;
   flex-direction: column; justify-content: center; gap: 5px;
-  width: 38px; height: 38px; padding: 6px;
+  width: 36px; height: 36px; padding: 6px;
   background: var(--indigo-soft); border: 1px solid var(--border-i);
   border-radius: var(--r-sm); cursor: pointer;
   flex-shrink: 0;
@@ -886,36 +886,33 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
 .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Mobile dropdown nav */
+/* ══ MOBILE NAV — single clean row: [Logo] ··· [Hamburger] [Theme] ══ */
 @media (max-width: 640px) {
-  .nav-hamburger { display: flex; }
 
-  /* Nav inner: logo + hamburger on first row; steps/theme hidden or below */
+  /* Wrapper: no wrapping, single rigid row */
   .nav-inner {
-    flex-wrap: wrap;
-    row-gap: 0;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: 8px 14px;
+    gap: 8px;
   }
 
-  /* Logo takes all remaining space before hamburger */
-  .nav-logo { flex: 1; }
-
-  /* Nav-right: hide steps pill on mobile to avoid overflow,
-     keep only the theme button, and push it to the right */
-  .nav-right {
-    order: 3;
-    flex: 1;
-    justify-content: flex-end;
+  /* Logo: grow to fill middle space */
+  .nav-logo {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 1rem;
   }
-  .steps-nav { display: none; }
+  .nav-logo-icon {
+    width: 30px; height: 30px; font-size: .85rem;
+  }
 
-  /* Hamburger stays in natural order */
-  .nav-hamburger { order: 2; }
-
-  /* Full-width dropdown below the pill */
+  /* Nav links: hidden by default, slides down as full-width dropdown */
   .nav-links {
     display: none;
-    order: 4;
-    width: 100%;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 14px; right: 14px;
     flex-direction: column; gap: 4px;
     background: var(--surface);
     border: 1px solid var(--border-i);
@@ -924,10 +921,29 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
     box-shadow: var(--shadow-lg);
     z-index: 600;
     animation: fade-up .2s ease;
-    margin-top: 8px;
   }
   .nav-links.mobile-open { display: flex; }
   .nav-link { padding: 11px 16px; border-radius: var(--r-sm); font-size: .95rem; }
+
+  /* Show hamburger */
+  .nav-hamburger {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* Right side: keep only theme button, no steps pill, no flex-grow */
+  .nav-right {
+    flex: 0 0 auto;
+    gap: 0;
+  }
+  .steps-nav { display: none; }
+
+  /* Theme button sizing */
+  .theme-btn {
+    width: 36px; height: 36px; font-size: .9rem;
+  }
+
+  /* Nav must be relative so the dropdown positions correctly */
   .nav { position: relative; }
 }
 

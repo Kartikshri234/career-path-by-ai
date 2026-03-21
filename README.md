@@ -3,9 +3,9 @@
 An AI-powered career path recommendation system for engineering students.
 Enter your profile — CGPA, LeetCode count, GitHub repos, and skills — and get
 instant career match scores, skill gap analysis, city-wise salary data, a
-personalised 12-week roadmap, and much more.
+personalised 12-week roadmap, shareable result links, and much more.
 
-Built with **Django 4.x · SQLite · Chart.js · Vanilla JS · CSS Design System**.
+Built with **Python 3.11 · Django 4.x · SQLite · Chart.js · Vanilla JS · CSS Design System**.
 
 ---
 
@@ -15,9 +15,11 @@ Built with **Django 4.x · SQLite · Chart.js · Vanilla JS · CSS Design System
 |---|---|
 | 🎯 Career Matching | Weighted scoring across 5 career tracks |
 | 🔍 Skill Gap Analysis | See exactly which skills you have vs need |
+| 📊 Score Breakdown | Per-component contribution (skills, CGPA, LeetCode, GitHub) |
 | 🗺️ 12-Week Roadmap | Week-by-week plan with curated resources |
-| 📊 Radar Chart | Your skills vs required — visual comparison |
+| 📈 Radar Chart | Your skills vs required — visual comparison |
 | 💰 Salary Insights | City-wise salary data (India + Remote) |
+| 🔗 Shareable Results | Unique UUID link per analysis — share with anyone |
 | 📜 History Page | All past analyses saved, searchable, filterable |
 | 🗑️ Delete History | AJAX delete with confirm modal + toast notification |
 | 📄 Pagination | 8 per page with numbered navigation |
@@ -45,17 +47,47 @@ venv\Scripts\activate        # Windows
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Apply database migrations
+# 4. Set up environment variables
+cp .env.example .env
+# Edit .env and set SECRET_KEY, DEBUG, etc.
+
+# 5. Apply database migrations
 python manage.py migrate
 
-# 5. (Optional) Create an admin superuser
+# 6. (Optional) Create an admin superuser
 python manage.py createsuperuser
 
-# 6. Run the development server
+# 7. Run the development server
 python manage.py runserver
 ```
 
 Then open **http://127.0.0.1:8000** in your browser.
+
+---
+
+## ⚙️ Environment Variables
+
+All sensitive config lives in a `.env` file (development) or real environment
+variables (production). Copy `.env.example` to `.env` and fill in your values.
+
+| Variable | Default | Description |
+|---|---|---|
+| `SECRET_KEY` | `django-insecure-...` | Django secret key — **change in production** |
+| `DEBUG` | `True` | Set `False` in production |
+| `ALLOWED_HOSTS` | `*` | Comma-separated allowed hostnames |
+| `DB_ENGINE` | `sqlite3` | `sqlite3` or `postgresql` |
+| `DB_NAME` | `careercompass_db` | PostgreSQL database name |
+| `DB_USER` | `postgres` | PostgreSQL user |
+| `DB_PASSWORD` | _(empty)_ | PostgreSQL password |
+| `DB_HOST` | `localhost` | PostgreSQL host |
+| `DB_PORT` | `5432` | PostgreSQL port |
+| `LANGUAGE_CODE` | `en-us` | Django language code |
+| `TIME_ZONE` | `Asia/Kolkata` | Django timezone |
+
+Generate a secure secret key:
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
 
 ---
 
@@ -66,34 +98,50 @@ careercompass/
 ├── manage.py
 ├── requirements.txt
 ├── README.md
+├── .env.example                        ← Copy to .env and fill in values
 ├── db.sqlite3                          ← Auto-created SQLite database
 │
 ├── careercompass/                      ← Django project config
-│   ├── settings.py                     ← App settings (timezone: Asia/Kolkata)
+│   ├── settings.py                     ← All settings loaded from .env via python-decouple
 │   ├── urls.py                         ← Root URL config
 │   └── wsgi.py
 │
-└── careers/                            ← Main Django app
-    ├── career_engine.py                ← Full scoring engine + career data
-    ├── career_matcher.py               ← Legacy scoring module (still used)
-    ├── models.py                       ← StudentProfile + CareerRecommendation
-    ├── views.py                        ← All page + API views + delete endpoint
-    ├── forms.py                        ← StudentProfileForm with validation
-    ├── urls.py                         ← All URL routes
-    ├── admin.py                        ← Admin with list_display, search, filters
-    ├── migrations/
-    │   └── 0001_initial.py
-    ├── static/careers/
-    │   ├── css/style.css               ← Full design system (dark + light theme)
-    │   └── js/main.js                  ← Scroll reveal, 3D tilt, count-up, tabs
-    └── templates/careers/
-        ├── base.html                   ← Shared nav, fonts, Chart.js, theme toggle
-        ├── home.html                   ← Landing page with hero + feature cards
-        ├── form.html                   ← Student profile input form
-        ├── results.html                ← Career results with tabs + radar chart
-        ├── careers_list.html           ← Expandable career cards with 6 tabs each
-        ├── history.html                ← Searchable, filterable, paginated history
-        └── skill_roadmap.html          ← 3-step interactive skill planner
+├── careers/                            ← Main Django app
+│   ├── career_engine.py                ← Full scoring engine + rich career data
+│   ├── career_matcher.py               ← Core scoring module (used by views)
+│   ├── models.py                       ← StudentProfile + CareerRecommendation
+│   ├── views.py                        ← All page + API views + delete + shared result
+│   ├── forms.py                        ← StudentProfileForm with validation
+│   ├── urls.py                         ← All URL routes
+│   ├── admin.py                        ← Admin with list_display, search, filters
+│   └── migrations/
+│       ├── 0001_initial.py
+│       └── 0002_studentprofile_share_token.py
+│
+├── static/
+│   ├── css/
+│   │   ├── style.css                   ← Full design system (dark + light theme)
+│   │   ├── careers_list.css
+│   │   ├── history.css
+│   │   └── skill_roadmap.css
+│   └── js/
+│       ├── main.js                     ← Scroll reveal, 3D tilt, count-up, tabs
+│       ├── results.js
+│       ├── careers_list.js
+│       ├── history.js
+│       └── skill_roadmap.js
+│
+├── staticfiles/                        ← Collected static files (WhiteNoise / production)
+│
+└── templates/careers/
+    ├── base.html                       ← Shared nav, fonts, Chart.js, theme toggle
+    ├── home.html                       ← Landing page with hero + feature cards
+    ├── form.html                       ← Student profile input form
+    ├── results.html                    ← Career results with tabs + radar chart
+    ├── shared_result.html              ← Public read-only shareable result page
+    ├── careers_list.html               ← Expandable career cards with 6 tabs each
+    ├── history.html                    ← Searchable, filterable, paginated history
+    └── skill_roadmap.html              ← 3-step interactive skill planner
 ```
 
 ---
@@ -106,6 +154,7 @@ careercompass/
 | `/profile/` | `profile_form` | Student profile form |
 | `/profile/?demo=1` | `profile_form` | Pre-filled demo profile |
 | `/analyze/` | `analyze` | POST — runs scoring, saves to DB |
+| `/results/<uuid:token>/` | `shared_result` | Public shareable result page |
 | `/careers/` | `careers_list` | Explore all 5 career tracks |
 | `/history/` | `history` | All saved analyses |
 | `/skill-roadmap/` | `skill_roadmap` | Interactive skill roadmap planner |
@@ -156,31 +205,39 @@ Returns all 5 career tracks with required skills, salary, and demand data.
 ## 🧠 Scoring Formula
 
 ```
-Score = (Skill Match × 60%) + (CGPA × 20%) + (LeetCode × 10%) + (GitHub × 10%)
+Score = base(18) + [Skill Match × weight_skill + CGPA × weight_cgpa + LeetCode × weight_lc + GitHub × weight_gh] × 80
 ```
 
-Each career has custom weights. For example:
-- **Cloud / DevOps** weights GitHub at 20% (projects matter more than CGPA)
-- **Data Scientist** weights CGPA at 25% (academic foundation matters more)
-- **Cybersecurity** weights Skill Match at 65% (very skill-specific field)
-
 Scores are normalised to a range of **18–98** so no student ever gets 0.
+
+Each career has custom weights tuned to that field's hiring reality:
+
+| Career | Skill | CGPA | LeetCode | GitHub |
+|---|---|---|---|---|
+| Software Development Engineer | 60% | 20% | 10% | 10% |
+| Data Scientist / ML Engineer | 60% | 25% | 5% | 10% |
+| Cloud / DevOps Engineer | 60% | 15% | 5% | 20% |
+| Cybersecurity Engineer | 65% | 15% | 5% | 15% |
+| Product Manager (Tech) | 50% | 20% | 10% | 20% |
+
+The results page also shows a **score breakdown** — each component's exact
+point contribution so students understand exactly what to improve.
 
 ---
 
 ## 🗂️ Career Tracks
 
-| Career | Icon | Avg Salary | Demand |
-|---|---|---|---|
-| Software Development Engineer | 💻 | ₹8–35 LPA | Very High ↑ |
-| Data Scientist / ML Engineer | 🤖 | ₹10–45 LPA | High ↑ |
-| Cloud / DevOps Engineer | ☁️ | ₹9–40 LPA | High ↑ |
-| Cybersecurity Engineer | 🔐 | ₹8–32 LPA | Growing ↑ |
-| Product Manager (Tech) | 📋 | ₹12–50 LPA | Moderate → |
+| Career | Icon | Avg Salary | Demand | Difficulty |
+|---|---|---|---|---|
+| Software Development Engineer | 💻 | ₹8–35 LPA | Very High ↑ | Medium |
+| Data Scientist / ML Engineer | 🤖 | ₹10–45 LPA | High ↑ | Hard |
+| Cloud / DevOps Engineer | ☁️ | ₹9–40 LPA | High ↑ | Medium |
+| Cybersecurity Engineer | 🔐 | ₹8–32 LPA | Growing ↑ | Hard |
+| Product Manager (Tech) | 📋 | ₹12–50 LPA | Moderate → | Medium |
 
 Each career includes: required skills, scoring weights, 5-phase 12-week roadmap,
 city-wise salary data, job roles, top hiring companies, certifications, day-in-life
-description, and a career growth path.
+description, growth path, and a competency radar chart.
 
 ---
 
@@ -192,12 +249,13 @@ Stores every submitted profile automatically.
 | Field | Type | Description |
 |---|---|---|
 | `name` | CharField | Student name |
-| `branch` | CharField | Engineering branch |
+| `branch` | CharField | Engineering branch (CSE, IT, ECE, EE, ME, DS) |
 | `cgpa` | FloatField | CGPA out of 10 |
 | `year` | CharField | Year of study |
 | `leetcode` | IntegerField | Problems solved |
 | `github` | IntegerField | Public repositories |
 | `skills` | JSONField | List of selected skills |
+| `share_token` | UUIDField | Auto-generated UUID for shareable links |
 | `created_at` | DateTimeField | Auto timestamp |
 
 ### `CareerRecommendation`
@@ -205,6 +263,7 @@ Stores ranked results linked to each profile (FK → StudentProfile, CASCADE del
 
 | Field | Type | Description |
 |---|---|---|
+| `student` | ForeignKey | Links to StudentProfile |
 | `career` | CharField | Career track name |
 | `score` | IntegerField | Match score (18–98) |
 | `rank` | IntegerField | Position in ranked results |
@@ -215,12 +274,26 @@ Stores ranked results linked to each profile (FK → StudentProfile, CASCADE del
 
 ---
 
+## 🔗 Shareable Results
+
+Every analysis generates a unique UUID token stored on `StudentProfile.share_token`.
+After analysing, a shareable URL is displayed:
+
+```
+http://127.0.0.1:8000/results/<uuid>/
+```
+
+Anyone with the link can view the full read-only results page — no login required.
+This is served by the `shared_result` view using `shared_result.html`.
+
+---
+
 ## 🎨 Frontend Design
 
 The frontend is a custom design system called **"Deep Cosmos × Neon Precision"** with:
 
 - **Fonts:** Syne (headings) · DM Sans (body) · DM Mono (code) via Google Fonts
-- **Dark/Light theme** with full CSS variable token system
+- **Dark / Light theme** with full CSS variable token system
 - **Micro-animations:** scroll reveal, 3D card tilt, count-up, progress bars, button glow
 - **Glassmorphism** floating navbar with `backdrop-filter: blur`
 - **Chart.js** radar charts on results and careers pages
@@ -228,58 +301,13 @@ The frontend is a custom design system called **"Deep Cosmos × Neon Precision"*
 
 ---
 
-## ⚙️ Configuration
-
-Key settings in `careercompass/settings.py`:
-
-```python
-DEBUG = True                        # Set False in production
-TIME_ZONE = 'Asia/Kolkata'          # Change for your region
-ALLOWED_HOSTS = ['*']               # Restrict in production
-
-# Database — SQLite by default
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# To switch to PostgreSQL:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'careercompass_db',
-#         'USER': 'your_user',
-#         'PASSWORD': 'your_password',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
-```
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Backend | Python 3.11 · Django 4.x |
-| Database | SQLite (dev) · PostgreSQL-ready |
-| Frontend | HTML · CSS (custom design system) · Vanilla JS |
-| Charts | Chart.js 4.4 (CDN) |
-| Fonts | Google Fonts (Syne, DM Sans, DM Mono) |
-| Version Control | Git |
-
----
-
 ## 📋 What's Inside Each Page
 
 ### `/careers/` — Career Tracks Explorer
-Each career card is clickable and expands to show **6 tabs**:
+Each career card expands to show **6 tabs**:
 - **Overview** — salary, demand, difficulty, day-in-life, growth path, scoring weights
 - **Roles** — job titles, top hiring companies, recommended certifications
-- **Roadmap** — 5-phase 12-week learning plan with resources
+- **Roadmap** — 5-phase 12-week learning plan with curated resources
 - **Salaries** — bar chart + city-wise salary cards
 - **Skills** — all required skills with tips
 - **Radar** — Chart.js radar showing required competency levels
@@ -301,16 +329,48 @@ A 3-step interactive wizard:
 
 ---
 
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Python 3.11 · Django 4.x |
+| Database | SQLite (dev) · PostgreSQL-ready |
+| Frontend | HTML · CSS (custom design system) · Vanilla JS |
+| Charts | Chart.js 4.4 (CDN) |
+| Fonts | Google Fonts (Syne, DM Sans, DM Mono) |
+| Static Files | WhiteNoise (production serving + compression) |
+| Production Server | Gunicorn |
+| Config Management | python-decouple (.env support) |
+| Version Control | Git |
+
+---
+
+## 🚀 Production Deployment (Render)
+
+1. Push your repo to GitHub.
+2. Create a new **Web Service** on [Render](https://render.com).
+3. Set **Build Command:** `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+4. Set **Start Command:** `gunicorn careercompass.wsgi`
+5. Add environment variables in Render Dashboard → Environment:
+   - `SECRET_KEY` — a strong random key
+   - `DEBUG` — `False`
+   - `ALLOWED_HOSTS` — `your-app.onrender.com`
+   - `DB_ENGINE` — `sqlite3` (or `postgresql` with DB vars)
+
+WhiteNoise handles static file serving automatically — no separate CDN needed for small deployments.
+
+---
+
 ## 🚧 Future Improvements
 
 - [ ] User authentication (login / signup)
 - [ ] PDF export of results
 - [ ] Resume parser — auto-fill skills from uploaded PDF
 - [ ] Progress tracker — mark roadmap tasks as done (persistent)
-- [ ] Shareable result links
 - [ ] Score history chart over multiple submissions
-- [ ] More career tracks (UI/UX, Embedded, Blockchain)
+- [ ] More career tracks (UI/UX, Embedded, Blockchain, Game Dev)
 - [ ] PWA support (installable on mobile)
+- [ ] Email notification with results summary
 
 ---
 
