@@ -4,7 +4,7 @@
 
 {% block extra_head %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
-<link rel="stylesheet" href="{% static 'careers/css/careers_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/careers_list.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -230,5 +230,5 @@ window.RADAR_DATA = {
   {% endwith %}{% endfor %}
 };
 </script>
-<script src="{% static 'careers/js/careers_list.js' %}"></script>
+<script src="{% static 'js/careers_list.js' %}"></script>
 {% endblock %}

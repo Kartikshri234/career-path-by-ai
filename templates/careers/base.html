@@ -18,7 +18,7 @@
   <script>(function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('cc-theme') || 'dark'); })();</script>
 
   <!-- Global stylesheet -->
-  <link rel="stylesheet" href="{% static 'careers/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
   {% block extra_head %}{% endblock %}
 </head>
@@ -54,7 +54,7 @@
 {% block content %}{% endblock %}
 
 <!-- Global JS -->
-<script src="{% static 'careers/js/main.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

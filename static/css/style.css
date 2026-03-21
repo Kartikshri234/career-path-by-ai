@@ -889,9 +889,33 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
 /* Mobile dropdown nav */
 @media (max-width: 640px) {
   .nav-hamburger { display: flex; }
+
+  /* Nav inner: logo + hamburger on first row; steps/theme hidden or below */
+  .nav-inner {
+    flex-wrap: wrap;
+    row-gap: 0;
+  }
+
+  /* Logo takes all remaining space before hamburger */
+  .nav-logo { flex: 1; }
+
+  /* Nav-right: hide steps pill on mobile to avoid overflow,
+     keep only the theme button, and push it to the right */
+  .nav-right {
+    order: 3;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  .steps-nav { display: none; }
+
+  /* Hamburger stays in natural order */
+  .nav-hamburger { order: 2; }
+
+  /* Full-width dropdown below the pill */
   .nav-links {
     display: none;
-    position: absolute; top: calc(100% + 8px); left: 16px; right: 16px;
+    order: 4;
+    width: 100%;
     flex-direction: column; gap: 4px;
     background: var(--surface);
     border: 1px solid var(--border-i);
@@ -900,6 +924,7 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
     box-shadow: var(--shadow-lg);
     z-index: 600;
     animation: fade-up .2s ease;
+    margin-top: 8px;
   }
   .nav-links.mobile-open { display: flex; }
   .nav-link { padding: 11px 16px; border-radius: var(--r-sm); font-size: .95rem; }
