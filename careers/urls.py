@@ -6,8 +6,10 @@ urlpatterns = [
     path('profile/',                  views.profile_form,   name='profile_form'),
     path('analyze/',                  views.analyze,        name='analyze'),
     path('careers/',                  views.careers_list,   name='careers_list'),
+    path('history/',                  views.history,        name='history'),
     path('skill-roadmap/',            views.skill_roadmap,  name='skill_roadmap'),
-    path('results/<uuid:token>/',            views.shared_result,  name='shared_result'),
+    path('delete-profile/<int:pk>/',  views.delete_profile, name='delete_profile'),
+    path('results/<uuid:token>/',     views.shared_result,  name='shared_result'),
 
     # API
     path('api/careers/',              views.api_careers,    name='api_careers'),

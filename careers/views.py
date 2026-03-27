@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -105,6 +105,22 @@ def careers_list(request):
 
 def skill_roadmap(request):
     return render(request, 'careers/skill_roadmap.html')
+
+
+def history(request):
+    """Show all past student profile analyses."""
+    profiles = StudentProfile.objects.prefetch_related('recommendations').all()
+    return render(request, 'careers/history.html', {'profiles': profiles})
+
+
+def delete_profile(request, pk):
+    """Delete a student profile and its recommendations."""
+    profile = get_object_or_404(StudentProfile, pk=pk)
+    if request.method == 'POST':
+        profile.delete()
+        return redirect('history')
+    # If accessed via GET, redirect back to history (safety guard)
+    return redirect('history')
 
 
 @csrf_exempt
