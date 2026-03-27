@@ -226,7 +226,7 @@
 <script>
 window.RADAR_DATA = {
   {% for name, profile in careers.items %}{% with forloop.counter as idx %}
-  {{ idx }}: { labels: {{ profile.radar_labels|safe }}, required: {{ profile.radar_required|safe }}, name: "{{ name|escapejs }}" },
+  {{ idx }}: { labels: [{% for l in profile.radar_labels %}"{{ l|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}], required: [{% for v in profile.radar_required %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}], name: "{{ name|escapejs }}" },
   {% endwith %}{% endfor %}
 };
 </script>

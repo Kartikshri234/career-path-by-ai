@@ -1,0 +1,490 @@
+{% extends 'careers/base.html' %}
+{% block title %}Resume Screener — CareerCompass{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Screener page ── */
+.screener-page { padding: 48px 0 96px; }
+
+.screener-hero { text-align: center; margin-bottom: 48px; }
+.screener-hero .hero-badge { margin-bottom: 20px; }
+.screener-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 800; letter-spacing: -.035em;
+  color: var(--ink-100); line-height: 1.1; margin-bottom: 14px;
+}
+.screener-hero h1 .hl {
+  background: var(--grad-warm);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.screener-hero p { font-size: .97rem; color: var(--ink-400); line-height: 1.8; max-width: 520px; margin: 0 auto; }
+
+/* Panel */
+.screener-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 34px;
+  box-shadow: var(--shadow);
+  margin-bottom: 28px;
+}
+.screener-panel:focus-within { border-color: var(--border-i); box-shadow: var(--shadow-i); }
+
+.sp-section { margin-bottom: 28px; }
+.sp-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: .76rem; font-weight: 700;
+  color: var(--ink-400); text-transform: uppercase; letter-spacing: .6px;
+  margin-bottom: 12px;
+}
+.sp-label .sp-icon {
+  width: 28px; height: 28px; border-radius: var(--r-xs);
+  background: var(--indigo-soft); display: flex; align-items: center;
+  justify-content: center; font-size: .85rem;
+}
+
+.sp-textarea {
+  width: 100%; min-height: 160px;
+  background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); padding: 14px 16px;
+  color: var(--ink-100); font-family: var(--font-body); font-size: .9rem;
+  line-height: 1.6; resize: vertical;
+  transition: border-color var(--t), box-shadow var(--t), background var(--t);
+}
+.sp-textarea:focus {
+  outline: none; border-color: var(--indigo);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--indigo-glow);
+}
+.sp-textarea::placeholder { color: var(--ink-500); }
+
+.sp-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 8px; font-size: .82rem;
+}
+.char-badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 11px; border-radius: var(--r-pill);
+  background: var(--indigo-soft); color: var(--indigo);
+  font-size: .78rem; font-weight: 700; font-family: var(--font-display);
+  transition: background var(--t), color var(--t);
+}
+
+/* Dropzone */
+.dropzone {
+  border: 2px dashed var(--border-i);
+  border-radius: var(--r-sm);
+  background: var(--surface2);
+  padding: 36px 20px;
+  text-align: center; cursor: pointer;
+  transition: border-color var(--t), transform var(--t), background var(--t);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.dropzone:hover, .dropzone.active {
+  border-color: var(--indigo);
+  background: var(--indigo-soft);
+  transform: translateY(-2px);
+}
+.drop-icon { font-size: 2.2rem; margin-bottom: 4px; }
+.dropzone strong { font-size: .92rem; font-weight: 600; color: var(--ink-200); }
+.dropzone .muted { font-size: .82rem; color: var(--ink-500); }
+
+.file-list { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+.file-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--border-i);
+  background: var(--indigo-soft); color: var(--indigo);
+  font-size: .8rem; font-weight: 500;
+}
+
+/* Actions */
+.sp-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.sp-btn-ghost {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 20px; border-radius: var(--r-pill);
+  font-size: .88rem; font-weight: 600; font-family: var(--font-display);
+  color: var(--ink-400); background: var(--surface2);
+  border: 1px solid var(--border); cursor: pointer;
+  transition: all var(--t);
+}
+.sp-btn-ghost:hover { color: var(--ink-100); border-color: var(--indigo); background: var(--indigo-soft); }
+
+.sp-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 28px; border-radius: var(--r-pill);
+  font-family: var(--font-display); font-size: .9rem; font-weight: 700;
+  color: #fff; background: var(--grad-brand);
+  border: none; cursor: pointer;
+  box-shadow: var(--shadow-i);
+  transition: all var(--t-spring);
+}
+.sp-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(129,140,248,.40); }
+.sp-btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* Results */
+.results-section { margin-top: 36px; }
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.results-header h2 {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+  color: var(--ink-100);
+}
+.results-count {
+  font-size: .78rem; color: var(--ink-500);
+  background: var(--surface2); padding: 4px 12px;
+  border-radius: var(--r-pill); border: 1px solid var(--border);
+}
+
+.result-card {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  position: relative;
+  transition: all var(--t-spring);
+}
+.result-card:hover { border-color: var(--border-i); transform: translateY(-2px); box-shadow: var(--shadow-i); }
+.result-card.top-match {
+  border-color: var(--emerald);
+  background: linear-gradient(135deg, var(--surface2), rgba(52,211,153,.04));
+}
+
+.top-badge-result {
+  position: absolute; top: -10px; right: 14px;
+  background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  color: #fff; font-size: .68rem; font-weight: 800;
+  padding: 3px 12px; border-radius: var(--r-pill);
+  letter-spacing: .3px;
+}
+
+.result-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; gap: 12px;
+}
+.result-meta { display: flex; align-items: center; gap: 10px; }
+.result-rank {
+  font-family: var(--font-display); font-weight: 800; font-size: .78rem; color: var(--ink-500);
+}
+.result-filename { font-weight: 500; font-size: .9rem; color: var(--ink-200); overflow-wrap: anywhere; }
+.result-score {
+  font-family: var(--font-display); font-weight: 900; font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.score-high { color: var(--emerald); }
+.score-mid  { color: var(--amber); }
+.score-low  { color: var(--rose); }
+
+.progress-bar {
+  height: 5px; border-radius: 999px;
+  background: var(--surface3); overflow: hidden; margin-bottom: 8px;
+}
+.progress-fill {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--grad-brand);
+  width: 0; animation: fill-bar 1s ease forwards;
+}
+@keyframes fill-bar { from { width: 0; } to { width: var(--target, 0%); } }
+
+.result-label { font-size: .78rem; font-weight: 600; color: var(--ink-400); }
+
+/* How it works */
+.how-section { margin-top: 60px; }
+.how-section .section-heading { margin-bottom: 24px; }
+.how-steps {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+}
+.how-step {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 26px;
+  transition: all var(--t-spring);
+}
+.how-step:hover { border-color: var(--border-i); transform: translateY(-4px); box-shadow: var(--shadow-i); }
+.how-num {
+  font-family: var(--font-display); font-size: 2.8rem; font-weight: 900;
+  color: var(--indigo-soft); line-height: 1; margin-bottom: 12px;
+  background: var(--grad-brand); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text; opacity: .25;
+}
+.how-step h3 { font-family: var(--font-display); font-size: .95rem; font-weight: 700; margin-bottom: 6px; color: var(--ink-100); }
+.how-step p  { font-size: .83rem; color: var(--ink-400); line-height: 1.65; }
+
+/* Developer card */
+.dev-section { margin-top: 60px; }
+.dev-card {
+  background: var(--surface); border: 1px solid var(--border-i);
+  border-radius: var(--r-lg); padding: 36px;
+  display: flex; gap: 28px; align-items: flex-start;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.dev-card::before {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: var(--grad-brand); opacity: .08; filter: blur(40px);
+  pointer-events: none;
+}
+.dev-avatar {
+  width: 68px; height: 68px; border-radius: var(--r-sm);
+  background: var(--grad-brand);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 900; font-size: 1.4rem;
+  color: #fff; flex-shrink: 0; box-shadow: var(--shadow-i);
+}
+.dev-info { flex: 1; position: relative; z-index: 1; }
+.dev-tag {
+  font-size: .68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--ink-500); margin-bottom: 6px;
+}
+.dev-name {
+  font-family: var(--font-display); font-size: 1.6rem; font-weight: 900;
+  letter-spacing: -.02em; color: var(--ink-100); margin-bottom: 10px;
+}
+.dev-bio {
+  font-size: .88rem; color: var(--ink-400); line-height: 1.75;
+  max-width: 540px; margin-bottom: 18px; font-weight: 300;
+}
+.dev-skills { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+.dev-links  { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.dev-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 15px; border-radius: var(--r-sm);
+  font-size: .83rem; font-weight: 600; text-decoration: none;
+  transition: all var(--t);
+}
+.dev-link:hover { transform: translateY(-2px); }
+.dev-link.linkedin { background: rgba(0,119,181,.15); color: var(--cyan); border: 1px solid rgba(0,119,181,.25); }
+.dev-link.email    { background: var(--rose-soft);    color: var(--rose);  border: 1px solid rgba(251,113,133,.2); }
+.dev-link.phone    { background: var(--surface2);     color: var(--ink-400); border: 1px solid var(--border); cursor: default; }
+
+@media (max-width: 720px) {
+  .how-steps { grid-template-columns: 1fr; }
+  .dev-card   { flex-direction: column; gap: 18px; padding: 24px; }
+  .sp-actions { flex-direction: column; }
+  .sp-actions > * { width: 100%; justify-content: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="screener-page">
+<div class="container">
+
+  <!-- Hero -->
+  <div class="screener-hero reveal">
+    <div class="hero-badge">
+      <span class="badge-pulse"></span>
+      📄 AI-Powered · TF-IDF Cosine Similarity
+    </div>
+    <h1>Resume <span class="hl">Screener</span></h1>
+    <p>Upload candidate resumes, paste the job description, and get instant AI-powered similarity rankings in seconds.</p>
+  </div>
+
+  <!-- Main Panel -->
+  <div class="screener-panel reveal">
+    <form method="POST" enctype="multipart/form-data" id="screener-form">
+      {% csrf_token %}
+
+      <!-- Job Description -->
+      <div class="sp-section">
+        <div class="sp-label">
+          <div class="sp-icon">📋</div>
+          Job Description
+        </div>
+        <textarea
+          id="jobDescription"
+          name="job_description"
+          class="sp-textarea"
+          placeholder="Paste the full job description here — include required skills, responsibilities, qualifications…"
+          required
+        ></textarea>
+        <div class="sp-meta">
+          <span class="muted" style="color:var(--ink-500);font-size:.82rem;">💡 More detail = better matching accuracy</span>
+          <span class="char-badge" id="charCount">0 chars</span>
+        </div>
+      </div>
+
+      <!-- Upload -->
+      <div class="sp-section">
+        <div class="sp-label">
+          <div class="sp-icon">📤</div>
+          Upload Resumes
+          <span style="margin-left:4px;font-size:.72rem;color:var(--ink-500);font-weight:400;text-transform:none;letter-spacing:0;">.pdf · .docx · multiple allowed</span>
+        </div>
+        <input id="resumeInput" type="file" name="resumes" accept=".pdf,.doc,.docx" multiple style="display:none">
+        <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload resumes">
+          <div class="drop-icon">☁️</div>
+          <strong>Drag & drop resumes here</strong>
+          <span class="muted">or click to browse</span>
+        </div>
+        <div class="file-list" id="fileList"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="sp-actions">
+        <button type="button" class="sp-btn-ghost" id="pickFiles">📁 Choose Files</button>
+        <button type="button" class="sp-btn-ghost" id="clearFiles">🗑 Clear</button>
+        <button type="submit" class="sp-btn-primary" id="submitBtn" disabled>⚡ Analyse Resumes</button>
+      </div>
+    </form>
+
+    {% if results %}
+    <div class="results-section">
+      <div class="results-header">
+        <h2>📊 Ranked Results</h2>
+        <span class="results-count">{{ results|length }} resume{% if results|length != 1 %}s{% endif %}</span>
+      </div>
+      {% for r in results %}
+      <div class="result-card {% if forloop.first %}top-match{% endif %}">
+        {% if forloop.first %}<div class="top-badge-result">🏆 Top Match</div>{% endif %}
+        <div class="result-top">
+          <div class="result-meta">
+            <span class="result-rank">#{{ forloop.counter }}</span>
+            <span class="result-filename">{{ r.name }}</span>
+          </div>
+          <span class="result-score {% if r.score >= 70 %}score-high{% elif r.score >= 40 %}score-mid{% else %}score-low{% endif %}">
+            {{ r.score }}%
+          </span>
+        </div>
+        <div class="progress-bar">
+          <span class="progress-fill" style="--target: {{ r.score }}%;"></span>
+        </div>
+        <div class="result-label">
+          {% if r.score >= 70 %}✅ Strong Match
+          {% elif r.score >= 40 %}🟡 Moderate Match
+          {% else %}🔴 Weak Match{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- How it works -->
+  <div class="how-section reveal">
+    <div class="section-heading">✨ How It Works</div>
+    <div class="how-steps">
+      <div class="how-step reveal">
+        <div class="how-num">01</div>
+        <h3>Paste Job Description</h3>
+        <p>Add the full job posting — skills, qualifications, and responsibilities for best results.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">02</div>
+        <h3>Upload Resumes</h3>
+        <p>Upload one or multiple PDF or DOCX candidate resumes simultaneously.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">03</div>
+        <h3>Get Rankings</h3>
+        <p>TF-IDF vectorization + cosine similarity scores and ranks every resume instantly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Developer Card -->
+  <div class="dev-section reveal">
+    <div class="dev-card">
+      <div class="dev-avatar">SS</div>
+      <div class="dev-info">
+        <div class="dev-tag">🛠️ Built by Developer</div>
+        <div class="dev-name">Satyam Solanki</div>
+        <div class="dev-bio">
+          B.Tech CSE (AI &amp; ML) · RGPV University, Bhopal · Python Full-Stack Developer passionate about applying Machine Learning and web technologies to real-world problems.
+        </div>
+        <div class="dev-skills">
+          <span class="tag tag-purple">Python</span>
+          <span class="tag tag-blue">Flask</span>
+          <span class="tag tag-green">Machine Learning</span>
+          <span class="tag tag-purple">NLP</span>
+          <span class="tag tag-yellow">Data Analysis</span>
+          <span class="tag tag-blue">Django</span>
+          <span class="tag tag-green">MS Excel</span>
+        </div>
+        <div class="dev-links">
+          <a href="https://www.linkedin.com/in/satyam-solanki-2bbb1327/" target="_blank" class="dev-link linkedin">🔗 LinkedIn</a>
+          <a href="mailto:satyamsolanki008@gmail.com" class="dev-link email">✉️ satyamsolanki008@gmail.com</a>
+          <span class="dev-link phone">📞 +91 9981569354</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+const form        = document.getElementById('screener-form');
+const resumeInput = document.getElementById('resumeInput');
+const dropzone    = document.getElementById('dropzone');
+const pickBtn     = document.getElementById('pickFiles');
+const clearBtn    = document.getElementById('clearFiles');
+const fileList    = document.getElementById('fileList');
+const submitBtn   = document.getElementById('submitBtn');
+const jobDesc     = document.getElementById('jobDescription');
+const charCount   = document.getElementById('charCount');
+
+const ACCEPT = ["application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword"];
+
+function refreshState() {
+  const hasDesc  = jobDesc.value.trim().length > 20;
+  const hasFiles = resumeInput.files.length > 0;
+  submitBtn.disabled = !(hasDesc && hasFiles);
+}
+
+function updateCount() {
+  const len = jobDesc.value.trim().length;
+  charCount.textContent = len + ' chars';
+  refreshState();
+}
+
+function renderFiles() {
+  fileList.innerHTML = '';
+  if (!resumeInput.files.length) return;
+  Array.from(resumeInput.files).forEach(f => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.textContent = '📄 ' + f.name;
+    fileList.appendChild(chip);
+  });
+}
+
+function setFiles(fl) {
+  const dt = new DataTransfer();
+  Array.from(fl).forEach(f => {
+    if (ACCEPT.includes(f.type) || /\.(pdf|doc|docx)$/i.test(f.name)) dt.items.add(f);
+  });
+  resumeInput.files = dt.files;
+  renderFiles(); refreshState();
+}
+
+pickBtn.addEventListener('click',  () => resumeInput.click());
+clearBtn.addEventListener('click', () => { resumeInput.value=''; renderFiles(); refreshState(); });
+resumeInput.addEventListener('change', () => { renderFiles(); refreshState(); });
+jobDesc.addEventListener('input', updateCount);
+
+['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.add('active'); }));
+['dragleave','drop'].forEach(e => dropzone.addEventListener(e, () => dropzone.classList.remove('active')));
+dropzone.addEventListener('drop', ev => { ev.preventDefault(); setFiles(ev.dataTransfer.files); });
+dropzone.addEventListener('click', () => resumeInput.click());
+dropzone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); resumeInput.click(); }});
+
+form.addEventListener('submit', () => {
+  submitBtn.innerHTML = '⏳ Analysing…';
+  submitBtn.disabled = true;
+});
+
+// Scroll to results
+const res = document.querySelector('.results-section');
+if (res) setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'start' }), 400);
+
+updateCount();
+</script>
+{% endblock %}

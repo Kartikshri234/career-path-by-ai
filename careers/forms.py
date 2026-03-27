@@ -1,5 +1,5 @@
 from django import forms
-from .career_matcher import ALL_SKILLS
+from .career_engine import SKILLS_LIST as ALL_SKILLS
 
 
 BRANCH_CHOICES = [

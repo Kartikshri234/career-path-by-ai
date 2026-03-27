@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 
 from .forms import StudentProfileForm
 from .models import StudentProfile, CareerRecommendation
-from .career_matcher import recommend, ALL_SKILLS, CAREER_PROFILES
+from .career_engine import recommend, SKILLS_LIST as ALL_SKILLS, CAREER_PROFILES
 
 
 def home(request):

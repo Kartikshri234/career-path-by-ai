@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'careers',
+    'resume_screener',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,11 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 # WhiteNoise: compress + fingerprint static files so browsers cache them correctly
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# ══ FILE UPLOADS ════════════════════════════════
+# Allow large resume uploads (10 MB max)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # 10 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # 10 MB
 
 
 # ══ MISC ═══════════════════════════════════════

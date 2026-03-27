@@ -8,7 +8,7 @@
 ══════════════════════════════════════════ */
 (function () {
   const root = document.documentElement;
-  const saved = localStorage.getItem('cc-theme') || 'dark';
+  const saved = localStorage.getItem('cc-theme') || 'light';
   root.setAttribute('data-theme', saved);
   const btn = document.getElementById('themeBtn');
   if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
