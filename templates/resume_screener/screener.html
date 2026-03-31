@@ -4,7 +4,7 @@
 {% block extra_head %}
 <style>
 /* ══════════════════════════════════════════
-   RESUME SCREENER — ENHANCED v2.0
+   RESUME SCREENER — v3.0 (All 6 Features)
 ══════════════════════════════════════════ */
 .screener-page { padding: 48px 0 96px; }
 
@@ -81,24 +81,6 @@
 }
 .tip-text { font-size: .8rem; color: var(--ink-400); line-height: 1.55; }
 
-/* Stats mini card */
-.stat-mini-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 18px 22px;
-  box-shadow: var(--shadow-sm);
-}
-.stat-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.stat-mini-item { text-align: center; }
-.stat-mini-num {
-  font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
-  background: var(--grad-brand); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-  display: block;
-}
-.stat-mini-lbl { font-size: .7rem; color: var(--ink-500); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; }
-
 /* ── Section labels ── */
 .sp-label {
   display: flex; align-items: center; gap: 10px;
@@ -128,11 +110,7 @@
   box-shadow: 0 0 0 3px var(--indigo-glow);
 }
 .sp-textarea::placeholder { color: var(--ink-500); }
-
-.sp-meta {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 8px; flex-wrap: wrap; gap: 6px;
-}
+.sp-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 6px; }
 .char-badge {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 3px 11px; border-radius: var(--r-pill);
@@ -142,7 +120,6 @@
 }
 .char-badge.good { background: var(--emerald-soft); color: var(--emerald); }
 
-/* JD skill pills live preview */
 .jd-skills-preview {
   margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;
   min-height: 0; transition: all .3s;
@@ -168,35 +145,26 @@
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   position: relative; overflow: hidden;
 }
-.dropzone::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--grad-brand); opacity: 0;
-  transition: opacity var(--t); pointer-events: none;
-}
 .dropzone:hover, .dropzone.active {
   border-color: var(--indigo);
   transform: translateY(-2px);
+  background: var(--indigo-soft);
 }
-.dropzone:hover::before, .dropzone.active::before { opacity: .04; }
-.drop-icon { font-size: 2rem; margin-bottom: 4px; position: relative; z-index: 1; }
-.dropzone strong { font-size: .9rem; font-weight: 600; color: var(--ink-200); position: relative; z-index: 1; }
-.dropzone .muted  { font-size: .8rem; color: var(--ink-500); position: relative; z-index: 1; }
-.drop-formats {
-  display: flex; gap: 6px; margin-top: 8px; position: relative; z-index: 1;
-}
+.drop-icon { font-size: 2rem; margin-bottom: 4px; }
+.dropzone strong { font-size: .9rem; font-weight: 600; color: var(--ink-200); }
+.dropzone .muted  { font-size: .8rem; color: var(--ink-500); }
+.drop-formats { display: flex; gap: 6px; margin-top: 8px; }
 .drop-fmt {
   padding: 2px 10px; border-radius: var(--r-pill);
   background: var(--surface3); color: var(--ink-500);
   font-size: .68rem; font-weight: 700; border: 1px solid var(--border);
 }
-
 .file-list { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
 .file-chip {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; padding: 8px 14px;
   border-radius: var(--r-sm); border: 1px solid var(--border-i);
-  background: var(--indigo-soft);
-  animation: pop-in .18s ease;
+  background: var(--indigo-soft); animation: pop-in .18s ease;
 }
 .file-chip-name { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: var(--ink-200); font-weight: 500; }
 .file-chip-size { font-size: .7rem; color: var(--ink-500); font-family: var(--font-mono); }
@@ -212,15 +180,13 @@
   transition: all var(--t);
 }
 .sp-btn-ghost:hover { color: var(--ink-100); border-color: var(--indigo); background: var(--indigo-soft); }
-
 .sp-btn-primary {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 11px 26px; border-radius: var(--r-pill);
   font-family: var(--font-display); font-size: .9rem; font-weight: 700;
   color: #fff; background: var(--grad-brand);
   border: none; cursor: pointer;
-  box-shadow: var(--shadow-i);
-  transition: all var(--t-spring);
+  box-shadow: var(--shadow-i); transition: all var(--t-spring);
 }
 .sp-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(129,140,248,.40); }
 .sp-btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
@@ -229,18 +195,69 @@
 .sp-btn-primary.loading .btn-text { display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ══════════════════════════════════════════
-   RESULTS SECTION
-══════════════════════════════════════════ */
+/* ── FEATURE 1: Auto-fill banner ── */
+.autofill-banner {
+  background: linear-gradient(135deg, var(--emerald-soft), var(--cyan-soft));
+  border: 1px solid rgba(52,211,153,.3);
+  border-radius: var(--r-sm);
+  padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap;
+  margin-top: 20px;
+  animation: pop-in .3s ease;
+}
+.autofill-banner-text { font-size: .86rem; color: var(--ink-200); line-height: 1.5; }
+.autofill-banner-text strong { color: var(--emerald); }
+.autofill-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 18px; border-radius: var(--r-pill);
+  font-family: var(--font-display); font-size: .83rem; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  border: none; cursor: pointer; text-decoration: none; flex-shrink: 0;
+  transition: all var(--t);
+}
+.autofill-link:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(52,211,153,.3); }
+
+/* ── FEATURE 5: Share / actions bar ── */
+.session-actions-bar {
+  background: var(--surface2); border: 1px solid var(--border-i);
+  border-radius: var(--r-sm); padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.share-url-box {
+  flex: 1; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-xs); padding: 7px 13px;
+  font-family: var(--font-mono); font-size: .75rem; color: var(--ink-400);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;
+}
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: var(--r-pill);
+  font-size: .8rem; font-weight: 700;
+  color: var(--indigo); background: var(--indigo-soft);
+  border: 1px solid var(--border-i); cursor: pointer;
+  transition: all var(--t); flex-shrink: 0;
+}
+.copy-btn:hover { background: rgba(129,140,248,.18); }
+.download-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: var(--r-pill);
+  font-size: .8rem; font-weight: 700;
+  color: var(--emerald); background: var(--emerald-soft);
+  border: 1px solid rgba(52,211,153,.3); cursor: pointer;
+  text-decoration: none; flex-shrink: 0; transition: all var(--t);
+}
+.download-btn:hover { background: rgba(52,211,153,.2); }
+
+/* ── RESULTS ── */
 .results-section { margin-top: 36px; }
 .results-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
 }
-.results-header h2 {
-  font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
-  color: var(--ink-100);
-}
+.results-header h2 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 800; color: var(--ink-100); }
 .results-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .results-count {
   font-size: .75rem; color: var(--ink-500);
@@ -248,46 +265,44 @@
   border-radius: var(--r-pill); border: 1px solid var(--border);
 }
 
-/* JD keyword strip */
 .jd-strip {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: var(--r-sm); padding: 14px 16px;
   margin-bottom: 18px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
 }
-.jd-strip-label {
-  font-size: .72rem; font-weight: 700; color: var(--ink-500);
-  text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; flex-shrink: 0;
+.jd-strip-label { font-size: .72rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; flex-shrink: 0; }
+
+/* ── FEATURE 6: Chart section ── */
+.chart-section {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 22px;
+  margin-bottom: 20px;
 }
+.chart-section h3 {
+  font-family: var(--font-display); font-size: .82rem; font-weight: 700;
+  color: var(--ink-400); text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 16px;
+}
+.chart-wrap { height: 220px; position: relative; }
 
 /* Result card */
 .result-card {
   background: var(--surface2);
   border: 1.5px solid var(--border);
-  border-radius: var(--r-lg);
-  margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
+  border-radius: var(--r-lg); margin-bottom: 14px;
+  position: relative; overflow: hidden;
   transition: all var(--t-spring);
 }
 .result-card:hover { border-color: var(--border-i); transform: translateY(-2px); box-shadow: var(--shadow-i); }
-.result-card.rank-1 {
-  border-color: var(--emerald);
-  background: linear-gradient(135deg, var(--surface2), rgba(52,211,153,.04));
-  box-shadow: 0 0 0 1px rgba(52,211,153,.2);
-}
+.result-card.rank-1 { border-color: var(--emerald); background: linear-gradient(135deg, var(--surface2), rgba(52,211,153,.04)); box-shadow: 0 0 0 1px rgba(52,211,153,.2); }
 .result-card.rank-2 { border-color: rgba(34,211,238,.3); }
 .result-card.rank-3 { border-color: rgba(192,132,252,.2); }
 
-/* Card header */
-.rc-header {
-  padding: 18px 20px 14px;
-  display: flex; align-items: center; gap: 14px;
-}
+.rc-header { padding: 18px 20px 14px; display: flex; align-items: center; gap: 14px; }
 .rc-rank-badge {
   width: 36px; height: 36px; border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 900; font-size: .85rem;
-  flex-shrink: 0;
+  font-family: var(--font-display); font-weight: 900; font-size: .85rem; flex-shrink: 0;
 }
 .rank-1 .rc-rank-badge { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff; box-shadow: 0 4px 12px rgba(251,191,36,.35); }
 .rank-2 .rc-rank-badge { background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #fff; }
@@ -300,44 +315,26 @@
 .rc-wc { font-size: .73rem; color: var(--ink-500); font-family: var(--font-mono); }
 
 .rc-score-block { text-align: right; flex-shrink: 0; }
-.rc-score-num {
-  font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; line-height: 1;
-}
+.rc-score-num { font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; line-height: 1; }
 .score-emerald { color: var(--emerald); }
 .score-cyan    { color: var(--cyan); }
 .score-amber   { color: var(--amber); }
 .score-rose    { color: var(--rose); }
-.rc-score-tier {
-  font-size: .68rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: .5px; margin-top: 2px;
-}
+.rc-score-tier { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
-/* Glow bar */
-.rc-progress {
-  height: 4px; background: var(--surface3);
-  margin: 0 20px 14px;
-  border-radius: 999px; overflow: hidden;
-}
-.rc-progress-fill {
-  display: block; height: 100%; border-radius: inherit;
-  width: 0; animation: fill-bar 1.1s cubic-bezier(.22,1,.36,1) forwards;
-}
+.rc-progress { height: 4px; background: var(--surface3); margin: 0 20px 14px; border-radius: 999px; overflow: hidden; }
+.rc-progress-fill { display: block; height: 100%; border-radius: inherit; width: 0; animation: fill-bar 1.1s cubic-bezier(.22,1,.36,1) forwards; }
 .fill-emerald { background: linear-gradient(90deg, var(--emerald), var(--cyan)); }
 .fill-cyan    { background: linear-gradient(90deg, var(--cyan), var(--indigo)); }
 .fill-amber   { background: linear-gradient(90deg, var(--amber), #f97316); }
 .fill-rose    { background: linear-gradient(90deg, var(--rose), var(--amber)); }
 @keyframes fill-bar { from { width: 0; } to { width: var(--w, 0%); } }
 
-/* Card tabs */
-.rc-tabs {
-  display: flex; gap: 2px; padding: 0 16px 0;
-  border-top: 1px solid var(--border);
-}
+.rc-tabs { display: flex; gap: 2px; padding: 0 16px 0; border-top: 1px solid var(--border); }
 .rc-tab {
   padding: 9px 14px; font-size: .78rem; font-weight: 600;
   color: var(--ink-500); border-bottom: 2px solid transparent;
-  cursor: pointer; transition: all var(--t);
-  font-family: var(--font-display);
+  cursor: pointer; transition: all var(--t); font-family: var(--font-display);
 }
 .rc-tab:hover { color: var(--ink-200); }
 .rc-tab.active { color: var(--indigo); border-bottom-color: var(--indigo); }
@@ -346,39 +343,38 @@
 .rc-panel { display: none; }
 .rc-panel.active { display: block; animation: fade-up .2s ease; }
 
-/* Skills section inside card */
 .rc-skills-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.rc-skill-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 11px; border-radius: var(--r-pill);
-  font-size: .72rem; font-weight: 600;
-}
-.skill-match { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
-.skill-miss  { background: var(--rose-soft); color: var(--rose); border: 1px solid rgba(251,113,133,.25); }
-.skill-neutral { background: var(--indigo-soft); color: var(--indigo); border: 1px solid var(--border-i); }
+.rc-skill-tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 11px; border-radius: var(--r-pill); font-size: .72rem; font-weight: 600; }
+.skill-match   { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
+.skill-miss    { background: var(--rose-soft);    color: var(--rose);    border: 1px solid rgba(251,113,133,.25); }
+.skill-neutral { background: var(--indigo-soft);  color: var(--indigo);  border: 1px solid var(--border-i); }
 
-/* Keyword grid */
 .kw-grid { display: flex; flex-wrap: wrap; gap: 5px; }
-.kw-tag {
-  padding: 3px 10px; border-radius: var(--r-pill);
-  font-size: .7rem; font-weight: 600;
-}
+.kw-tag { padding: 3px 10px; border-radius: var(--r-pill); font-size: .7rem; font-weight: 600; }
 .kw-hit  { background: var(--cyan-soft);  color: var(--cyan);  border: 1px solid rgba(34,211,238,.2); }
 .kw-miss { background: var(--surface3); color: var(--ink-500); border: 1px solid var(--border); text-decoration: line-through; opacity: .6; }
 
-/* Score breakdown bars */
 .breakdown-list { display: flex; flex-direction: column; gap: 10px; }
 .bd-row { display: flex; flex-direction: column; gap: 4px; }
 .bd-label { display: flex; justify-content: space-between; font-size: .78rem; font-weight: 500; color: var(--ink-400); }
 .bd-bar-bg { height: 6px; background: var(--surface3); border-radius: 999px; overflow: hidden; }
-.bd-bar-fill {
-  height: 100%; border-radius: inherit;
-  background: var(--grad-brand);
-  width: 0; animation: fill-bar 1.2s cubic-bezier(.22,1,.36,1) forwards;
-  animation-delay: .15s;
+.bd-bar-fill { height: 100%; border-radius: inherit; background: var(--grad-brand); width: 0; animation: fill-bar 1.2s cubic-bezier(.22,1,.36,1) forwards; animation-delay: .15s; }
+
+/* ── FEATURE 3: ATS panel ── */
+.ats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.ats-check {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--surface3); border-radius: var(--r-xs);
+  padding: 10px 12px; border: 1px solid var(--border);
+}
+.ats-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.ats-label { font-size: .78rem; font-weight: 600; color: var(--ink-200); }
+.ats-sub   { font-size: .71rem; color: var(--ink-500); margin-top: 2px; }
+.ats-score-big {
+  font-family: var(--font-display); font-size: 1.9rem; font-weight: 900;
+  line-height: 1; margin-bottom: 2px;
 }
 
-/* Verdict box */
 .verdict-box {
   border-radius: var(--r-sm); padding: 12px 14px;
   font-size: .82rem; line-height: 1.6;
@@ -391,7 +387,6 @@
 .verdict-icon { font-size: 1.1rem; margin-top: 1px; flex-shrink: 0; }
 .verdict-text { color: var(--ink-300); }
 
-/* Top-match ribbon */
 .top-ribbon {
   position: absolute; top: 0; left: 0;
   background: linear-gradient(135deg, var(--emerald), var(--cyan));
@@ -401,69 +396,26 @@
   letter-spacing: .5px;
 }
 
-/* ══════════════════════════════════════════
-   HOW IT WORKS
-══════════════════════════════════════════ */
-.how-section { margin-top: 64px; }
-.how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.how-step {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r-lg); padding: 26px;
-  transition: all var(--t-spring); position: relative; overflow: hidden;
-}
-.how-step::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--grad-brand); opacity: 0; transition: opacity var(--t);
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
-}
-.how-step:hover { border-color: var(--border-i); transform: translateY(-4px); box-shadow: var(--shadow-i); }
-.how-step:hover::after { opacity: 1; }
-.how-num {
-  font-family: var(--font-display); font-size: 2.8rem; font-weight: 900;
-  line-height: 1; margin-bottom: 12px;
-  background: var(--grad-brand); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text; opacity: .2;
-}
-.how-step h3 { font-family: var(--font-display); font-size: .95rem; font-weight: 700; margin-bottom: 6px; color: var(--ink-100); }
-.how-step p  { font-size: .82rem; color: var(--ink-400); line-height: 1.65; }
-
-/* ══════════════════════════════════════════
-   COMPARE BAR (top-level summary)
-══════════════════════════════════════════ */
 .compare-bar {
-  background: var(--surface);
-  border: 1px solid var(--border-i);
+  background: var(--surface); border: 1px solid var(--border-i);
   border-radius: var(--r-lg); padding: 20px 24px;
   margin-bottom: 20px;
-  display: grid; grid-template-columns: repeat(4, 1fr);
+  display: grid; grid-template-columns: repeat(5, 1fr);
   gap: 0; box-shadow: var(--shadow-sm);
 }
-.cb-item {
-  text-align: center; padding: 8px 12px; position: relative;
-}
-.cb-item + .cb-item::before {
-  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
-  width: 1px; background: var(--border-i);
-}
-.cb-val {
-  display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 900;
-  background: var(--grad-brand); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-}
+.cb-item { text-align: center; padding: 8px 12px; position: relative; }
+.cb-item + .cb-item::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 1px; background: var(--border-i); }
+.cb-val { display: block; font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; background: var(--grad-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .cb-lbl { font-size: .68rem; color: var(--ink-500); font-weight: 600; text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
 
-/* ══════════════════════════════════════════
-   RESPONSIVE
-══════════════════════════════════════════ */
 @media (max-width: 900px) {
   .screener-layout { grid-template-columns: 1fr; }
   .screener-sidebar { order: -1; display: grid; grid-template-columns: 1fr 1fr; }
-  .how-steps { grid-template-columns: 1fr 1fr; }
-  .compare-bar { grid-template-columns: repeat(2, 1fr); }
+  .compare-bar { grid-template-columns: repeat(3, 1fr); }
+  .ats-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .screener-sidebar { grid-template-columns: 1fr; }
-  .how-steps { grid-template-columns: 1fr; }
   .sp-actions { flex-direction: column; }
   .sp-actions > * { width: 100%; justify-content: center; }
   .compare-bar { grid-template-columns: repeat(2, 1fr); }
@@ -482,10 +434,11 @@
       AI-Powered Resume Screener
     </div>
     <h1>Smart Resume <span class="hl">Screening</span></h1>
-    <p>Upload multiple resumes and get instant AI-driven similarity scores, skill gap analysis, and keyword match breakdowns.</p>
+    <p>Upload multiple resumes and get instant AI-driven similarity scores, ATS simulation, skill gap analysis, and keyword match breakdowns.</p>
     <div class="hero-tech-badges">
       <span class="tech-badge">🧠 TF-IDF Vectorization</span>
       <span class="tech-badge">📐 Cosine Similarity</span>
+      <span class="tech-badge">🤖 ATS Simulation</span>
       <span class="tech-badge">🔍 Keyword Extraction</span>
       <span class="tech-badge">🎯 Skill Gap Analysis</span>
     </div>
@@ -497,6 +450,8 @@
     <!-- ── Left: Input + Results ── -->
     <div>
       <div class="screener-panel reveal">
+
+        {% if not is_shared_view %}
         <form method="POST" enctype="multipart/form-data" id="screener-form">
           {% csrf_token %}
 
@@ -517,7 +472,6 @@
               <span style="font-size:.8rem;color:var(--ink-500);">💡 Tip: more detail = higher accuracy</span>
               <span class="char-badge" id="charCount">0 words</span>
             </div>
-            <!-- Live skill detection preview -->
             <div id="jdSkillsPreview" class="jd-skills-preview"></div>
           </div>
 
@@ -530,7 +484,7 @@
             <input id="resumeInput" type="file" name="resumes" accept=".pdf,.doc,.docx" multiple style="display:none">
             <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Upload resumes">
               <div class="drop-icon">☁️</div>
-              <strong>Drag & drop resumes here</strong>
+              <strong>Drag &amp; drop resumes here</strong>
               <span class="muted">or click to browse — multiple files supported</span>
               <div class="drop-formats">
                 <span class="drop-fmt">PDF</span>
@@ -551,20 +505,45 @@
             </button>
           </div>
         </form>
+        {% else %}
+        <div style="padding:10px 0 20px;display:flex;align-items:center;gap:10px;color:var(--ink-400);font-size:.85rem;">
+          <span>👁️</span>
+          <span>Shared view — read-only screening results</span>
+        </div>
+        {% endif %}
 
         <!-- ══ RESULTS ══ -->
         {% if results %}
         <div class="results-section">
 
-          <!-- Summary bar -->
+          <!-- Feature 5: Share / Download bar -->
+          {% if session %}
+          <div class="session-actions-bar">
+            <span style="font-size:.8rem;font-weight:600;color:var(--ink-400);">🔗 Share:</span>
+            <div class="share-url-box" id="shareUrlBox">
+              {{ request.scheme }}://{{ request.get_host }}/screener/results/{{ session.share_token }}/
+            </div>
+            <button class="copy-btn" onclick="copyShareUrl()">📋 Copy</button>
+            <!-- Feature 4: Download PDF -->
+            <a class="download-btn" href="{% url 'download_report' session.share_token %}">
+              ⬇ PDF Report
+            </a>
+          </div>
+          {% endif %}
+
+          <!-- Summary bar (Feature 3: added ATS avg) -->
           <div class="compare-bar">
             <div class="cb-item">
               <span class="cb-val">{{ results|length }}</span>
-              <div class="cb-lbl">Resumes Screened</div>
+              <div class="cb-lbl">Screened</div>
             </div>
             <div class="cb-item">
               <span class="cb-val">{{ results.0.score }}%</span>
               <div class="cb-lbl">Top Score</div>
+            </div>
+            <div class="cb-item">
+              <span class="cb-val">{{ results.0.ats_score }}%</span>
+              <div class="cb-lbl">Top ATS</div>
             </div>
             <div class="cb-item">
               <span class="cb-val">{{ jd_skills|length }}</span>
@@ -572,9 +551,19 @@
             </div>
             <div class="cb-item">
               <span class="cb-val">{{ jd_word_count }}</span>
-              <div class="cb-lbl">JD Word Count</div>
+              <div class="cb-lbl">JD Words</div>
             </div>
           </div>
+
+          <!-- Feature 6: Candidate comparison chart -->
+          {% if results|length > 1 %}
+          <div class="chart-section">
+            <h3>📊 Candidate Comparison</h3>
+            <div class="chart-wrap">
+              <canvas id="compareChart"></canvas>
+            </div>
+          </div>
+          {% endif %}
 
           <!-- JD keyword strip -->
           {% if jd_keywords %}
@@ -612,6 +601,10 @@
                   {% if r.matched_skills %}
                   <span class="rc-wc">✅ {{ r.matched_skills|length }}/{{ jd_skills|length }} skills</span>
                   {% endif %}
+                  <!-- Feature 3: ATS badge inline -->
+                  <span class="rc-wc" style="color:{% if r.ats_score >= 70 %}var(--emerald){% elif r.ats_score >= 45 %}var(--amber){% else %}var(--rose){% endif %}">
+                    🤖 ATS {{ r.ats_score }}%
+                  </span>
                 </div>
               </div>
               <div class="rc-score-block">
@@ -625,11 +618,12 @@
               <span class="rc-progress-fill fill-{{ r.strength.color }}" style="--w:{{ r.score }}%;"></span>
             </div>
 
-            <!-- Tabs -->
+            <!-- Tabs — Feature 3: added ATS tab -->
             <div class="rc-tabs">
               <div class="rc-tab active" data-tab="skills-{{ forloop.counter }}">Skills</div>
               <div class="rc-tab" data-tab="keywords-{{ forloop.counter }}">Keywords</div>
-              <div class="rc-tab" data-tab="breakdown-{{ forloop.counter }}">Score Breakdown</div>
+              <div class="rc-tab" data-tab="breakdown-{{ forloop.counter }}">Score</div>
+              <div class="rc-tab" data-tab="ats-{{ forloop.counter }}">🤖 ATS</div>
             </div>
 
             <!-- Tab body -->
@@ -640,45 +634,30 @@
                 {% if r.matched_skills %}
                 <div style="font-size:.73rem;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">✅ Matched Skills</div>
                 <div class="rc-skills-grid" style="margin-bottom:12px;">
-                  {% for s in r.matched_skills %}
-                    <span class="rc-skill-tag skill-match">✓ {{ s }}</span>
-                  {% endfor %}
+                  {% for s in r.matched_skills %}<span class="rc-skill-tag skill-match">✓ {{ s }}</span>{% endfor %}
                 </div>
                 {% endif %}
-
                 {% if r.missing_skills %}
                 <div style="font-size:.73rem;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">❌ Missing Skills</div>
                 <div class="rc-skills-grid" style="margin-bottom:12px;">
-                  {% for s in r.missing_skills %}
-                    <span class="rc-skill-tag skill-miss">✗ {{ s }}</span>
-                  {% endfor %}
+                  {% for s in r.missing_skills %}<span class="rc-skill-tag skill-miss">✗ {{ s }}</span>{% endfor %}
                 </div>
                 {% endif %}
-
                 {% if r.resume_skills %}
                 <div style="font-size:.73rem;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">💡 Other Skills in Resume</div>
                 <div class="rc-skills-grid">
                   {% for s in r.resume_skills %}
-                    {% if s not in r.matched_skills %}
-                    <span class="rc-skill-tag skill-neutral">{{ s }}</span>
-                    {% endif %}
+                    {% if s not in r.matched_skills %}<span class="rc-skill-tag skill-neutral">{{ s }}</span>{% endif %}
                   {% endfor %}
                 </div>
                 {% endif %}
-
-                <!-- Verdict -->
                 <div class="verdict-box verdict-{{ r.strength.color }}">
                   <span class="verdict-icon">{{ r.strength.emoji }}</span>
                   <div class="verdict-text">
-                    {% if r.score >= 75 %}
-                      This resume is an <strong>excellent match</strong> for the role. The candidate demonstrates strong alignment with the required skills and job description.
-                    {% elif r.score >= 55 %}
-                      This resume is a <strong>strong candidate</strong>. Most key skills are present with minor gaps that could be addressed in interviews.
-                    {% elif r.score >= 35 %}
-                      <strong>Moderate alignment</strong> — some relevant skills found but significant gaps exist. Consider if the candidate can upskill quickly.
-                    {% else %}
-                      <strong>Low match</strong> for this role. The resume lacks many key skills and keywords from the job description.
-                    {% endif %}
+                    {% if r.score >= 75 %}This resume is an <strong>excellent match</strong> for the role.
+                    {% elif r.score >= 55 %}This resume is a <strong>strong candidate</strong>. Most key skills are present.
+                    {% elif r.score >= 35 %}<strong>Moderate alignment</strong> — some relevant skills found but significant gaps exist.
+                    {% else %}<strong>Low match</strong> for this role. The resume lacks many key skills.{% endif %}
                   </div>
                 </div>
               </div>
@@ -687,174 +666,180 @@
               <div class="rc-panel" id="keywords-{{ forloop.counter }}">
                 <div style="font-size:.73rem;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✅ Matched Keywords ({{ r.matched_keywords|length }})</div>
                 <div class="kw-grid" style="margin-bottom:14px;">
-                  {% for kw in r.matched_keywords %}
-                    <span class="kw-tag kw-hit">{{ kw }}</span>
-                  {% empty %}
-                    <span style="font-size:.8rem;color:var(--ink-500);">No keywords matched</span>
-                  {% endfor %}
+                  {% for kw in r.matched_keywords %}<span class="kw-tag kw-hit">{{ kw }}</span>{% empty %}<span style="font-size:.8rem;color:var(--ink-500);">No keywords matched</span>{% endfor %}
                 </div>
                 <div style="font-size:.73rem;font-weight:700;color:var(--ink-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">❌ Missing Keywords</div>
                 <div class="kw-grid">
-                  {% for kw in r.missing_keywords %}
-                    <span class="kw-tag kw-miss">{{ kw }}</span>
-                  {% empty %}
-                    <span style="font-size:.8rem;color:var(--emerald);">All key terms found!</span>
-                  {% endfor %}
+                  {% for kw in r.missing_keywords %}<span class="kw-tag kw-miss">{{ kw }}</span>{% empty %}<span style="font-size:.8rem;color:var(--emerald);">All key terms found!</span>{% endfor %}
                 </div>
               </div>
 
-              <!-- Breakdown panel -->
+              <!-- Score Breakdown panel -->
               <div class="rc-panel" id="breakdown-{{ forloop.counter }}">
                 <div class="breakdown-list">
                   <div class="bd-row">
-                    <div class="bd-label">
-                      <span>Overall Similarity Score</span>
-                      <span>{{ r.score }}%</span>
-                    </div>
+                    <div class="bd-label"><span>Overall Similarity</span><span>{{ r.score }}%</span></div>
                     <div class="bd-bar-bg"><div class="bd-bar-fill" style="--w:{{ r.score }}%;"></div></div>
                   </div>
                   <div class="bd-row">
-                    <div class="bd-label">
-                      <span>Keyword Coverage</span>
-                      <span>{{ r.kw_score }}%</span>
-                    </div>
+                    <div class="bd-label"><span>ATS Score</span><span>{{ r.ats_score }}%</span></div>
+                    <div class="bd-bar-bg"><div class="bd-bar-fill" style="--w:{{ r.ats_score }}%;background:linear-gradient(90deg,var(--emerald),var(--cyan));"></div></div>
+                  </div>
+                  <div class="bd-row">
+                    <div class="bd-label"><span>Keyword Coverage</span><span>{{ r.kw_score }}%</span></div>
                     <div class="bd-bar-bg"><div class="bd-bar-fill" style="--w:{{ r.kw_score }}%;background:linear-gradient(90deg,var(--cyan),var(--emerald));"></div></div>
                   </div>
                   <div class="bd-row">
-                    <div class="bd-label">
-                      <span>Skill Match Rate</span>
-                      <span>{{ r.skill_score }}%</span>
-                    </div>
+                    <div class="bd-label"><span>Skill Match Rate</span><span>{{ r.skill_score }}%</span></div>
                     <div class="bd-bar-bg"><div class="bd-bar-fill" style="--w:{{ r.skill_score }}%;background:linear-gradient(90deg,var(--violet),var(--indigo));"></div></div>
                   </div>
                   <div class="bd-row">
-                    <div class="bd-label">
-                      <span>Resume Length</span>
-                      <span>{{ r.word_count }} words</span>
-                    </div>
+                    <div class="bd-label"><span>Resume Length</span><span>{{ r.word_count }} words</span></div>
                     <div class="bd-bar-bg"><div class="bd-bar-fill" style="--w:{% widthratio r.word_count 1200 100 %}%;background:linear-gradient(90deg,var(--amber),var(--rose));"></div></div>
                   </div>
                 </div>
-                <div style="margin-top:12px;font-size:.78rem;color:var(--ink-500);background:var(--surface3);border-radius:var(--r-xs);padding:10px 12px;">
-                  📌 <strong>Similarity</strong> is computed using TF-IDF vectorization + cosine distance between the job description and resume text.
+              </div>
+
+              <!-- Feature 3: ATS panel -->
+              <div class="rc-panel" id="ats-{{ forloop.counter }}">
+                <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+                  <div>
+                    <div class="ats-score-big" style="color:{% if r.ats_score >= 70 %}var(--emerald){% elif r.ats_score >= 45 %}var(--amber){% else %}var(--rose){% endif %}">
+                      {{ r.ats_score }}%
+                    </div>
+                    <div style="font-size:.73rem;color:var(--ink-500);">ATS Compatibility Score</div>
+                  </div>
+                  <div style="font-size:.82rem;color:var(--ink-400);line-height:1.6;">
+                    {% if r.ats_score >= 70 %}Strong ATS pass — resume is well-structured and parseable.
+                    {% elif r.ats_score >= 45 %}Moderate ATS compatibility — some improvements recommended.
+                    {% else %}Low ATS score — resume may be filtered out by automated systems.{% endif %}
+                  </div>
+                </div>
+                <div class="ats-grid">
+                  {% with ad=r.ats_details %}
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.contact.email %}✅{% else %}❌{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Email address</div>
+                      <div class="ats-sub">{% if ad.contact.email %}Detected{% else %}Not found{% endif %}</div>
+                    </div>
+                  </div>
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.contact.phone %}✅{% else %}❌{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Phone number</div>
+                      <div class="ats-sub">{% if ad.contact.phone %}Detected{% else %}Not found{% endif %}</div>
+                    </div>
+                  </div>
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.dates.found %}✅{% else %}❌{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Work dates</div>
+                      <div class="ats-sub">{% if ad.dates.found %}Years / months found{% else %}No dates detected{% endif %}</div>
+                    </div>
+                  </div>
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.formatting.parseable %}✅{% else %}⚠️{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Text formatting</div>
+                      <div class="ats-sub">{{ ad.formatting.note }}</div>
+                    </div>
+                  </div>
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.sections.found %}✅{% else %}⚠️{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Standard sections</div>
+                      <div class="ats-sub">
+                        Found: {{ ad.sections.found|join:", "|default:"none" }}
+                        {% if ad.sections.missing %} · Missing: {{ ad.sections.missing|join:", " }}{% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ats-check">
+                    <span class="ats-icon">{% if ad.length.score >= 12 %}✅{% else %}⚠️{% endif %}</span>
+                    <div>
+                      <div class="ats-label">Resume length</div>
+                      <div class="ats-sub">{{ ad.length.word_count }} words — {{ ad.length.note }}</div>
+                    </div>
+                  </div>
+                  {% endwith %}
                 </div>
               </div>
 
-            </div><!-- /rc-body -->
-          </div><!-- /result-card -->
+            </div>
+          </div>
           {% endfor %}
 
-        </div><!-- /results-section -->
+          <!-- Feature 1: Auto-fill career form banner -->
+          {% if detected_skills_json != "[]" and not is_shared_view %}
+          <div class="autofill-banner" id="autofillBanner">
+            <div class="autofill-banner-text">
+              <strong>✨ Career Form Auto-fill Available!</strong><br>
+              Skills detected from your resumes can be pre-loaded into the Career Analysis form.
+            </div>
+            <a id="autofillLink" href="#" class="autofill-link">
+              🎯 Open Career Form with These Skills
+            </a>
+          </div>
+          {% endif %}
+
+        </div>
         {% endif %}
-      </div><!-- /screener-panel -->
-    </div><!-- /left col -->
+      </div>
+    </div>
 
     <!-- ── Right: Sidebar ── -->
     <div class="screener-sidebar reveal">
 
-      <!-- Tips card -->
       <div class="tips-card">
         <div class="tips-card-title">💡 Tips for Better Results</div>
-        <div class="tip-item">
-          <span class="tip-num">01</span>
-          <span class="tip-text">Paste the <strong>complete job description</strong> — skills, responsibilities, and requirements all improve accuracy.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">02</span>
-          <span class="tip-text">Upload resumes in <strong>PDF or DOCX</strong> format for best text extraction.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">03</span>
-          <span class="tip-text">A score of <strong>55%+</strong> indicates a strong candidate worth interviewing.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">04</span>
-          <span class="tip-text">Check the <strong>Skill Gap tab</strong> to see exactly which skills each candidate is missing.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">05</span>
-          <span class="tip-text">Screen <strong>multiple resumes at once</strong> — the tool ranks them all automatically.</span>
-        </div>
+        <div class="tip-item"><span class="tip-num">01</span><span class="tip-text">Paste the <strong>complete job description</strong> for maximum accuracy.</span></div>
+        <div class="tip-item"><span class="tip-num">02</span><span class="tip-text">Upload resumes in <strong>PDF or DOCX</strong> for best text extraction.</span></div>
+        <div class="tip-item"><span class="tip-num">03</span><span class="tip-text">A score of <strong>55%+</strong> indicates a strong candidate worth interviewing.</span></div>
+        <div class="tip-item"><span class="tip-num">04</span><span class="tip-text">Check the <strong>🤖 ATS tab</strong> to see how well each resume will pass automated scanners.</span></div>
+        <div class="tip-item"><span class="tip-num">05</span><span class="tip-text">Use the <strong>⬇ PDF Report</strong> button to download and share results with your team.</span></div>
+        <div class="tip-item"><span class="tip-num">06</span><span class="tip-text">Use the <strong>🔗 Share link</strong> to send read-only results to colleagues.</span></div>
       </div>
 
-      <!-- Score legend -->
       <div class="tips-card">
         <div class="tips-card-title">📊 Score Legend</div>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);">
-              <span style="width:10px;height:10px;border-radius:50%;background:var(--emerald);display:inline-block;flex-shrink:0;"></span>
-              Excellent Match
-            </span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);"><span style="width:10px;height:10px;border-radius:50%;background:var(--emerald);display:inline-block;flex-shrink:0;"></span>Excellent Match</span>
             <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--emerald);font-weight:700;">75–100%</span>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);">
-              <span style="width:10px;height:10px;border-radius:50%;background:var(--cyan);display:inline-block;flex-shrink:0;"></span>
-              Strong Match
-            </span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);"><span style="width:10px;height:10px;border-radius:50%;background:var(--cyan);display:inline-block;flex-shrink:0;"></span>Strong Match</span>
             <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--cyan);font-weight:700;">55–74%</span>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);">
-              <span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;flex-shrink:0;"></span>
-              Moderate Match
-            </span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);"><span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;flex-shrink:0;"></span>Moderate Match</span>
             <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--amber);font-weight:700;">35–54%</span>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);">
-              <span style="width:10px;height:10px;border-radius:50%;background:var(--rose);display:inline-block;flex-shrink:0;"></span>
-              Weak Match
-            </span>
+            <span style="display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--ink-300);"><span style="width:10px;height:10px;border-radius:50%;background:var(--rose);display:inline-block;flex-shrink:0;"></span>Weak Match</span>
             <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--rose);font-weight:700;">0–34%</span>
           </div>
         </div>
       </div>
 
-      <!-- Tech card -->
       <div class="tips-card">
         <div class="tips-card-title">⚙️ How It Works</div>
-        <div class="tip-item">
-          <span class="tip-num">①</span>
-          <span class="tip-text">Text extracted from PDF / DOCX using <strong>PyMuPDF</strong> and <strong>python-docx</strong>.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">②</span>
-          <span class="tip-text"><strong>TF-IDF vectorization</strong> converts job description and resume into weighted term vectors.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">③</span>
-          <span class="tip-text"><strong>Cosine similarity</strong> measures the angle between vectors — higher = better match.</span>
-        </div>
-        <div class="tip-item">
-          <span class="tip-num">④</span>
-          <span class="tip-text"><strong>Regex pattern matching</strong> identifies 30+ technology skills in each resume.</span>
-        </div>
+        <div class="tip-item"><span class="tip-num">①</span><span class="tip-text">Text extracted from PDF/DOCX using <strong>PyMuPDF</strong> and <strong>python-docx</strong>.</span></div>
+        <div class="tip-item"><span class="tip-num">②</span><span class="tip-text"><strong>TF-IDF vectorization</strong> converts JD and resume into weighted term vectors.</span></div>
+        <div class="tip-item"><span class="tip-num">③</span><span class="tip-text"><strong>Cosine similarity</strong> measures the match angle between vectors.</span></div>
+        <div class="tip-item"><span class="tip-num">④</span><span class="tip-text"><strong>ATS simulation</strong> checks sections, contact info, dates, and formatting.</span></div>
       </div>
 
-    </div><!-- /sidebar -->
-  </div><!-- /screener-layout -->
+      <!-- History link -->
+      <div class="tips-card" style="text-align:center;">
+        <div class="tips-card-title">📂 Screening History</div>
+        <p style="font-size:.82rem;color:var(--ink-400);margin-bottom:14px;">All your past sessions are saved and searchable.</p>
+        <a href="{% url 'screener_history' %}" class="sp-btn-primary" style="display:inline-flex;text-decoration:none;">
+          View All Sessions →
+        </a>
+      </div>
 
-  <!-- ── How it works (bottom) ── -->
-  <div class="how-section reveal">
-    <div class="section-heading">✨ Three Simple Steps</div>
-    <div class="how-steps">
-      <div class="how-step reveal">
-        <div class="how-num">01</div>
-        <h3>Paste Job Description</h3>
-        <p>Add the full job posting — required skills, responsibilities, and tech stack for maximum matching precision.</p>
-      </div>
-      <div class="how-step reveal">
-        <div class="how-num">02</div>
-        <h3>Upload Resumes</h3>
-        <p>Drop multiple PDF or DOCX resumes at once. Our engine extracts and processes all text automatically.</p>
-      </div>
-      <div class="how-step reveal">
-        <div class="how-num">03</div>
-        <h3>Get Deep Rankings</h3>
-        <p>Receive a ranked list with similarity scores, skill gap analysis, keyword coverage, and actionable insights.</p>
-      </div>
     </div>
   </div>
 
@@ -862,7 +847,82 @@
 </div>
 
 <script>
-/* ── Elements ── */
+const detectedSkills = {{ detected_skills_json|safe }};
+
+/* ── Feature 1: auto-fill URL ── */
+(function() {
+  const link = document.getElementById('autofillLink');
+  if (!link || !detectedSkills.length) return;
+  const params = new URLSearchParams();
+  params.set('skills', JSON.stringify(detectedSkills));
+  link.href = '/profile/?' + params.toString();
+})();
+
+/* ── Feature 5: Copy share URL ── */
+function copyShareUrl() {
+  const box = document.getElementById('shareUrlBox');
+  if (!box) return;
+  navigator.clipboard.writeText(box.textContent.trim()).then(() => {
+    const btn = event.target.closest('button');
+    if (btn) { btn.textContent = '✅ Copied!'; setTimeout(() => btn.textContent = '📋 Copy', 1800); }
+  });
+}
+
+/* ── Feature 6: Comparison chart ── */
+(function() {
+  const canvas = document.getElementById('compareChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const labels = {{ chart_labels_json|safe }};
+  const scores = {{ chart_scores_json|safe }};
+  const ats    = {{ chart_ats_json|safe }};
+  if (!labels.length) return;
+
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridCol = isDark ? 'rgba(129,140,248,.10)' : 'rgba(79,70,229,.07)';
+  const textCol = isDark ? '#94a3b8' : '#64748b';
+
+  new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Similarity %',
+          data: scores,
+          backgroundColor: 'rgba(129,140,248,.7)',
+          borderColor: 'rgba(129,140,248,1)',
+          borderWidth: 1, borderRadius: 4,
+        },
+        {
+          label: 'ATS Score %',
+          data: ats,
+          backgroundColor: 'rgba(52,211,153,.6)',
+          borderColor: 'rgba(52,211,153,1)',
+          borderWidth: 1, borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textCol, font: { size: 11 } } },
+      },
+      scales: {
+        y: {
+          min: 0, max: 100,
+          grid: { color: gridCol },
+          ticks: { color: textCol, font: { size: 10 } },
+        },
+        x: {
+          grid: { color: gridCol },
+          ticks: { color: textCol, font: { size: 10 } },
+        },
+      },
+    },
+  });
+})();
+
+/* ── Form elements (only when not shared view) ── */
 const form        = document.getElementById('screener-form');
 const resumeInput = document.getElementById('resumeInput');
 const dropzone    = document.getElementById('dropzone');
@@ -874,13 +934,6 @@ const jobDesc     = document.getElementById('jobDescription');
 const charCount   = document.getElementById('charCount');
 const jdPreview   = document.getElementById('jdSkillsPreview');
 
-const ACCEPT = [
-  "application/pdf",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  "application/msword"
-];
-
-/* Known skills for live preview (client-side subset) */
 const SKILL_LIST = [
   "python","java","javascript","typescript","react","node.js","vue","angular",
   "next.js","django","flask","docker","kubernetes","aws","azure","gcp",
@@ -889,29 +942,28 @@ const SKILL_LIST = [
   "c++","go","rust","swift","kotlin","agile","scrum"
 ];
 
-/* ── Word count & live skill preview ── */
 function updateJdInfo() {
+  if (!jobDesc) return;
   const text = jobDesc.value.trim();
   const words = text ? text.split(/\s+/).length : 0;
-  charCount.textContent = words + ' words';
-  charCount.classList.toggle('good', words > 80);
-
-  // Live skill detection
+  if (charCount) { charCount.textContent = words + ' words'; charCount.classList.toggle('good', words > 80); }
   const lower = text.toLowerCase();
   const found = SKILL_LIST.filter(s => {
     const re = new RegExp('\\b' + s.replace('.', '\\.').replace('+','\\+') + '\\b');
     return re.test(lower);
   });
-  jdPreview.innerHTML = found.length
-    ? found.map(s => `<span class="jd-skill-pill">🔍 ${s.charAt(0).toUpperCase()+s.slice(1)}</span>`).join('')
-    : '';
-
+  if (jdPreview) {
+    jdPreview.innerHTML = found.length
+      ? found.map(s => `<span class="jd-skill-pill">🔍 ${s.charAt(0).toUpperCase()+s.slice(1)}</span>`).join('')
+      : '';
+  }
   refreshSubmit();
 }
 
 function refreshSubmit() {
-  const hasDesc  = jobDesc.value.trim().split(/\s+/).length > 5;
-  const hasFiles = resumeInput.files.length > 0;
+  if (!submitBtn) return;
+  const hasDesc  = jobDesc && jobDesc.value.trim().split(/\s+/).length > 5;
+  const hasFiles = resumeInput && resumeInput.files.length > 0;
   submitBtn.disabled = !(hasDesc && hasFiles);
 }
 
@@ -922,20 +974,20 @@ function formatSize(bytes) {
 }
 
 function renderFiles() {
+  if (!fileList || !resumeInput) return;
   fileList.innerHTML = '';
-  if (!resumeInput.files.length) return;
   Array.from(resumeInput.files).forEach(f => {
     const chip = document.createElement('div');
     chip.className = 'file-chip';
-    chip.innerHTML = `
-      <div class="file-chip-name">📄 <span>${f.name}</span></div>
-      <span class="file-chip-size">${formatSize(f.size)}</span>
-    `;
+    chip.innerHTML = `<div class="file-chip-name">📄 <span>${f.name}</span></div><span class="file-chip-size">${formatSize(f.size)}</span>`;
     fileList.appendChild(chip);
   });
 }
 
+const ACCEPT = ["application/pdf","application/vnd.openxmlformats-officedocument.wordprocessingml.document","application/msword"];
+
 function setFiles(fl) {
+  if (!resumeInput) return;
   const dt = new DataTransfer();
   Array.from(fl).forEach(f => {
     if (ACCEPT.includes(f.type) || /\.(pdf|doc|docx)$/i.test(f.name)) dt.items.add(f);
@@ -944,24 +996,22 @@ function setFiles(fl) {
   renderFiles(); refreshSubmit();
 }
 
-/* ── Event listeners ── */
-pickBtn.addEventListener('click', () => resumeInput.click());
-clearBtn.addEventListener('click', () => { resumeInput.value = ''; renderFiles(); refreshSubmit(); });
-resumeInput.addEventListener('change', () => { renderFiles(); refreshSubmit(); });
-jobDesc.addEventListener('input', updateJdInfo);
+if (pickBtn)  pickBtn.addEventListener('click',  () => resumeInput && resumeInput.click());
+if (clearBtn) clearBtn.addEventListener('click', () => { if(resumeInput) resumeInput.value=''; renderFiles(); refreshSubmit(); });
+if (resumeInput) resumeInput.addEventListener('change', () => { renderFiles(); refreshSubmit(); });
+if (jobDesc) jobDesc.addEventListener('input', updateJdInfo);
 
-['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.add('active'); }));
-['dragleave','drop'].forEach(e => dropzone.addEventListener(e, () => dropzone.classList.remove('active')));
-dropzone.addEventListener('drop', ev => { ev.preventDefault(); setFiles(ev.dataTransfer.files); });
-dropzone.addEventListener('click', () => resumeInput.click());
-dropzone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); resumeInput.click(); }});
+if (dropzone) {
+  ['dragenter','dragover'].forEach(e => dropzone.addEventListener(e, ev => { ev.preventDefault(); dropzone.classList.add('active'); }));
+  ['dragleave','drop'].forEach(e => dropzone.addEventListener(e, () => dropzone.classList.remove('active')));
+  dropzone.addEventListener('drop', ev => { ev.preventDefault(); setFiles(ev.dataTransfer.files); });
+  dropzone.addEventListener('click', () => resumeInput && resumeInput.click());
+  dropzone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); resumeInput && resumeInput.click(); }});
+}
 
-form.addEventListener('submit', () => {
-  submitBtn.classList.add('loading');
-  submitBtn.disabled = true;
-});
+if (form) form.addEventListener('submit', () => { if(submitBtn){ submitBtn.classList.add('loading'); submitBtn.disabled = true; } });
 
-/* ── Tab switching inside result cards ── */
+/* ── Tab switching ── */
 document.addEventListener('click', e => {
   const tab = e.target.closest('.rc-tab');
   if (!tab) return;
@@ -978,7 +1028,6 @@ document.addEventListener('click', e => {
 const res = document.querySelector('.results-section');
 if (res) setTimeout(() => res.scrollIntoView({ behavior:'smooth', block:'start' }), 400);
 
-/* ── Init ── */
 updateJdInfo();
 </script>
 {% endblock %}

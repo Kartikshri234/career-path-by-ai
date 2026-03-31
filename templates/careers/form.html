@@ -4,6 +4,17 @@
 {% block extra_head %}
 <style>
 .form-page { padding: 40px 0 96px; }
+/* Feature 1: Auto-fill banner */
+.autofill-notice {
+  background: linear-gradient(135deg, rgba(52,211,153,.08), rgba(34,211,238,.08));
+  border: 1px solid rgba(52,211,153,.3);
+  border-radius: var(--r-sm); padding: 14px 18px;
+  display: flex; align-items: flex-start; gap: 13px;
+  margin-bottom: 20px; animation: fade-up .4s ease;
+}
+.autofill-notice-icon { font-size: 1.5rem; flex-shrink: 0; }
+.autofill-notice-text h4 { font-family: var(--font-display); font-weight: 700; font-size: .9rem; color: var(--emerald); margin-bottom: 3px; }
+.autofill-notice-text p  { font-size: .82rem; color: var(--ink-400); line-height: 1.55; }
 </style>
 {% endblock %}
 
@@ -15,6 +26,20 @@
     <h1 class="page-title">📋 Your Engineering Profile</h1>
     <p class="page-sub">✍️ Fill in your details — the more accurate, the better your career recommendations.</p>
   </div>
+
+  {% if is_autofill %}
+  <div class="autofill-notice reveal">
+    <div class="autofill-notice-icon">✨</div>
+    <div class="autofill-notice-text">
+      <h4>Skills Auto-filled from Your Resume</h4>
+      <p>
+        We detected <strong>{{ autofill_skills|length }} skill{% if autofill_skills|length != 1 %}s{% endif %}</strong>
+        ({{ autofill_skills|join:", " }}) from your uploaded resume and pre-selected them below.
+        You can adjust them before running the analysis.
+      </p>
+    </div>
+  </div>
+  {% endif %}
 
   {% if errors %}
   <div class="form-error reveal">⚠️ Please fix the errors below and try again.</div>

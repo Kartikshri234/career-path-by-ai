@@ -15,6 +15,8 @@ def home(request):
 
 def profile_form(request):
     demo_data = None
+    autofill_skills = []
+
     if request.GET.get('demo'):
         demo_data = {
             'name':     'Arjun Verma',
@@ -26,11 +28,26 @@ def profile_form(request):
             'skills':   ['Python', 'JavaScript', 'React', 'Git', 'SQL', 'DSA', 'HTML/CSS', 'Node.js'],
         }
 
+    # Feature 1: Resume auto-fill — accept skills from screener via URL param
+    skills_param = request.GET.get('skills', '')
+    if skills_param and not demo_data:
+        try:
+            raw = json.loads(skills_param)
+            # Filter to only valid SKILLS_LIST entries
+            autofill_skills = [s for s in raw if s in ALL_SKILLS]
+        except (json.JSONDecodeError, TypeError):
+            autofill_skills = []
+
     form = StudentProfileForm(initial=demo_data) if demo_data else StudentProfileForm()
+
+    prefill_skills = demo_data['skills'] if demo_data else autofill_skills
+
     return render(request, 'careers/form.html', {
-        'form':        form,
-        'all_skills':  ALL_SKILLS,
-        'demo_skills': json.dumps(demo_data['skills']) if demo_data else '[]',
+        'form':           form,
+        'all_skills':     ALL_SKILLS,
+        'demo_skills':    json.dumps(prefill_skills),
+        'autofill_skills': autofill_skills,
+        'is_autofill':    bool(autofill_skills),
     })
 
 
@@ -108,18 +125,15 @@ def skill_roadmap(request):
 
 
 def history(request):
-    """Show all past student profile analyses."""
     profiles = StudentProfile.objects.prefetch_related('recommendations').all()
     return render(request, 'careers/history.html', {'profiles': profiles})
 
 
 def delete_profile(request, pk):
-    """Delete a student profile and its recommendations."""
     profile = get_object_or_404(StudentProfile, pk=pk)
     if request.method == 'POST':
         profile.delete()
         return redirect('history')
-    # If accessed via GET, redirect back to history (safety guard)
     return redirect('history')
 
 
@@ -168,7 +182,6 @@ def api_careers(request):
 
 
 def shared_result(request, token):
-    """Public, read-only shareable results page accessed via UUID token."""
     profile = get_object_or_404(StudentProfile, share_token=token)
 
     student_dict = {
