@@ -11,6 +11,7 @@
 <div class="careers-page">
 <div class="container">
 
+  <!-- Page Heading -->
   <div class="reveal" style="margin-bottom:28px">
     <h1 class="page-title">🗂️ Career Tracks</h1>
     <p class="page-sub">Explore all 5 career paths — click any card to see full details, salary data, roadmap, job roles, and more.</p>
@@ -26,7 +27,7 @@
 
   <!-- Filter Bar -->
   <div class="ct-filters reveal">
-    <span style="font-size:.78rem;color:var(--ink-500);font-weight:600;">Filter:</span>
+    <span class="ct-filter-label">Filter:</span>
     <button class="cf-btn active" data-filter="all"         onclick="applyFilter(this)">🌐 All Tracks</button>
     <button class="cf-btn"        data-filter="very_high"   onclick="applyFilter(this)">🔥 Very High Demand</button>
     <button class="cf-btn"        data-filter="high"        onclick="applyFilter(this)">📈 High Demand</button>
@@ -42,6 +43,7 @@
 
   <div class="section-heading reveal">🚀 Click any card to explore full details</div>
 
+  <!-- Career Cards -->
   <div class="careers-grid" id="careers-grid">
     {% for name, profile in careers.items %}
     {% with forloop.counter as idx %}
@@ -51,36 +53,36 @@
          data-salary-level="{{ profile.salary_level }}"
          data-difficulty="{{ profile.difficulty|lower }}">
 
+      <!-- ── Collapsed Header ── -->
       <div class="cc-header" onclick="toggleCard('card-{{ idx }}', {{ idx }})">
-        <div class="cc-header-left">
-          <div class="cc-icon-row">
-            <div class="cc-icon">{{ profile.icon }}</div>
-            <div class="cc-title-block">
-              <div class="cc-name">{{ name }}</div>
-              <div class="cc-desc">{{ profile.desc }}</div>
-            </div>
-          </div>
+        <div class="cc-icon">{{ profile.icon }}</div>
+
+        <div class="cc-info">
+          <div class="cc-name">{{ name }}</div>
+          <div class="cc-desc">{{ profile.desc }}</div>
         </div>
-        <div class="cc-header-right">
-          <span class="cc-expand-hint">Click to expand</span>
-          <div class="cc-chevron">▼</div>
+
+        <div class="cc-header-badges">
+          <span class="cc-hb cc-hb-salary">💰 {{ profile.avg_salary }}</span>
+          <span class="cc-hb cc-hb-demand {% if profile.demand_level == 'moderate' %}moderate{% elif profile.demand_level == 'growing' %}growing{% endif %}">📈 {{ profile.demand_trend }}</span>
+          <span class="cc-hb cc-hb-diff {% if profile.difficulty == 'Hard' %}hard{% endif %}">{{ profile.difficulty }}</span>
+          <span class="cc-hb cc-hb-time">⏱ {{ profile.time_to_ready }}</span>
         </div>
+
+        <div class="cc-chevron">▼</div>
       </div>
 
-      <div class="cc-badges">
-        <span class="cc-badge cc-badge-salary">💰 {{ profile.avg_salary }}</span>
-        <span class="cc-badge cc-badge-demand {% if profile.demand_level == 'moderate' %}moderate{% elif profile.demand_level == 'growing' %}growing{% endif %}">📈 {{ profile.demand_trend }}</span>
-        <span class="cc-badge cc-badge-diff {% if profile.difficulty == 'Hard' %}hard{% endif %}">{{ profile.difficulty }}</span>
-        <span class="cc-badge cc-badge-time">⏱ {{ profile.time_to_ready }}</span>
-      </div>
-
-      <div class="cc-skills">
+      <!-- Skills strip (always visible) -->
+      <div class="cc-skills-strip">
         {% for skill in profile.required_skills %}
           <span class="cc-skill">{{ skill }}</span>
         {% endfor %}
       </div>
 
+      <!-- ── Expanded Detail ── -->
       <div class="cc-detail" id="detail-{{ idx }}">
+
+        <!-- Tab Bar -->
         <div class="cc-tabs">
           <button class="cc-tab active" onclick="switchTab({{ idx }},'overview',this)">📋 Overview</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'roles',this)">💼 Roles</button>
@@ -90,49 +92,97 @@
           <button class="cc-tab"        onclick="switchTab({{ idx }},'radar',this)">📊 Radar</button>
         </div>
 
-        <!-- Overview -->
+        <!-- ── Overview Tab ── -->
         <div class="cc-panel active" id="panel-{{ idx }}-overview">
-          <div class="ov-stat-grid">
-            <div class="ov-stat"><div class="ov-stat-lbl">💰 Salary Range</div><div class="ov-stat-val">{{ profile.avg_salary }}</div></div>
-            <div class="ov-stat"><div class="ov-stat-lbl">📈 Demand</div><div class="ov-stat-val">{{ profile.demand_trend }}</div></div>
-            <div class="ov-stat"><div class="ov-stat-lbl">⚡ Difficulty</div><div class="ov-stat-val">{{ profile.difficulty }}</div></div>
-            <div class="ov-stat"><div class="ov-stat-lbl">⏱ Time to Job-Ready</div><div class="ov-stat-val">{{ profile.time_to_ready }}</div></div>
-          </div>
-          <div class="ov-day">
-            <div class="ov-day-lbl">☀️ A Day in the Life</div>
-            <div class="ov-day-text">{{ profile.day_in_life }}</div>
-          </div>
-          <div class="ov-growth">
-            <div class="ov-growth-lbl">📈 Career Growth Path</div>
-            <div class="ov-growth-path">
-              {% for step in profile.growth_steps %}
-                {% if not forloop.first %}<span class="ov-gp-arr">→</span>{% endif %}
-                <span class="ov-gp-step">{{ step }}</span>
-              {% endfor %}
+
+          <!-- 4-stat row -->
+          <div class="ov-grid-top">
+            <div class="ov-stat">
+              <div class="ov-stat-lbl">💰 Salary Range</div>
+              <div class="ov-stat-val">{{ profile.avg_salary }}</div>
+            </div>
+            <div class="ov-stat">
+              <div class="ov-stat-lbl">📈 Demand</div>
+              <div class="ov-stat-val">{{ profile.demand_trend }}</div>
+            </div>
+            <div class="ov-stat">
+              <div class="ov-stat-lbl">⚡ Difficulty</div>
+              <div class="ov-stat-val">{{ profile.difficulty }}</div>
+            </div>
+            <div class="ov-stat">
+              <div class="ov-stat-lbl">⏱ Time to Job-Ready</div>
+              <div class="ov-stat-val">{{ profile.time_to_ready }}</div>
             </div>
           </div>
+
+          <!-- Day in life + growth path side by side -->
+          <div class="ov-two-col">
+            <div class="ov-day">
+              <div class="ov-day-lbl">☀️ A Day in the Life</div>
+              <div class="ov-day-text">{{ profile.day_in_life }}</div>
+            </div>
+            <div class="ov-growth">
+              <div class="ov-growth-lbl">📈 Career Growth Path</div>
+              <div class="ov-growth-path">
+                {% for step in profile.growth_steps %}
+                  {% if not forloop.first %}<span class="ov-gp-arr">→</span>{% endif %}
+                  <span class="ov-gp-step">{{ step }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Scoring weights -->
           <div class="ov-scoring">
             <div class="ov-scoring-lbl">⚖️ How You're Scored for This Career</div>
-            <div class="ov-score-row"><span class="ov-score-name">Skill Match</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_skill_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_skill_pct }}%</span></div>
-            <div class="ov-score-row"><span class="ov-score-name">CGPA</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_cgpa_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_cgpa_pct }}%</span></div>
-            <div class="ov-score-row"><span class="ov-score-name">LeetCode</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_lc_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_lc_pct }}%</span></div>
-            <div class="ov-score-row"><span class="ov-score-name">GitHub</span><div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_gh_pct }}%"></div></div><span class="ov-bar-pct">{{ profile.weight_gh_pct }}%</span></div>
+            <div class="ov-score-row">
+              <span class="ov-score-name">Skill Match</span>
+              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_skill_pct }}%"></div></div>
+              <span class="ov-bar-pct">{{ profile.weight_skill_pct }}%</span>
+            </div>
+            <div class="ov-score-row">
+              <span class="ov-score-name">CGPA</span>
+              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_cgpa_pct }}%"></div></div>
+              <span class="ov-bar-pct">{{ profile.weight_cgpa_pct }}%</span>
+            </div>
+            <div class="ov-score-row">
+              <span class="ov-score-name">LeetCode</span>
+              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_lc_pct }}%"></div></div>
+              <span class="ov-bar-pct">{{ profile.weight_lc_pct }}%</span>
+            </div>
+            <div class="ov-score-row" style="margin-bottom:0">
+              <span class="ov-score-name">GitHub</span>
+              <div class="ov-bar-bg"><div class="ov-bar-fill" style="width:{{ profile.weight_gh_pct }}%"></div></div>
+              <span class="ov-bar-pct">{{ profile.weight_gh_pct }}%</span>
+            </div>
           </div>
         </div>
 
-        <!-- Roles -->
+        <!-- ── Roles Tab ── -->
         <div class="cc-panel" id="panel-{{ idx }}-roles">
           <div class="roles-section">
             <div class="roles-section-lbl">💼 Job Titles You Can Target</div>
-            <div class="role-chips">{% for role in profile.job_roles %}<span class="role-chip">{{ role }}</span>{% endfor %}</div>
+            <div class="role-chips">
+              {% for role in profile.job_roles %}
+                <span class="role-chip">{{ role }}</span>
+              {% endfor %}
+            </div>
           </div>
           <div class="roles-section">
             <div class="roles-section-lbl">🏢 Companies That Hire</div>
-            <div class="role-chips">{% for company in profile.top_companies %}<span class="company-chip">{{ company }}</span>{% endfor %}</div>
+            <div class="role-chips">
+              {% for company in profile.top_companies %}
+                <span class="company-chip">{{ company }}</span>
+              {% endfor %}
+            </div>
           </div>
           <div class="roles-section">
             <div class="roles-section-lbl">🏅 Certifications That Help</div>
-            <div class="role-chips">{% for cert in profile.certifications %}<span class="cert-chip">🎓 {{ cert }}</span>{% endfor %}</div>
+            <div class="role-chips">
+              {% for cert in profile.certifications %}
+                <span class="cert-chip">🎓 {{ cert }}</span>
+              {% endfor %}
+            </div>
           </div>
           <div class="ov-growth" style="margin-top:4px">
             <div class="ov-growth-lbl">📈 Career Growth Path</div>
@@ -145,33 +195,40 @@
           </div>
         </div>
 
-        <!-- Roadmap -->
+        <!-- ── Roadmap Tab ── -->
         <div class="cc-panel" id="panel-{{ idx }}-roadmap">
           <div class="rm-timeline">
             {% for step in profile.roadmap %}
             <div class="rm-item">
               <div class="rm-dot">{{ forloop.counter }}</div>
-              <div class="rm-week">{{ step.week }}</div>
-              <div class="rm-title">{{ step.title }}</div>
-              <div class="rm-desc">{{ step.desc }}</div>
-              <div class="rm-res-row">{% for r in step.resources %}<span class="rm-res">📖 {{ r }}</span>{% endfor %}</div>
+              <div class="rm-card">
+                <div class="rm-week">{{ step.week }}</div>
+                <div class="rm-title">{{ step.title }}</div>
+                <div class="rm-desc">{{ step.desc }}</div>
+                <div class="rm-res-row">
+                  {% for r in step.resources %}<span class="rm-res">📖 {{ r }}</span>{% endfor %}
+                </div>
+              </div>
             </div>
             {% endfor %}
           </div>
         </div>
 
-        <!-- Salary -->
+        <!-- ── Salary Tab ── -->
         <div class="cc-panel" id="panel-{{ idx }}-salary">
-          <div class="sal-bar-section">
-            <div class="sal-bar-lbl">📊 Salary by City</div>
-            {% for s in profile.salary %}
-            <div class="sal-bar-row">
-              <span class="sal-bar-city">{{ s.city }}</span>
-              <div class="sal-bar-bg"><div class="sal-bar-fill" style="width:{% if '80' in s.range or '150' in s.range or '70' in s.range %}100{% elif '60' in s.range or '55' in s.range or '50' in s.range %}90{% elif '45' in s.range or '40' in s.range %}78{% elif '35' in s.range or '38' in s.range %}65{% elif '30' in s.range or '32' in s.range %}55{% elif '28' in s.range or '25' in s.range %}45{% else %}35{% endif %}%"></div></div>
-              <span class="sal-bar-val">{{ s.range }}</span>
-            </div>
-            {% endfor %}
+          <div class="sal-header-row">
+            <span class="sal-header-lbl">📊 Salary by City</span>
+            <span class="sal-avg-badge">Avg: {{ profile.avg_salary }}</span>
           </div>
+          {% for s in profile.salary %}
+          <div class="sal-bar-row">
+            <span class="sal-bar-city">{{ s.city }}</span>
+            <div class="sal-bar-bg">
+              <div class="sal-bar-fill" style="width:{% if '80' in s.range or '150' in s.range or '70' in s.range %}100{% elif '60' in s.range or '55' in s.range or '50' in s.range %}90{% elif '45' in s.range or '40' in s.range %}78{% elif '35' in s.range or '38' in s.range %}65{% elif '30' in s.range or '32' in s.range %}55{% elif '28' in s.range or '25' in s.range %}45{% else %}35{% endif %}%"></div>
+            </div>
+            <span class="sal-bar-val">{{ s.range }}</span>
+          </div>
+          {% endfor %}
           <div class="sal-card-grid">
             {% for s in profile.salary %}
             <div class="sal-card">
@@ -183,50 +240,57 @@
           </div>
         </div>
 
-        <!-- Skills -->
+        <!-- ── Skills Tab ── -->
         <div class="cc-panel" id="panel-{{ idx }}-skills">
-          <p style="font-size:.82rem;color:var(--ink-400);margin-bottom:14px;line-height:1.6">
-            These are the <strong style="color:var(--ink-200)">{{ profile.required_skills|length }} core skills</strong>
-            evaluated when matching you to <strong style="color:var(--indigo)">{{ name }}</strong>.
+          <p class="sk-intro">
+            These are the <strong>{{ profile.required_skills|length }} core skills</strong>
+            evaluated when matching you to <strong>{{ name }}</strong>.
           </p>
           <div class="sk-full-grid">
-            {% for skill in profile.required_skills %}<span class="sk-full-chip">✦ {{ skill }}</span>{% endfor %}
+            {% for skill in profile.required_skills %}
+              <span class="sk-full-chip">✦ {{ skill }}</span>
+            {% endfor %}
           </div>
-          <div style="background:var(--amber-soft);border:1px solid rgba(251,191,36,.25);border-radius:var(--r-sm);padding:10px 14px;font-size:.79rem;color:var(--ink-300);line-height:1.6">
+          <div class="sk-tip">
             💡 <strong>Tip:</strong> Focusing on 2–3 missing skills can boost your match score by 20–30 points.
-            Head to the <a href="{% url 'skill_roadmap' %}" style="color:var(--indigo)">Skill Roadmap Planner</a> to build a plan.
+            Head to the <a href="{% url 'skill_roadmap' %}">Skill Roadmap Planner</a> to build a personalised plan.
           </div>
         </div>
 
-        <!-- Radar -->
+        <!-- ── Radar Tab ── -->
         <div class="cc-panel" id="panel-{{ idx }}-radar">
           <div class="radar-wrap"><canvas id="radar-{{ idx }}"></canvas></div>
-          <p style="font-size:.74rem;color:var(--ink-500);margin-top:10px;text-align:center">Required competency levels across key areas for {{ name }}</p>
+          <p class="radar-note">Required competency levels across key areas for {{ name }}</p>
         </div>
 
+        <!-- CTA Footer -->
         <div class="cc-cta">
           <div class="cc-cta-text">See how well you match → <strong>Get your personalised score now</strong></div>
           <div class="cc-cta-btns">
-            <a href="{% url 'profile_form' %}?demo=1" class="btn-ghost" style="font-size:.78rem;padding:7px 14px;">👀 Demo</a>
-            <a href="{% url 'profile_form' %}"        class="btn-primary" style="font-size:.8rem;padding:8px 18px;">⚡ Analyse My Profile</a>
+            <a href="{% url 'profile_form' %}?demo=1" class="btn-ghost"    style="font-size:.78rem;padding:7px 14px;">👀 Demo</a>
+            <a href="{% url 'profile_form' %}"        class="btn-primary"  style="font-size:.8rem;padding:8px 18px;">⚡ Analyse My Profile</a>
           </div>
         </div>
-      </div>
-    </div>
+
+      </div><!-- /cc-detail -->
+    </div><!-- /career-card -->
     {% endwith %}
     {% endfor %}
-  </div>
+  </div><!-- /careers-grid -->
 
 </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Radar data for JS -->
 <script>
 window.RADAR_DATA = {
   {% for name, profile in careers.items %}{% with forloop.counter as idx %}
-  {{ idx }}: { labels: [{% for l in profile.radar_labels %}"{{ l|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}], required: [{% for v in profile.radar_required %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}], name: "{{ name|escapejs }}" },
+  {{ idx }}: {
+    labels: [{% for l in profile.radar_labels %}"{{ l|escapejs }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    required: [{% for v in profile.radar_required %}{{ v }}{% if not forloop.last %},{% endif %}{% endfor %}],
+    name: "{{ name|escapejs }}"
+  },
   {% endwith %}{% endfor %}
 };
 </script>
