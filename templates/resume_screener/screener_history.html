@@ -3,45 +3,90 @@
 
 {% block extra_head %}
 <style>
-.sh-page { padding: 48px 0 96px; }
-.sh-header { margin-bottom: 36px; }
-.sh-header h1 { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; letter-spacing: -.02em; color: var(--ink-100); }
-.sh-header p  { color: var(--ink-400); font-size: .9rem; margin-top: 5px; }
+/* ══════════════════════════════════════════════════
+   SCREENING HISTORY — Full Light + Dark Mode v2.0
+══════════════════════════════════════════════════ */
 
+.sh-page { padding: 48px 0 96px; }
+
+.sh-header { margin-bottom: 36px; }
+.sh-header h1 {
+  font-family: var(--font-display); font-size: 1.7rem; font-weight: 800;
+  letter-spacing: -.02em; color: var(--ink-100);
+}
+.sh-header p { color: var(--ink-400); font-size: .9rem; margin-top: 5px; }
+[data-theme="light"] .sh-header p { color: var(--ink-300); }
+
+/* Search & sort bar */
+.sh-search-input {
+  flex: 1; min-width: 220px;
+  background: var(--surface); border: 1.5px solid var(--border-i);
+  border-radius: var(--r-sm); padding: 10px 16px;
+  color: var(--ink-100); font-family: var(--font-body); font-size: .88rem;
+  transition: all var(--t);
+}
+.sh-search-input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-glow); }
+.sh-search-input::placeholder { color: var(--ink-500); }
+[data-theme="light"] .sh-search-input { color: var(--ink-100); background: var(--surface); }
+[data-theme="light"] .sh-search-input::placeholder { color: var(--ink-400); }
+
+.sh-sort-select {
+  background: var(--surface2); border: 1px solid var(--border-i);
+  border-radius: var(--r-sm); padding: 10px 14px;
+  color: var(--ink-300); font-family: var(--font-body); font-size: .85rem; cursor: pointer;
+}
+[data-theme="light"] .sh-sort-select { background: var(--surface3); color: var(--ink-200); }
+
+/* Session card */
 .sh-session {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--r-lg); margin-bottom: 16px;
-  overflow: hidden; transition: all var(--t-spring);
-  box-shadow: var(--shadow-sm);
+  overflow: hidden; transition: all var(--t-spring); box-shadow: var(--shadow-sm);
 }
 .sh-session:hover { border-color: var(--border-i); box-shadow: var(--shadow-i); }
+[data-theme="light"] .sh-session { box-shadow: var(--shadow-sm); }
+[data-theme="light"] .sh-session:hover { box-shadow: var(--shadow-i); }
 
 .sh-session-header {
-  display: flex; align-items: center; gap: 16px;
+  display: flex; align-items: center;
   padding: 18px 24px; cursor: pointer;
   justify-content: space-between; flex-wrap: wrap; gap: 12px;
 }
+
 .sh-meta { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; flex-wrap: wrap; }
+
 .sh-date {
   font-family: var(--font-display); font-size: .72rem; font-weight: 700;
   color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px;
   background: var(--surface2); padding: 4px 12px;
   border-radius: var(--r-pill); border: 1px solid var(--border); flex-shrink: 0;
 }
+[data-theme="light"] .sh-date { background: var(--surface3); color: var(--ink-400); border-color: var(--border-i); }
+
 .sh-jd-preview {
   font-size: .82rem; color: var(--ink-300);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   max-width: 400px; flex: 1;
 }
+[data-theme="light"] .sh-jd-preview { color: var(--ink-200); }
+
 .sh-stats { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 .sh-stat {
   display: flex; flex-direction: column; align-items: center;
   background: var(--surface2); border: 1px solid var(--border);
   padding: 6px 14px; border-radius: var(--r-sm); min-width: 70px;
 }
-.sh-stat-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; background: var(--grad-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-theme="light"] .sh-stat { background: var(--surface3); border-color: var(--border-i); }
+.sh-stat-num {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+  background: var(--grad-brand); -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+}
 .sh-stat-lbl { font-size: .64rem; font-weight: 600; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; }
+[data-theme="light"] .sh-stat-lbl { color: var(--ink-400); }
+
 .sh-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
 .sh-link {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 7px 14px; border-radius: var(--r-sm);
@@ -50,17 +95,21 @@
 }
 .sh-link-indigo { color: var(--indigo); background: var(--indigo-soft); border: 1px solid var(--border-i); }
 .sh-link-indigo:hover { background: rgba(129,140,248,.18); }
+[data-theme="light"] .sh-link-indigo:hover { background: rgba(79,70,229,.14); }
+
 .sh-link-emerald { color: var(--emerald); background: var(--emerald-soft); border: 1px solid rgba(52,211,153,.3); }
 .sh-link-emerald:hover { background: rgba(52,211,153,.2); }
+[data-theme="light"] .sh-link-emerald { color: var(--emerald); }
+
 .sh-delete-btn {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 7px 14px; border-radius: var(--r-sm);
   font-size: .78rem; font-weight: 600;
   color: var(--rose); background: var(--rose-soft);
-  border: 1px solid rgba(251,113,133,.3); cursor: pointer;
-  transition: all var(--t);
+  border: 1px solid rgba(251,113,133,.3); cursor: pointer; transition: all var(--t);
 }
 .sh-delete-btn:hover { background: rgba(251,113,133,.2); }
+
 .sh-toggle-btn {
   width: 32px; height: 32px; border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;
@@ -68,25 +117,34 @@
   color: var(--ink-400); font-size: .8rem; cursor: pointer;
   transition: all var(--t); flex-shrink: 0;
 }
+[data-theme="light"] .sh-toggle-btn { background: var(--surface3); color: var(--ink-300); border-color: var(--border-i); }
 .sh-toggle-btn:hover { background: var(--indigo-soft); color: var(--indigo); border-color: var(--indigo); }
 
-/* Expandable body */
+/* Expanded results table */
 .sh-session-body { display: none; border-top: 1px solid var(--border); }
 .sh-session-body.open { display: block; }
+
 .sh-results-table { width: 100%; border-collapse: collapse; }
 .sh-results-table th {
   padding: 10px 16px; text-align: left;
   font-size: .7rem; font-weight: 700; color: var(--ink-500);
   text-transform: uppercase; letter-spacing: .5px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface2);
+  border-bottom: 1px solid var(--border); background: var(--surface2);
 }
+[data-theme="light"] .sh-results-table th {
+  background: var(--surface3); color: var(--ink-400);
+}
+
 .sh-results-table td {
   padding: 12px 16px; font-size: .83rem; color: var(--ink-200);
   border-bottom: 1px solid var(--border);
 }
+[data-theme="light"] .sh-results-table td { color: var(--ink-100); }
 .sh-results-table tr:last-child td { border-bottom: none; }
 .sh-results-table tr:hover td { background: var(--surface2); }
+[data-theme="light"] .sh-results-table tr:hover td { background: var(--surface3); }
+
+/* Score pills */
 .score-pill {
   display: inline-flex; align-items: center;
   padding: 3px 12px; border-radius: var(--r-pill);
@@ -97,41 +155,66 @@
 .score-amber   { background: var(--amber-soft);   color: var(--amber); }
 .score-rose    { background: var(--rose-soft);    color: var(--rose); }
 
+/* Empty state */
 .empty-history { text-align: center; padding: 72px 20px; color: var(--ink-400); }
 .empty-history .es-icon { font-size: 3.5rem; margin-bottom: 18px; display: block; }
 .empty-history h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--ink-200); margin-bottom: 8px; }
+[data-theme="light"] .empty-history h3 { color: var(--ink-100); }
 
 /* Delete modal */
 .modal-overlay {
   display: none; position: fixed; inset: 0; z-index: 900;
-  background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+  background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
   align-items: center; justify-content: center;
 }
+[data-theme="light"] .modal-overlay { background: rgba(15,23,42,.35); }
 .modal-overlay.open { display: flex; }
+
 .modal-box {
   background: var(--surface); border: 1px solid var(--border-i);
   border-radius: var(--r-lg); padding: 30px 32px;
   max-width: 400px; width: 90%; box-shadow: var(--shadow-lg);
   text-align: center;
 }
-.modal-box h3 { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: var(--ink-100); margin-bottom: 8px; }
-.modal-box p  { font-size: .87rem; color: var(--ink-400); margin-bottom: 24px; }
+[data-theme="light"] .modal-box { box-shadow: var(--shadow-lg); background: #fff; }
+
+.modal-box h3 {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 800;
+  color: var(--ink-100); margin-bottom: 8px;
+}
+.modal-box p { font-size: .87rem; color: var(--ink-400); margin-bottom: 24px; }
+[data-theme="light"] .modal-box p { color: var(--ink-300); }
+
 .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
 .modal-cancel-btn {
   padding: 10px 22px; border-radius: var(--r-pill);
   font-family: var(--font-display); font-size: .87rem; font-weight: 700;
   color: var(--ink-400); background: var(--surface2);
   border: 1px solid var(--border); cursor: pointer; transition: all var(--t);
 }
-.modal-cancel-btn:hover { color: var(--ink-100); }
+[data-theme="light"] .modal-cancel-btn { background: var(--surface3); color: var(--ink-300); border-color: var(--border-i); }
+.modal-cancel-btn:hover { color: var(--ink-100); background: var(--surface3); }
+[data-theme="light"] .modal-cancel-btn:hover { color: var(--ink-100); background: var(--surface4); }
+
 .modal-delete-btn {
   padding: 10px 22px; border-radius: var(--r-pill);
   font-family: var(--font-display); font-size: .87rem; font-weight: 700;
   color: #fff; background: linear-gradient(135deg, var(--rose), #e11d48);
   border: none; cursor: pointer; transition: all var(--t);
-  box-shadow: 0 4px 16px rgba(251,113,133,.3);
+  box-shadow: 0 4px 16px rgba(225,29,72,.25);
 }
-.modal-delete-btn:hover { transform: translateY(-1px); }
+.modal-delete-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(225,29,72,.3); }
+
+/* Search result count */
+.sh-count-text { font-size: .78rem; color: var(--ink-500); margin-top: 8px; }
+[data-theme="light"] .sh-count-text { color: var(--ink-400); }
+
+@media (max-width: 640px) {
+  .sh-session-header { padding: 14px 16px; }
+  .sh-stats { display: none; }
+  .sh-jd-preview { max-width: 180px; }
+}
 </style>
 {% endblock %}
 
@@ -147,108 +230,95 @@
       </div>
       <a href="{% url 'screener' %}" class="sh-link sh-link-indigo" style="display:inline-flex;align-items:center;gap:6px;">+ New Screening</a>
     </div>
-    <!-- Search bar -->
+
+    <!-- Search + sort bar -->
     <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
       <input
         type="text"
         id="sh-search"
-        placeholder="🔍 Search by job description keywords..."
-        style="flex:1;min-width:220px;background:var(--surface);border:1.5px solid var(--border-i);border-radius:var(--r-sm);padding:10px 16px;color:var(--ink-100);font-family:var(--font-body);font-size:.88rem;transition:all var(--t);"
+        class="sh-search-input"
+        placeholder="🔍 Search by job description keywords…"
         oninput="filterSessions()"
       />
-      <select id="sh-sort" onchange="sortSessions()" style="background:var(--surface2);border:1px solid var(--border-i);border-radius:var(--r-sm);padding:10px 14px;color:var(--ink-300);font-family:var(--font-body);font-size:.85rem;cursor:pointer;">
+      <select id="sh-sort" class="sh-sort-select" onchange="sortSessions()">
         <option value="date">Sort: Newest First</option>
         <option value="resumes">Sort: Most Resumes</option>
         <option value="score">Sort: Highest Score</option>
       </select>
     </div>
-    <div id="sh-count" style="font-size:.78rem;color:var(--ink-500);margin-top:8px;"></div>
+    <div id="sh-count" class="sh-count-text"></div>
   </div>
 
   {% if sessions %}
-    <div id="sessions-container">
-    {% for session in sessions %}
-    <div class="sh-session reveal">
-      <div class="sh-session-header">
+  <div id="sessions-container">
+  {% for session in sessions %}
+  <div class="sh-session reveal">
 
-        <div class="sh-meta">
-          <span class="sh-date">{{ session.created_at|date:"d M Y, H:i" }}</span>
-          <span class="sh-jd-preview">{{ session.job_description|truncatechars:80 }}</span>
-        </div>
-
-        <div class="sh-stats">
-          <div class="sh-stat">
-            <span class="sh-stat-num">{{ session.resume_count }}</span>
-            <span class="sh-stat-lbl">Resumes</span>
-          </div>
-          {% with top=session.results.first %}
-          {% if top %}
-          <div class="sh-stat">
-            <span class="sh-stat-num">{{ top.score|floatformat:0 }}%</span>
-            <span class="sh-stat-lbl">Top Score</span>
-          </div>
-          {% endif %}
-          {% endwith %}
-        </div>
-
-        <div class="sh-actions">
-          <a class="sh-link sh-link-indigo" href="{% url 'shared_session' session.share_token %}">
-            🔗 View
-          </a>
-          <a class="sh-link sh-link-emerald" href="{% url 'download_report' session.share_token %}">
-            ⬇ PDF
-          </a>
-          <button class="sh-delete-btn" onclick="openDeleteModal({{ session.pk }})">🗑 Delete</button>
-          <button class="sh-toggle-btn" onclick="toggleSession(this)" title="Expand">▼</button>
-        </div>
-
+    <div class="sh-session-header">
+      <div class="sh-meta">
+        <span class="sh-date">{{ session.created_at|date:"d M Y, H:i" }}</span>
+        <span class="sh-jd-preview">{{ session.job_description|truncatechars:80 }}</span>
       </div>
 
-      <div class="sh-session-body">
-        {% if session.results.all %}
-        <table class="sh-results-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Filename</th>
-              <th>Similarity</th>
-              <th>ATS Score</th>
-              <th>Grade</th>
-              <th>Keywords</th>
-              <th>Skills</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in session.results.all %}
-            <tr>
-              <td>{{ r.rank }}</td>
-              <td style="font-weight:500;">{{ r.filename }}</td>
-              <td>
-                <span class="score-pill score-{{ r.strength_color }}">
-                  {{ r.strength_emoji }} {{ r.score|floatformat:1 }}%
-                </span>
-              </td>
-              <td>
-                <span class="score-pill {% if r.ats_score >= 70 %}score-emerald{% elif r.ats_score >= 45 %}score-amber{% else %}score-rose{% endif %}">
-                  {{ r.ats_score }}%
-                </span>
-              </td>
-              <td>
-                <span class="score-pill score-{{ r.strength_color }}">{{ r.strength_tier }}</span>
-              </td>
-              <td>{{ r.matched_keywords|length }} / {{ r.matched_keywords|length|add:r.missing_keywords|length }}</td>
-              <td>{{ r.matched_skills|length }} matched</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% else %}
-        <div style="padding:20px 24px;color:var(--ink-500);font-size:.85rem;">No resume results saved for this session.</div>
+      <div class="sh-stats">
+        <div class="sh-stat">
+          <span class="sh-stat-num">{{ session.resume_count }}</span>
+          <span class="sh-stat-lbl">Resumes</span>
+        </div>
+        {% with top=session.results.first %}
+        {% if top %}
+        <div class="sh-stat">
+          <span class="sh-stat-num">{{ top.score|floatformat:0 }}%</span>
+          <span class="sh-stat-lbl">Top Score</span>
+        </div>
         {% endif %}
+        {% endwith %}
+      </div>
+
+      <div class="sh-actions">
+        <a class="sh-link sh-link-indigo" href="{% url 'shared_session' session.share_token %}">🔗 View</a>
+        <a class="sh-link sh-link-emerald" href="{% url 'download_report' session.share_token %}">⬇ PDF</a>
+        <button class="sh-delete-btn" onclick="openDeleteModal({{ session.pk }})">🗑 Delete</button>
+        <button class="sh-toggle-btn" onclick="toggleSession(this)" title="Expand">▼</button>
       </div>
     </div>
-    {% endfor %}
+
+    <div class="sh-session-body">
+      {% if session.results.all %}
+      <table class="sh-results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Filename</th>
+            <th>Similarity</th>
+            <th>ATS Score</th>
+            <th>Grade</th>
+            <th>Keywords</th>
+            <th>Skills</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in session.results.all %}
+          <tr>
+            <td>{{ r.rank }}</td>
+            <td style="font-weight:600;">{{ r.filename }}</td>
+            <td><span class="score-pill score-{{ r.strength_color }}">{{ r.strength_emoji }} {{ r.score|floatformat:1 }}%</span></td>
+            <td><span class="score-pill {% if r.ats_score >= 70 %}score-emerald{% elif r.ats_score >= 45 %}score-amber{% else %}score-rose{% endif %}">{{ r.ats_score }}%</span></td>
+            <td><span class="score-pill score-{{ r.strength_color }}">{{ r.strength_tier }}</span></td>
+            <td>{{ r.matched_keywords|length }} / {{ r.matched_keywords|length|add:r.missing_keywords|length }}</td>
+            <td>{{ r.matched_skills|length }} matched</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="padding:20px 24px;color:var(--ink-500);font-size:.85rem;">No resume results saved for this session.</div>
+      {% endif %}
     </div>
+
+  </div>
+  {% endfor %}
+  </div>
 
   {% else %}
   <div class="empty-history">
@@ -295,7 +365,6 @@ document.getElementById('deleteModal').addEventListener('click', function(e) {
   if (e.target === this) closeDeleteModal();
 });
 
-// Search & sort
 function filterSessions() {
   const q = document.getElementById('sh-search').value.toLowerCase().trim();
   const sessions = document.querySelectorAll('.sh-session');
@@ -322,13 +391,13 @@ function sortSessions() {
       return bNum - aNum;
     }
     if (val === 'score') {
-      const stats = a.querySelectorAll('.sh-stat-num');
+      const aStats = a.querySelectorAll('.sh-stat-num');
       const bStats = b.querySelectorAll('.sh-stat-num');
-      const aScore = parseFloat(stats[1]?.textContent || '0');
-      const bScore = parseFloat(bStats[1]?.textContent || '0');
+      const aScore = parseFloat((aStats[1]?.textContent || '0').replace('%',''));
+      const bScore = parseFloat((bStats[1]?.textContent || '0').replace('%',''));
       return bScore - aScore;
     }
-    return 0; // default: keep server-sorted order (newest first)
+    return 0;
   });
   sessions.forEach(s => container.appendChild(s));
 }
