@@ -14,15 +14,15 @@
   <!-- Page Heading -->
   <div class="reveal" style="margin-bottom:28px">
     <h1 class="page-title">🗂️ Career Tracks</h1>
-    <p class="page-sub">Explore all 5 career paths — click any card to see full details, salary data, roadmap, job roles, and more.</p>
+    <p class="page-sub">Explore all 10 career paths — including city-wise demand data so you know exactly where to look for jobs.</p>
   </div>
 
   <!-- Hero Stats -->
   <div class="ct-hero-stats reveal">
-    <div class="hs-card"><div class="hs-num">5</div><div class="hs-lbl">Career Tracks</div></div>
-    <div class="hs-card"><div class="hs-num">29</div><div class="hs-lbl">Skills Mapped</div></div>
-    <div class="hs-card"><div class="hs-num">30</div><div class="hs-lbl">Salary Data Points</div></div>
-    <div class="hs-card"><div class="hs-num">25</div><div class="hs-lbl">Roadmap Phases</div></div>
+    <div class="hs-card"><div class="hs-num">10</div><div class="hs-lbl">Career Tracks</div></div>
+    <div class="hs-card"><div class="hs-num">50+</div><div class="hs-lbl">Skills Mapped</div></div>
+    <div class="hs-card"><div class="hs-num">60+</div><div class="hs-lbl">Salary Data Points</div></div>
+    <div class="hs-card"><div class="hs-num">50</div><div class="hs-lbl">Roadmap Phases</div></div>
   </div>
 
   <!-- Filter Bar -->
@@ -88,6 +88,7 @@
           <button class="cc-tab"        onclick="switchTab({{ idx }},'roles',this)">💼 Roles</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'roadmap',this)">🗺️ Roadmap</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'salary',this)">💰 Salaries</button>
+          <button class="cc-tab"        onclick="switchTab({{ idx }},'city',this)">📍 City Demand</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'skills',this)">🧠 Skills</button>
           <button class="cc-tab"        onclick="switchTab({{ idx }},'radar',this)">📊 Radar</button>
         </div>
@@ -236,6 +237,35 @@
               <div class="sal-range">{{ s.range }}</div>
               <div class="sal-exp">🕐 {{ s.exp }}</div>
             </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- ── City Demand Tab ── -->
+        <div class="cc-panel" id="panel-{{ idx }}-city">
+          <p style="font-size:.82rem;color:var(--ink-400);margin-bottom:16px;line-height:1.6;">
+            📍 Where to look for <strong>{{ name }}</strong> jobs in India — ranked by number of active openings and ecosystem strength.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            {% for cd in profile.city_demand %}
+            <div style="display:grid;grid-template-columns:130px 1fr auto;align-items:center;gap:14px;
+                        background:var(--surface2);border:1px solid var(--border);
+                        border-radius:var(--r-sm);padding:14px 16px;
+                        transition:all var(--t);" class="city-row">
+              <div>
+                <div style="font-weight:700;font-size:.88rem;color:var(--ink-100);">📍 {{ cd.city }}</div>
+                <div style="font-size:.7rem;color:var(--ink-500);margin-top:2px;">{{ cd.openings }} openings</div>
+              </div>
+              <div style="font-size:.78rem;color:var(--ink-400);line-height:1.5;">{{ cd.why }}</div>
+              <div style="font-size:.75rem;font-weight:700;white-space:nowrap;
+                         padding:4px 12px;border-radius:99px;
+                         {% if 'Highest' in cd.demand %}background:var(--emerald-soft);color:var(--emerald);border:1px solid rgba(52,211,153,.25);
+                         {% elif 'Very High' in cd.demand %}background:var(--cyan-soft);color:var(--cyan);border:1px solid rgba(34,211,238,.25);
+                         {% elif 'High' in cd.demand %}background:var(--indigo-soft);color:var(--indigo);border:1px solid var(--border-i);
+                         {% else %}background:var(--amber-soft);color:var(--amber);border:1px solid rgba(251,191,36,.25);{% endif %}">{{ cd.demand }}</div>
+            </div>
+            {% empty %}
+            <div style="color:var(--ink-500);font-size:.85rem;">City demand data not available for this track.</div>
             {% endfor %}
           </div>
         </div>

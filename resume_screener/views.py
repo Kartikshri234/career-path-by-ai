@@ -23,6 +23,16 @@ from .models import ScreeningSession, ResumeResult
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, 'resume_screener', 'uploads')
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# ── Action verbs that signal strong resume bullet points ──
+ACTION_VERBS = [
+    "achieved","architected","automated","built","collaborated","contributed",
+    "created","decreased","delivered","deployed","designed","developed",
+    "drove","engineered","enhanced","executed","improved","implemented",
+    "increased","launched","led","managed","mentored","migrated","optimized",
+    "reduced","refactored","released","scaled","shipped","solved","streamlined",
+    "transformed","integrated","published","maintained","monitored",
+]
+
 # ── Common tech skills / keywords for extraction ──
 SKILL_KEYWORDS = [
     # Languages
@@ -112,6 +122,110 @@ def keyword_overlap(jd_keywords, resume_text):
 # ── Estimate word count ──
 def word_count(text):
     return len(text.split())
+
+
+# ── Extract years of experience mentioned in resume ──
+def extract_experience_years(text):
+    """
+    Look for patterns like '3 years', '5+ years', '2 yrs of experience'.
+    Returns the max number found, or 0.
+    """
+    patterns = [
+        r'(\d+)\+?\s*years?\s*(?:of\s*)?(?:experience|exp)',
+        r'(\d+)\+?\s*yrs?\s*(?:of\s*)?(?:experience|exp)',
+        r'experience\s*(?:of\s*)?(\d+)\+?\s*years?',
+    ]
+    found = []
+    for p in patterns:
+        for m in re.finditer(p, text.lower()):
+            try:
+                found.append(int(m.group(1)))
+            except (IndexError, ValueError):
+                pass
+    return max(found) if found else 0
+
+
+# ── Count strong action verbs used ──
+def count_action_verbs(text):
+    text_lower = text.lower()
+    found = [v for v in ACTION_VERBS if re.search(r'\b' + v + r'\b', text_lower)]
+    return len(found), found
+
+
+# ── Check for quantified achievements (numbers in bullet context) ──
+def has_quantified_achievements(text):
+    """
+    Returns True if the resume contains bullet-point-style lines with numbers
+    that suggest quantified achievements (e.g. 'Reduced load time by 40%').
+    """
+    pattern = r'(?:reduced|improved|increased|decreased|saved|grew|achieved|delivered|boosted)[^.\n]{0,60}\d+[%x]'
+    return bool(re.search(pattern, text.lower()))
+
+
+# ── Detect education level ──
+def detect_education(text):
+    text_lower = text.lower()
+    if any(k in text_lower for k in ['phd', 'ph.d', 'doctorate', 'doctor of']):
+        return 'PhD'
+    if any(k in text_lower for k in ['m.tech', 'mtech', 'm.e.', 'mba', 'master']):
+        return 'Masters'
+    if any(k in text_lower for k in ['b.tech', 'btech', 'b.e.', 'b.sc', 'bachelor', 'undergraduate']):
+        return 'Bachelors'
+    if any(k in text_lower for k in ['diploma', 'polytechnic']):
+        return 'Diploma'
+    return 'Unknown'
+
+
+# ── Generate actionable improvement tips ──
+def generate_improvement_tips(result_data, jd_text):
+    tips = []
+    score = result_data.get('score', 0)
+    ats  = result_data.get('ats_score', 0)
+    wc   = result_data.get('word_count', 0)
+    action_count = result_data.get('action_verb_count', 0)
+    has_quant    = result_data.get('has_quantified', False)
+    missing_skills = result_data.get('missing_skills', [])
+    missing_kw     = result_data.get('missing_keywords', [])
+    ats_details    = result_data.get('ats_details', {})
+
+    if missing_skills:
+        top_missing = ', '.join(missing_skills[:3])
+        tips.append({'icon': '🎯', 'text': f'Add missing skills: <strong>{top_missing}</strong> — these appear in the job description.'})
+
+    if not has_quant:
+        tips.append({'icon': '📊', 'text': 'Add <strong>quantified achievements</strong> — e.g. "Reduced API latency by 35%" or "Shipped 3 features in Q2".' })
+
+    if action_count < 5:
+        tips.append({'icon': '✍️', 'text': 'Use stronger <strong>action verbs</strong> to start bullet points (e.g. Architected, Optimized, Delivered, Shipped).'})
+
+    if wc < 300:
+        tips.append({'icon': '📝', 'text': f'Resume is too short ({wc} words). Expand experience bullets and add a project or summary section.'})
+    elif wc > 900:
+        tips.append({'icon': '✂️', 'text': f'Resume is too long ({wc} words). Trim to 400–700 words for optimal ATS readability.'})
+
+    if not ats_details.get('contact', {}).get('linkedin'):
+        tips.append({'icon': '🔗', 'text': 'Add a <strong>LinkedIn profile URL</strong> — most ATS systems and recruiters expect it.'})
+
+    if not ats_details.get('contact', {}).get('email'):
+        tips.append({'icon': '📧', 'text': 'No email address detected — make sure your contact info is in plain text, not inside an image or table.'})
+
+    missing_sections = ats_details.get('sections', {}).get('missing', [])
+    if 'summary' in missing_sections:
+        tips.append({'icon': '💡', 'text': 'Add a <strong>Professional Summary</strong> section — 2–3 lines tailored to this specific role.'})
+    if 'experience' in missing_sections:
+        tips.append({'icon': '🏢', 'text': 'Add a clear <strong>Work Experience</strong> section header so ATS can parse your employment history.'})
+
+    if missing_kw:
+        top_kw = ', '.join(missing_kw[:4])
+        tips.append({'icon': '🔑', 'text': f'Include missing keywords from the JD: <strong>{top_kw}</strong>.'})
+
+    if score < 40:
+        tips.append({'icon': '🔄', 'text': 'Consider tailoring this resume specifically for this role — a generic resume scores much lower.'})
+
+    if ats < 50:
+        tips.append({'icon': '🤖', 'text': 'Low ATS score — avoid columns, graphics, or tables. Use a clean single-column layout.'})
+
+    return tips[:6]  # cap at 6 tips
 
 
 # ── Strength label ──
@@ -262,9 +376,15 @@ def screener(request):
             # Feature 3: ATS score
             ats_score, ats_details = compute_ats_score(resume_text)
 
+            # ── NEW: richer resume signals ──
+            exp_years = extract_experience_years(resume_text)
+            action_count, action_verbs_found = count_action_verbs(resume_text)
+            has_quant = has_quantified_achievements(resume_text)
+            education = detect_education(resume_text)
+
             strength = get_strength(score)
 
-            results.append({
+            result_entry = {
                 "name": safe_name,
                 "score": score,
                 "strength": strength,
@@ -278,7 +398,18 @@ def screener(request):
                 "word_count": wc,
                 "ats_score": ats_score,
                 "ats_details": ats_details,
-            })
+                # new fields
+                "experience_years": exp_years,
+                "action_verb_count": action_count,
+                "action_verbs_found": action_verbs_found[:8],
+                "has_quantified": has_quant,
+                "education": education,
+            }
+
+            # Generate improvement tips
+            result_entry["improvement_tips"] = generate_improvement_tips(result_entry, job_desc)
+
+            results.append(result_entry)
 
         results = sorted(results, key=lambda x: x["score"], reverse=True)
         resume_count = len(results)

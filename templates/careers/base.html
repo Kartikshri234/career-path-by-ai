@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Chart.js (results page radar/bar) -->
+  <!-- Chart.js (results page radar/bar + screener chart) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
 
   <!-- Theme flash prevention -->
@@ -38,11 +38,12 @@
     </button>
 
     <div class="nav-links" id="navLinks">
-      <a href="{% url 'home' %}"         class="nav-link">Home</a>
-      <a href="{% url 'profile_form' %}" class="nav-link">Analyse</a>
-      <a href="{% url 'careers_list' %}" class="nav-link">Careers</a>
-      <a href="{% url 'skill_roadmap' %}" class="nav-link">Roadmap</a>
-      <a href="{% url 'screener' %}"     class="nav-link">Resume</a>
+      <a href="{% url 'home' %}"             class="nav-link">Home</a>
+      <a href="{% url 'profile_form' %}"     class="nav-link">Analyse</a>
+      <a href="{% url 'careers_list' %}"     class="nav-link">Careers</a>
+      <a href="{% url 'skill_roadmap' %}"    class="nav-link">Roadmap</a>
+      <a href="{% url 'screener' %}"         class="nav-link">Resume</a>
+      <a href="{% url 'history' %}"          class="nav-link">History</a>
     </div>
 
     <div class="nav-right">

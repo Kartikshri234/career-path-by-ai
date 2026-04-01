@@ -312,11 +312,17 @@ body::before {
    TAGS / BADGES
 ══════════════════════════════════════════ */
 .tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 13px; border-radius: var(--r-pill); font-size: .78rem; font-weight: 600; }
-.tag-green  { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
-.tag-red    { background: var(--rose-soft);    color: var(--rose);    border: 1px solid rgba(251,113,133,.25); }
-.tag-blue   { background: var(--cyan-soft);    color: var(--cyan);    border: 1px solid rgba(34,211,238,.25); }
-.tag-purple { background: var(--indigo-soft);  color: var(--indigo);  border: 1px solid var(--border-i); }
-.tag-yellow { background: var(--amber-soft);   color: var(--amber);   border: 1px solid rgba(251,191,36,.25); }
+.tag-green   { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
+.tag-red     { background: var(--rose-soft);    color: var(--rose);    border: 1px solid rgba(251,113,133,.25); }
+.tag-blue    { background: var(--cyan-soft);    color: var(--cyan);    border: 1px solid rgba(34,211,238,.25); }
+.tag-purple  { background: var(--indigo-soft);  color: var(--indigo);  border: 1px solid var(--border-i); }
+.tag-yellow  { background: var(--amber-soft);   color: var(--amber);   border: 1px solid rgba(251,191,36,.25); }
+/* Semantic aliases used in screener templates */
+.tag-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
+.tag-cyan    { background: var(--cyan-soft);    color: var(--cyan);    border: 1px solid rgba(34,211,238,.25); }
+.tag-amber   { background: var(--amber-soft);   color: var(--amber);   border: 1px solid rgba(251,191,36,.25); }
+.tag-rose    { background: var(--rose-soft);    color: var(--rose);    border: 1px solid rgba(251,113,133,.25); }
+.tag-indigo  { background: var(--indigo-soft);  color: var(--indigo);  border: 1px solid var(--border-i); }
 
 /* ══════════════════════════════════════════
    FORM INPUTS
@@ -446,6 +452,14 @@ select.field-input option { background: var(--surface); color: var(--ink-100); }
 @keyframes pulse {
   0%,100% { box-shadow: 0 0 0 3px var(--emerald-soft); }
   50%      { box-shadow: 0 0 0 7px transparent; }
+}
+@keyframes orb-breathe {
+  from { opacity: .8; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 1;  transform: translate(-50%, -50%) scale(1.06); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Heading */

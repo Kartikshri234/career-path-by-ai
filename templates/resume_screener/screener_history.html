@@ -140,11 +140,33 @@
 <div class="container">
 
   <div class="sh-header reveal">
-    <h1>📂 Screening History</h1>
-    <p>All saved resume screening sessions — expand any session to view ranked candidates.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+      <div>
+        <h1>📂 Screening History</h1>
+        <p>All saved resume screening sessions — expand any session to view ranked candidates.</p>
+      </div>
+      <a href="{% url 'screener' %}" class="sh-link sh-link-indigo" style="display:inline-flex;align-items:center;gap:6px;">+ New Screening</a>
+    </div>
+    <!-- Search bar -->
+    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <input
+        type="text"
+        id="sh-search"
+        placeholder="🔍 Search by job description keywords..."
+        style="flex:1;min-width:220px;background:var(--surface);border:1.5px solid var(--border-i);border-radius:var(--r-sm);padding:10px 16px;color:var(--ink-100);font-family:var(--font-body);font-size:.88rem;transition:all var(--t);"
+        oninput="filterSessions()"
+      />
+      <select id="sh-sort" onchange="sortSessions()" style="background:var(--surface2);border:1px solid var(--border-i);border-radius:var(--r-sm);padding:10px 14px;color:var(--ink-300);font-family:var(--font-body);font-size:.85rem;cursor:pointer;">
+        <option value="date">Sort: Newest First</option>
+        <option value="resumes">Sort: Most Resumes</option>
+        <option value="score">Sort: Highest Score</option>
+      </select>
+    </div>
+    <div id="sh-count" style="font-size:.78rem;color:var(--ink-500);margin-top:8px;"></div>
   </div>
 
   {% if sessions %}
+    <div id="sessions-container">
     {% for session in sessions %}
     <div class="sh-session reveal">
       <div class="sh-session-header">
@@ -226,6 +248,7 @@
       </div>
     </div>
     {% endfor %}
+    </div>
 
   {% else %}
   <div class="empty-history">
@@ -271,5 +294,43 @@ function closeDeleteModal() {
 document.getElementById('deleteModal').addEventListener('click', function(e) {
   if (e.target === this) closeDeleteModal();
 });
+
+// Search & sort
+function filterSessions() {
+  const q = document.getElementById('sh-search').value.toLowerCase().trim();
+  const sessions = document.querySelectorAll('.sh-session');
+  let visible = 0;
+  sessions.forEach(s => {
+    const jd = (s.querySelector('.sh-jd-preview')?.textContent || '').toLowerCase();
+    const show = !q || jd.includes(q);
+    s.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+  const count = document.getElementById('sh-count');
+  if (count) count.textContent = q ? `Showing ${visible} result${visible !== 1 ? 's' : ''} for "${q}"` : '';
+}
+
+function sortSessions() {
+  const val = document.getElementById('sh-sort').value;
+  const container = document.getElementById('sessions-container');
+  if (!container) return;
+  const sessions = Array.from(container.querySelectorAll('.sh-session'));
+  sessions.sort((a, b) => {
+    if (val === 'resumes') {
+      const aNum = parseInt(a.querySelector('.sh-stat-num')?.textContent || '0');
+      const bNum = parseInt(b.querySelector('.sh-stat-num')?.textContent || '0');
+      return bNum - aNum;
+    }
+    if (val === 'score') {
+      const stats = a.querySelectorAll('.sh-stat-num');
+      const bStats = b.querySelectorAll('.sh-stat-num');
+      const aScore = parseFloat(stats[1]?.textContent || '0');
+      const bScore = parseFloat(bStats[1]?.textContent || '0');
+      return bScore - aScore;
+    }
+    return 0; // default: keep server-sorted order (newest first)
+  });
+  sessions.forEach(s => container.appendChild(s));
+}
 </script>
 {% endblock %}

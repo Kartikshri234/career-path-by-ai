@@ -27,6 +27,10 @@ WORK_PREF_CHOICES = [
     ('Analyzing Data',          'Analyzing Data'),
     ('Security & Networks',     'Security & Networks'),
     ('Research & Innovation',   'Research & Innovation'),
+    ('Web / Mobile Development','Web / Mobile Development'),
+    ('Embedded / IoT',          'Embedded / IoT'),
+    ('Blockchain / Web3',       'Blockchain / Web3'),
+    ('Design / UX',             'Design / UX'),
     ('Consulting',              'Consulting'),
 ]
 
