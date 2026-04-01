@@ -1,22 +1,23 @@
 /**
- * CareerCompass — main.js  v2.0
- * Premium AI-field interactions & micro-animations
+ * CareerCompass — main.js  v3.0
+ * Futuristic AI interactions & micro-animations
  */
 
 /* ══════════════════════════════════════════
-   THEME
+   THEME — Runs immediately on load
 ══════════════════════════════════════════ */
 (function () {
   const root = document.documentElement;
-  const saved = localStorage.getItem('cc-theme') || 'light';
-  root.setAttribute('data-theme', saved);
+  // Theme already applied by inline <script> in <head>, just sync the button
+  const saved = root.getAttribute('data-theme') || 'dark';
   const btn = document.getElementById('themeBtn');
   if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
 })();
 
 function toggleTheme() {
   const root = document.documentElement;
-  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  const current = root.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
   root.setAttribute('data-theme', next);
   localStorage.setItem('cc-theme', next);
   const btn = document.getElementById('themeBtn');
@@ -24,9 +25,15 @@ function toggleTheme() {
 }
 
 /* ══════════════════════════════════════════
-   ACTIVE NAV LINK
+   DOM READY
 ══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Sync button icon again after DOM ready (in case btn wasn't ready earlier)
+  const saved = document.documentElement.getAttribute('data-theme') || 'dark';
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+
+  // Active nav link
   const path = location.pathname;
   document.querySelectorAll('.nav-link').forEach(a => {
     const href = a.getAttribute('href') || '';
@@ -41,10 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
   initBars();
   initCardTilt();
+  initHolographicCards();
 });
 
 /* ══════════════════════════════════════════
-   SCROLL REVEAL  (Intersection Observer)
+   SCROLL REVEAL
 ══════════════════════════════════════════ */
 function initScrollReveal() {
   const items = document.querySelectorAll('.reveal');
@@ -61,7 +69,7 @@ function initScrollReveal() {
 }
 
 /* ══════════════════════════════════════════
-   BUTTON GLOW-FOLLOW (mouse radial)
+   BUTTON GLOW-FOLLOW (radial mouse track)
 ══════════════════════════════════════════ */
 function initButtonRipple() {
   document.querySelectorAll('.btn-primary').forEach(btn => {
@@ -151,6 +159,21 @@ function initCardTilt() {
 }
 
 /* ══════════════════════════════════════════
+   HOLOGRAPHIC CARD SHINE
+══════════════════════════════════════════ */
+function initHolographicCards() {
+  document.querySelectorAll('.holo-card, .feat-card, .panel-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--hx', (x * 100).toFixed(1) + '%');
+      card.style.setProperty('--hy', (y * 100).toFixed(1) + '%');
+    });
+  });
+}
+
+/* ══════════════════════════════════════════
    TAB SWITCHING (results page)
 ══════════════════════════════════════════ */
 function switchTab(id, btn) {
@@ -184,9 +207,7 @@ function updateHiddenInputs() {
     container.appendChild(inp);
   });
   const badge = document.getElementById('skill-count-badge');
-  if (badge) {
-    badge.textContent = chips.length + ' selected';
-  }
+  if (badge) badge.textContent = chips.length + ' selected';
   const legacyCount = document.getElementById('skill-count');
   if (legacyCount) legacyCount.textContent = `(${chips.length} selected)`;
 }
@@ -227,13 +248,13 @@ function showToast(message, type = 'info') {
     border-radius:12px; padding:12px 20px;
     color:var(--ink-100); font-size:.87rem; font-weight:500;
     display:flex; align-items:center; gap:10px;
-    box-shadow:0 8px 32px rgba(0,0,0,.5);
+    box-shadow:0 8px 32px rgba(0,0,0,.5), 0 0 24px ${colors[type]}22;
     transform:translateY(20px); opacity:0;
     transition:all .3s cubic-bezier(.34,1.56,.64,1);
     max-width:360px; font-family:var(--font-body);
   `;
   const dot = document.createElement('span');
-  dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${colors[type]};flex-shrink:0;box-shadow:0 0 8px ${colors[type]};`;
+  dot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${colors[type]};flex-shrink:0;box-shadow:0 0 10px ${colors[type]};`;
   toast.appendChild(dot);
   toast.appendChild(document.createTextNode(message));
   document.body.appendChild(toast);
@@ -245,7 +266,8 @@ function showToast(message, type = 'info') {
     });
   });
   setTimeout(() => {
-    toast.style.transform = 'translateY(20px)'; toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
@@ -311,7 +333,6 @@ function toggleMobileNav() {
   const btn   = document.getElementById('navHamburger');
   const open  = links && links.classList.toggle('mobile-open');
   if (btn) btn.classList.toggle('open', open);
-  // Close on outside click
   if (open) {
     setTimeout(() => {
       document.addEventListener('click', closeMobileNavOutside, { once: true });
@@ -331,10 +352,10 @@ function closeMobileNavOutside(e) {
 /* ══════════════════════════════════════════
    EXPOSE GLOBALS
 ══════════════════════════════════════════ */
-window.toggleTheme    = toggleTheme;
-window.switchTab      = switchTab;
-window.toggleSkill    = toggleSkill;
+window.toggleTheme        = toggleTheme;
+window.switchTab          = switchTab;
+window.toggleSkill        = toggleSkill;
 window.updateHiddenInputs = updateHiddenInputs;
-window.showToast      = showToast;
-window.showAIThinking = showAIThinking;
-window.toggleMobileNav = toggleMobileNav;
+window.showToast          = showToast;
+window.showAIThinking     = showAIThinking;
+window.toggleMobileNav    = toggleMobileNav;

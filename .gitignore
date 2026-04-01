@@ -20,6 +20,11 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media/
+uploads/
+database/
+**/migrations/*.py
+!**/migrations/__init__.py
+**/migrations/*.pyc
 
 # ── Static files (collected) ──
 /staticfiles/

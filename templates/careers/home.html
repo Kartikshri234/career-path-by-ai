@@ -4,15 +4,13 @@
 {% block extra_head %}
 <style>
 /* ═══════════════════════════════════════════════════
-   HOME PAGE v4.0 — Complete Redesign
-   Animated Hero · Live Career Ticker · Interactive Quiz
-   Feature Showcase · Social Proof · CTA
+   HOME PAGE v4.1 — Theme-Aware Futuristic Design
 ═══════════════════════════════════════════════════ */
 
 /* ── Particle Canvas ── */
 #hero-canvas {
   position: absolute; inset: 0; pointer-events: none; z-index: 0;
-  opacity: .45;
+  opacity: .65;
 }
 
 /* ── HERO ── */
@@ -21,12 +19,38 @@
   padding: 80px 0 72px; min-height: 88vh;
   display: flex; align-items: center;
 }
+
+/* Holographic bottom edge — dark only */
+.hero-v4::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(129,140,248,.6) 20%,
+    rgba(34,211,238,.8) 50%,
+    rgba(192,132,252,.6) 80%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  animation: holo-line 4s ease-in-out infinite alternate;
+  transition: opacity .3s;
+}
+[data-theme="light"] .hero-v4::after { opacity: .3; }
+
+@keyframes holo-line {
+  from { opacity: .5; filter: blur(1px); }
+  to   { opacity: 1;  filter: blur(2px) brightness(1.4); }
+}
+
+/* Grid overlay */
 .hero-v4 .hero-grid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(129,140,248,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(129,140,248,.05) 1px, transparent 1px);
-  background-size: 56px 56px;
+    linear-gradient(rgba(129,140,248,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129,140,248,.07) 1px, transparent 1px),
+    linear-gradient(rgba(34,211,238,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,.04) 1px, transparent 1px);
+  background-size: 56px 56px, 56px 56px, 224px 224px, 224px 224px;
   mask-image: radial-gradient(ellipse 100% 90% at 50% 40%, black, transparent);
   -webkit-mask-image: radial-gradient(ellipse 100% 90% at 50% 40%, black, transparent);
   animation: grid-drift 22s ease-in-out infinite alternate;
@@ -36,7 +60,10 @@
     linear-gradient(rgba(79,70,229,.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(79,70,229,.06) 1px, transparent 1px);
 }
-@keyframes grid-drift { from { background-position: 0 0; } to { background-position: 28px 28px; } }
+@keyframes grid-drift {
+  from { background-position: 0 0, 0 0, 0 0, 0 0; }
+  to   { background-position: 28px 28px, 28px 28px, 112px 112px, 112px 112px; }
+}
 
 .hero-v4-inner {
   position: relative; z-index: 2;
@@ -44,29 +71,37 @@
   gap: 56px; align-items: center;
 }
 
-/* Badge with glow ring */
+/* ── HERO BADGE ── */
 .hero-badge-v2 {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 6px 18px 6px 8px;
   background: rgba(129,140,248,.10);
-  border: 1px solid rgba(129,140,248,.35);
+  border: 1px solid rgba(129,140,248,.45);
   border-radius: var(--r-pill);
   font-size: .78rem; font-weight: 600; color: var(--indigo);
   margin-bottom: 24px; letter-spacing: .3px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 0 0 4px rgba(129,140,248,.06), 0 0 32px rgba(129,140,248,.12);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 0 4px rgba(129,140,248,.06), 0 0 32px rgba(129,140,248,.18), inset 0 1px 0 rgba(255,255,255,.08);
   width: fit-content;
+  animation: badge-glow-pulse 3s ease-in-out infinite alternate;
+}
+[data-theme="light"] .hero-badge-v2 {
+  background: rgba(79,70,229,.08);
+  border-color: rgba(79,70,229,.35);
+  box-shadow: 0 0 0 4px rgba(79,70,229,.04), 0 4px 20px rgba(79,70,229,.14);
+}
+@keyframes badge-glow-pulse {
+  from { box-shadow: 0 0 0 4px rgba(129,140,248,.06), 0 0 24px rgba(129,140,248,.14); }
+  to   { box-shadow: 0 0 0 4px rgba(129,140,248,.10), 0 0 48px rgba(129,140,248,.28), 0 0 80px rgba(34,211,238,.12); }
 }
 .badge-icon-wrap {
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--grad-brand); display: flex; align-items: center;
   justify-content: center; font-size: .75rem;
   box-shadow: 0 0 12px rgba(129,140,248,.4);
-  animation: badge-spin 8s linear infinite;
 }
-@keyframes badge-spin { to { box-shadow: 0 0 20px rgba(34,211,238,.6); } }
 
-/* Heading with typed text */
+/* ── HERO HEADING ── */
 .hero-h1 {
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 5vw, 3.8rem);
@@ -79,90 +114,197 @@
   background-clip: text;
   filter: drop-shadow(0 0 24px rgba(129,140,248,.3));
 }
+[data-theme="light"] .hero-h1 .hl-brand {
+  filter: drop-shadow(0 0 16px rgba(79,70,229,.2));
+}
 .hero-h1 .hl-warm {
   background: var(--grad-warm);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-/* Typing cursor */
-.typed-word { border-right: 3px solid var(--indigo); padding-right: 3px; animation: blink-cur .9s step-end infinite; }
+.typed-word {
+  border-right: 3px solid var(--indigo);
+  padding-right: 3px;
+  animation: blink-cur .9s step-end infinite;
+}
 @keyframes blink-cur { 50% { border-color: transparent; } }
 
 .hero-sub {
   font-size: 1.05rem; color: var(--ink-400); line-height: 1.8;
   max-width: 480px; margin-bottom: 36px;
 }
+[data-theme="light"] .hero-sub { color: var(--ink-300); }
 
-/* Hero CTA row */
 .hero-cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
 
-/* Pill trust strip */
-.trust-strip {
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
+/* Trust strip */
+.trust-strip { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .trust-item {
   display: flex; align-items: center; gap: 6px;
   font-size: .78rem; color: var(--ink-500); font-weight: 500;
 }
-.trust-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 6px var(--emerald); }
+[data-theme="light"] .trust-item { color: var(--ink-400); }
+.trust-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--emerald); box-shadow: 0 0 6px var(--emerald);
+}
 
-/* ── HERO RIGHT: Live Dashboard Card ── */
+/* ══════════════════════════════════════════
+   HERO DASHBOARD CARD — Full Theme Support
+══════════════════════════════════════════ */
 .hero-dashboard {
-  background: var(--surface);
-  border: 1px solid var(--border-i);
+  /* DARK default */
+  background: linear-gradient(160deg,
+    rgba(8,13,26,.97)  0%,
+    rgba(13,18,36,.95) 100%
+  );
+  border: 1px solid rgba(129,140,248,.35);
   border-radius: var(--r-xl);
   padding: 24px;
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(129,140,248,.08);
-  position: relative;
-  overflow: hidden;
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.80),
+    0 0 0 1px rgba(129,140,248,.08),
+    0 0 60px rgba(129,140,248,.12),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  position: relative; overflow: hidden;
   animation: float-card 6s ease-in-out infinite alternate;
+  backdrop-filter: blur(20px);
+  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
 }
+
+/* LIGHT override */
+[data-theme="light"] .hero-dashboard {
+  background: linear-gradient(160deg,
+    rgba(255,255,255,.98) 0%,
+    rgba(238,241,255,.96) 100%
+  );
+  border-color: rgba(79,70,229,.22);
+  box-shadow:
+    0 20px 60px rgba(79,70,229,.12),
+    0 4px 16px rgba(0,0,0,.06),
+    0 0 0 1px rgba(79,70,229,.06),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+
 @keyframes float-card {
-  from { transform: translateY(0); }
-  to   { transform: translateY(-12px); }
+  from { transform: translateY(0)   rotate3d(1,0,0,0deg); }
+  to   { transform: translateY(-14px) rotate3d(1,0,0,1deg); }
 }
+
+/* Top neon bar — dark */
 .hero-dashboard::before {
   content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--grad-brand);
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--indigo), var(--cyan), var(--violet));
   border-radius: var(--r-xl) var(--r-xl) 0 0;
+  filter: blur(.5px);
+  transition: opacity .3s;
 }
+/* Softer top bar in light */
+[data-theme="light"] .hero-dashboard::before {
+  background: linear-gradient(90deg, rgba(79,70,229,.7), rgba(8,145,178,.6), rgba(124,58,237,.5));
+  filter: none;
+}
+
+/* Corner holographic shimmer */
+.hero-dashboard::after {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(34,211,238,.10) 0%, transparent 70%);
+  pointer-events: none;
+  animation: holo-orb 5s ease-in-out infinite alternate;
+}
+[data-theme="light"] .hero-dashboard::after {
+  background: radial-gradient(circle, rgba(79,70,229,.07) 0%, transparent 70%);
+}
+@keyframes holo-orb {
+  from { opacity: .6; transform: scale(1); }
+  to   { opacity: 1;  transform: scale(1.3); }
+}
+
+/* Dashboard title row */
 .hd-title {
   font-family: var(--font-display); font-size: .75rem; font-weight: 700;
   color: var(--ink-500); text-transform: uppercase; letter-spacing: .6px;
   margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
 }
+[data-theme="light"] .hd-title { color: var(--ink-400); }
+
 .hd-live-dot {
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--emerald); box-shadow: 0 0 0 3px var(--emerald-soft);
   animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px var(--emerald-soft); }
+  50%      { box-shadow: 0 0 0 8px transparent; }
 }
 
-/* Career match bars inside dashboard card */
+/* ── Match bars ── */
 .hd-match-list { display: flex; flex-direction: column; gap: 12px; }
-.hd-match-row { display: flex; flex-direction: column; gap: 5px; }
+.hd-match-row  { display: flex; flex-direction: column; gap: 5px; }
 .hd-match-label {
   display: flex; justify-content: space-between; align-items: center;
   font-size: .78rem;
 }
-.hd-match-name { font-weight: 600; color: var(--ink-200); display: flex; align-items: center; gap: 6px; }
-.hd-match-pct  { font-family: var(--font-display); font-weight: 800; font-size: .82rem; }
-.hd-bar-bg { height: 6px; background: var(--surface3); border-radius: 99px; overflow: hidden; }
-.hd-bar    { height: 100%; border-radius: inherit; width: 0; transition: width 1.4s cubic-bezier(.22,1,.36,1); }
+.hd-match-name {
+  font-weight: 600;
+  color: var(--ink-200);    /* dark: light grey */
+  display: flex; align-items: center; gap: 6px;
+}
+[data-theme="light"] .hd-match-name {
+  color: var(--ink-100);    /* light: near-black */
+}
+.hd-match-pct {
+  font-family: var(--font-display); font-weight: 800; font-size: .82rem;
+  /* individual colours set via inline style — they use CSS vars which auto-adapt */
+}
 
-/* Score ring widget */
+.hd-bar-bg {
+  height: 6px; border-radius: 99px; overflow: hidden;
+  background: rgba(129,140,248,.12);           /* dark track */
+}
+[data-theme="light"] .hd-bar-bg {
+  background: rgba(79,70,229,.10);              /* light track */
+}
+.hd-bar {
+  height: 100%; border-radius: inherit;
+  width: 0; transition: width 1.4s cubic-bezier(.22,1,.36,1);
+}
+
+/* ── Score ring widget ── */
 .hd-score-ring-wrap {
   display: flex; align-items: center; gap: 14px;
-  background: var(--surface2); border-radius: var(--r-sm);
-  padding: 14px 16px; margin-top: 16px;
+  border-radius: var(--r-sm); padding: 14px 16px; margin-top: 16px;
   border: 1px solid var(--border);
+  background: rgba(129,140,248,.07);            /* dark */
+  transition: background .3s, border-color .3s;
+}
+[data-theme="light"] .hd-score-ring-wrap {
+  background: rgba(79,70,229,.06);              /* light */
+  border-color: rgba(79,70,229,.15);
 }
 .hd-ring-svg { width: 52px; height: 52px; transform: rotate(-90deg); flex-shrink: 0; }
 .hd-ring-info { flex: 1; }
-.hd-ring-label { font-size: .72rem; color: var(--ink-500); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
-.hd-ring-val { font-family: var(--font-display); font-size: 1rem; font-weight: 800; color: var(--ink-100); }
-.hd-ring-sub  { font-size: .72rem; color: var(--ink-400); }
+.hd-ring-label {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px;
+  color: var(--ink-500);
+}
+[data-theme="light"] .hd-ring-label { color: var(--ink-400); }
+.hd-ring-val {
+  font-family: var(--font-display); font-size: 1rem; font-weight: 800;
+  color: var(--ink-100);
+}
+[data-theme="light"] .hd-ring-val { color: var(--ink-100); }
+.hd-ring-sub {
+  font-size: .72rem;
+  color: var(--ink-400);
+}
+[data-theme="light"] .hd-ring-sub { color: var(--ink-300); }
 
-/* Skill chips in card */
+/* ── Skill chips in card ── */
 .hd-skills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 14px; }
 .hd-chip {
   padding: 3px 10px; border-radius: var(--r-pill);
@@ -170,11 +312,26 @@
   background: var(--indigo-soft); color: var(--indigo);
   border: 1px solid var(--border-i);
   animation: pop-in .3s ease both;
+  transition: background .2s, color .2s;
 }
-.hd-chip.match { background: var(--emerald-soft); color: var(--emerald); border-color: rgba(52,211,153,.25); }
+.hd-chip.match {
+  background: var(--emerald-soft); color: var(--emerald);
+  border-color: rgba(52,211,153,.25);
+}
+/* Light: slightly stronger contrast */
+[data-theme="light"] .hd-chip {
+  background: rgba(79,70,229,.10);
+  border-color: rgba(79,70,229,.22);
+}
+[data-theme="light"] .hd-chip.match {
+  background: rgba(5,150,105,.10);
+  border-color: rgba(5,150,105,.22);
+}
 @keyframes pop-in { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* ── SCROLLING TICKER ── */
+/* ══════════════════════════════════════════
+   LIVE TICKER
+══════════════════════════════════════════ */
 .ticker-section {
   padding: 0; margin: 0; overflow: hidden;
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -191,6 +348,7 @@
   font-size: .8rem; font-weight: 600; color: var(--ink-400);
   border-right: 1px solid var(--border);
 }
+[data-theme="light"] .ticker-item { color: var(--ink-300); }
 .ticker-icon { font-size: 1rem; }
 .ticker-score {
   font-family: var(--font-display); font-weight: 800;
@@ -199,18 +357,15 @@
 }
 @keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-/* ── INTERACTIVE QUIZ ── */
-.quiz-section {
-  padding: 80px 0; position: relative;
-}
+/* ══════════════════════════════════════════
+   INTERACTIVE QUIZ
+══════════════════════════════════════════ */
+.quiz-section { padding: 80px 0; position: relative; }
 .quiz-section::before {
   content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-i), transparent);
 }
-
-.quiz-intro {
-  text-align: center; margin-bottom: 48px;
-}
+.quiz-intro { text-align: center; margin-bottom: 48px; }
 .quiz-intro .section-tag {
   display: inline-flex; align-items: center; gap: 7px;
   font-size: .73rem; font-weight: 700;
@@ -223,39 +378,27 @@
   font-weight: 800; letter-spacing: -.03em; color: var(--ink-100); margin-bottom: 12px;
 }
 .quiz-intro p { color: var(--ink-400); font-size: .95rem; max-width: 480px; margin: 0 auto; line-height: 1.7; }
+[data-theme="light"] .quiz-intro p { color: var(--ink-300); }
 
 .quiz-card {
   max-width: 680px; margin: 0 auto;
   background: var(--surface);
   border: 1px solid var(--border-i);
-  border-radius: var(--r-xl);
-  overflow: hidden;
+  border-radius: var(--r-xl); overflow: hidden;
   box-shadow: var(--shadow-lg);
 }
+[data-theme="light"] .quiz-card { box-shadow: var(--shadow); }
 
-/* Quiz progress bar */
-.quiz-progress-bar {
-  height: 3px; background: var(--surface3);
-}
+.quiz-progress-bar { height: 3px; background: var(--surface3); }
 .quiz-progress-fill {
   height: 100%; background: var(--grad-brand);
   transition: width .5s cubic-bezier(.22,1,.36,1);
   border-radius: 0 99px 99px 0;
 }
-
 .quiz-body { padding: 36px 40px 28px; }
-
-.quiz-step-num {
-  font-size: .72rem; font-weight: 700; color: var(--ink-500);
-  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px;
-}
-.quiz-question {
-  font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
-  color: var(--ink-100); margin-bottom: 24px; line-height: 1.35;
-}
-.quiz-options {
-  display: flex; flex-direction: column; gap: 10px;
-}
+.quiz-step-num { font-size: .72rem; font-weight: 700; color: var(--ink-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.quiz-question { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; color: var(--ink-100); margin-bottom: 24px; line-height: 1.35; }
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
 .quiz-option {
   display: flex; align-items: center; gap: 14px;
   padding: 14px 18px; border-radius: var(--r-sm);
@@ -265,23 +408,18 @@
   font-size: .88rem; color: var(--ink-300);
   position: relative; overflow: hidden;
 }
-.quiz-option::before {
-  content: ''; position: absolute; inset: 0;
-  background: var(--grad-brand); opacity: 0;
-  transition: opacity .2s;
-}
-.quiz-option:hover { border-color: var(--indigo); color: var(--ink-100); transform: translateX(3px); }
-.quiz-option:hover::before { opacity: .05; }
+[data-theme="light"] .quiz-option { color: var(--ink-200); }
+.quiz-option:hover { border-color: var(--indigo); color: var(--ink-100); transform: translateX(3px); background: var(--indigo-soft); }
 .quiz-option.selected { border-color: var(--indigo); background: var(--indigo-soft); color: var(--indigo); }
 .quiz-option.selected .qo-icon-wrap { background: var(--indigo); }
-.quiz-option.selected .qo-icon { filter: brightness(10); }
 .qo-icon-wrap {
   width: 34px; height: 34px; border-radius: var(--r-xs);
   background: var(--surface3); display: flex; align-items: center; justify-content: center;
   font-size: 1rem; flex-shrink: 0; transition: background var(--t);
-  border: 1px solid var(--border); z-index: 1;
+  border: 1px solid var(--border);
 }
-.qo-text { z-index: 1; font-weight: 500; }
+[data-theme="light"] .qo-icon-wrap { background: var(--surface3); }
+.qo-text { font-weight: 500; }
 
 .quiz-nav {
   display: flex; align-items: center; justify-content: space-between;
@@ -300,36 +438,37 @@
 .quiz-btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); background: var(--indigo-soft); }
 .quiz-btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
 
-/* Quiz result panel */
-.quiz-result {
-  display: none; padding: 36px 40px; text-align: center;
-}
+.quiz-result { display: none; padding: 36px 40px; text-align: center; }
 .quiz-result.show { display: block; animation: fade-up .4s ease; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .qr-icon { font-size: 3.5rem; margin-bottom: 14px; display: block; }
 .qr-career {
   font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;
   background: var(--grad-brand); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-  margin-bottom: 8px;
+  -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px;
 }
 .qr-match { font-size: .9rem; color: var(--ink-400); margin-bottom: 20px; }
+[data-theme="light"] .qr-match { color: var(--ink-300); }
 .qr-skills { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; margin-bottom: 28px; }
-.qr-skill {
-  padding: 4px 13px; border-radius: var(--r-pill);
-  font-size: .75rem; font-weight: 600;
-  background: var(--emerald-soft); color: var(--emerald);
-  border: 1px solid rgba(52,211,153,.25);
-}
+.qr-skill { padding: 4px 13px; border-radius: var(--r-pill); font-size: .75rem; font-weight: 600; background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); }
 .qr-skill.miss { background: var(--rose-soft); color: var(--rose); border-color: rgba(251,113,133,.25); }
 .quiz-restart-btn {
   background: transparent; border: 1px solid var(--border-i);
   color: var(--indigo); padding: 8px 18px; border-radius: var(--r-pill);
-  font-size: .8rem; font-weight: 600; cursor: pointer; transition: all var(--t);
-  margin-top: 12px;
+  font-size: .8rem; font-weight: 600; cursor: pointer; transition: all var(--t); margin-top: 12px;
 }
 .quiz-restart-btn:hover { background: var(--indigo-soft); }
 
-/* ── FEATURES (redesigned) ── */
+/* Quiz dots */
+.qdot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--border-i); transition: all var(--t);
+}
+.qdot.active { background: var(--indigo); transform: scale(1.3); box-shadow: 0 0 6px var(--indigo); }
+
+/* ══════════════════════════════════════════
+   FEATURES BENTO GRID
+══════════════════════════════════════════ */
 .features-v4 { padding: 80px 0; position: relative; }
 .features-v4-header { text-align: center; margin-bottom: 56px; }
 .features-v4-header .section-tag {
@@ -344,8 +483,8 @@
   font-weight: 800; letter-spacing: -.03em; color: var(--ink-100); margin-bottom: 12px;
 }
 .features-v4-header p { color: var(--ink-400); font-size: .95rem; max-width: 420px; margin: 0 auto; line-height: 1.7; }
+[data-theme="light"] .features-v4-header p { color: var(--ink-300); }
 
-/* Bento-grid layout */
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -353,29 +492,22 @@
   gap: 16px;
 }
 .bento-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 24px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r-lg); padding: 24px;
   position: relative; overflow: hidden;
-  transition: all var(--t-spring);
-  cursor: default;
+  transition: all var(--t-spring); cursor: default;
 }
-.bento-card:hover {
-  border-color: var(--border-i);
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--shadow-i);
-}
+[data-theme="light"] .bento-card { box-shadow: var(--shadow-sm); }
+.bento-card:hover { border-color: var(--border-i); transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow-i); }
 .bento-card::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit;
-  background: var(--grad-brand); opacity: 0;
-  transition: opacity var(--t);
+  background: var(--grad-brand); opacity: 0; transition: opacity var(--t);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask-composite: exclude; -webkit-mask-composite: xor;
   padding: 1px; pointer-events: none;
 }
-.bento-card:hover::after { opacity: .6; }
+.bento-card:hover::after { opacity: .5; }
 
 .bc-1 { grid-column: span 5; grid-row: span 2; }
 .bc-2 { grid-column: span 4; grid-row: span 2; }
@@ -384,57 +516,31 @@
 .bc-5 { grid-column: span 7; grid-row: span 1; }
 .bc-6 { grid-column: span 5; grid-row: span 1; }
 
-.bc-icon {
-  width: 44px; height: 44px; border-radius: var(--r-sm);
-  background: var(--indigo-soft); border: 1px solid var(--border-i);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; margin-bottom: 14px;
-}
+.bc-icon { width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--indigo-soft); border: 1px solid var(--border-i); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 14px; }
 .bc-1 .bc-icon { background: linear-gradient(135deg, var(--indigo-soft), var(--cyan-soft)); }
 .bc-2 .bc-icon { background: linear-gradient(135deg, var(--emerald-soft), var(--cyan-soft)); border-color: rgba(52,211,153,.3); }
 .bc-3 .bc-icon { background: linear-gradient(135deg, var(--violet-soft), var(--rose-soft)); border-color: rgba(192,132,252,.3); }
 .bc-4 .bc-icon { background: linear-gradient(135deg, var(--amber-soft), var(--rose-soft)); border-color: rgba(251,191,36,.3); }
 .bc-5 .bc-icon { background: linear-gradient(135deg, var(--cyan-soft), var(--emerald-soft)); border-color: rgba(34,211,238,.3); }
 .bc-6 .bc-icon { background: linear-gradient(135deg, var(--rose-soft), var(--violet-soft)); border-color: rgba(251,113,133,.3); }
+.bc-title { font-family: var(--font-display); font-size: .95rem; font-weight: 700; color: var(--ink-100); margin-bottom: 7px; }
+.bc-desc  { font-size: .8rem; color: var(--ink-400); line-height: 1.65; }
+[data-theme="light"] .bc-desc { color: var(--ink-300); }
+.bc-tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: var(--r-pill); font-size: .68rem; font-weight: 700; background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(52,211,153,.25); margin-top: 10px; }
+.bc-mini-chart { display: flex; align-items: flex-end; gap: 5px; height: 52px; margin-top: 10px; }
+.bc-bar-mini { flex: 1; border-radius: 4px 4px 0 0; background: var(--grad-brand); opacity: .7; }
 
-.bc-title {
-  font-family: var(--font-display); font-size: .95rem; font-weight: 700;
-  color: var(--ink-100); margin-bottom: 7px;
-}
-.bc-desc { font-size: .8rem; color: var(--ink-400); line-height: 1.65; }
-.bc-tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 2px 10px; border-radius: var(--r-pill);
-  font-size: .68rem; font-weight: 700;
-  background: var(--emerald-soft); color: var(--emerald);
-  border: 1px solid rgba(52,211,153,.25); margin-top: 10px;
-}
-
-/* Mini bar chart inside bento (feature demo) */
-.bc-mini-chart {
-  display: flex; align-items: flex-end; gap: 5px;
-  height: 52px; margin-top: 10px;
-}
-.bc-bar-mini {
-  flex: 1; border-radius: 4px 4px 0 0;
-  background: var(--grad-brand); opacity: .7;
-  transition: height .8s cubic-bezier(.22,1,.36,1);
-}
-
-/* ── STATS ROW ── */
+/* ══════════════════════════════════════════
+   STATS ROW
+══════════════════════════════════════════ */
 .stats-v4 {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 0; margin: 0;
-  background: var(--surface);
-  border: 1px solid var(--border-i);
-  border-radius: var(--r-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  gap: 0; background: var(--surface);
+  border: 1px solid var(--border-i); border-radius: var(--r-xl);
+  overflow: hidden; box-shadow: var(--shadow);
 }
-.stat-v4 {
-  text-align: center; padding: 32px 20px;
-  position: relative;
-}
+[data-theme="light"] .stats-v4 { box-shadow: var(--shadow); }
+.stat-v4 { text-align: center; padding: 32px 20px; position: relative; }
 .stat-v4 + .stat-v4::before {
   content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
   width: 1px; background: var(--border-i);
@@ -443,85 +549,73 @@
   display: block; font-family: var(--font-display);
   font-size: 2.2rem; font-weight: 900;
   background: var(--grad-brand); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent; background-clip: text;
-  line-height: 1;
+  -webkit-text-fill-color: transparent; background-clip: text; line-height: 1;
 }
-.stat-v4-lbl {
-  font-size: .73rem; font-weight: 600; color: var(--ink-500);
-  text-transform: uppercase; letter-spacing: .5px; margin-top: 6px;
-}
+.stat-v4-lbl { font-size: .73rem; font-weight: 600; color: var(--ink-500); text-transform: uppercase; letter-spacing: .5px; margin-top: 6px; }
 .stat-v4-sub { font-size: .75rem; color: var(--ink-500); margin-top: 4px; }
+[data-theme="light"] .stat-v4-sub { color: var(--ink-400); }
 
-/* ── HOW IT WORKS ── */
+/* ══════════════════════════════════════════
+   HOW IT WORKS
+══════════════════════════════════════════ */
 .how-section { padding: 80px 0; }
 .how-header { text-align: center; margin-bottom: 56px; }
 .how-header .section-tag {
-  display: inline-flex; align-items: center; gap: 7px;
-  font-size: .73rem; font-weight: 700;
-  color: var(--emerald); background: var(--emerald-soft);
-  border: 1px solid rgba(52,211,153,.25);
+  display: inline-flex; align-items: center; gap: 7px; font-size: .73rem; font-weight: 700;
+  color: var(--emerald); background: var(--emerald-soft); border: 1px solid rgba(52,211,153,.25);
   padding: 4px 14px; border-radius: var(--r-pill); margin-bottom: 14px;
 }
 .how-header h2 {
   font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 800; letter-spacing: -.03em; color: var(--ink-100); margin-bottom: 12px;
 }
-
 .how-steps {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 0; position: relative;
 }
 .how-steps::before {
   content: ''; position: absolute;
-  top: 36px; left: 12.5%; right: 12.5%;
-  height: 2px;
+  top: 36px; left: 12.5%; right: 12.5%; height: 2px;
   background: linear-gradient(90deg, transparent, var(--indigo), var(--cyan), var(--emerald), transparent);
   opacity: .4;
 }
-.how-step {
-  text-align: center; padding: 0 16px;
-  display: flex; flex-direction: column; align-items: center; gap: 14px;
-}
+.how-step { text-align: center; padding: 0 16px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .how-step-num {
   width: 72px; height: 72px; border-radius: 50%;
-  background: var(--surface);
-  border: 2px solid var(--border-i);
+  background: var(--surface); border: 2px solid var(--border-i);
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; font-weight: 900;
-  font-family: var(--font-display);
-  position: relative; z-index: 1;
-  box-shadow: var(--shadow-sm);
+  font-size: 1.5rem; font-weight: 900; font-family: var(--font-display);
+  position: relative; z-index: 1; box-shadow: var(--shadow-sm);
   transition: all var(--t-spring);
 }
+[data-theme="light"] .how-step-num { box-shadow: var(--shadow-sm); }
 .how-step:hover .how-step-num { border-color: var(--indigo); box-shadow: var(--shadow-i); transform: scale(1.08); }
 .how-step-title { font-family: var(--font-display); font-size: .9rem; font-weight: 700; color: var(--ink-100); }
 .how-step-desc  { font-size: .8rem; color: var(--ink-400); line-height: 1.6; }
+[data-theme="light"] .how-step-desc { color: var(--ink-300); }
 
-/* ── CTA SECTION ── */
-.cta-section {
-  padding: 80px 0 100px;
-  text-align: center; position: relative;
-}
+/* ══════════════════════════════════════════
+   CTA SECTION
+══════════════════════════════════════════ */
+.cta-section { padding: 80px 0 100px; text-align: center; position: relative; }
 .cta-bg-orb {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: 600px; height: 400px; pointer-events: none;
-  background: radial-gradient(ellipse, rgba(129,140,248,.15) 0%, rgba(34,211,238,.08) 50%, transparent 75%);
+  background: radial-gradient(ellipse, var(--orb-primary) 0%, var(--orb-accent) 50%, transparent 75%);
   animation: orb-breathe 8s ease-in-out infinite alternate;
 }
-
+@keyframes orb-breathe {
+  from { opacity: .8; transform: translate(-50%,-50%) scale(1); }
+  to   { opacity: 1;  transform: translate(-50%,-50%) scale(1.06); }
+}
 .cta-card {
   max-width: 700px; margin: 0 auto;
-  background: var(--surface);
-  border: 1px solid var(--border-i);
-  border-radius: var(--r-xl);
-  padding: 56px 48px;
-  box-shadow: var(--shadow-lg);
-  position: relative; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border-i);
+  border-radius: var(--r-xl); padding: 56px 48px;
+  box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
 }
-.cta-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--grad-brand);
-}
+[data-theme="light"] .cta-card { box-shadow: var(--shadow-lg); }
+.cta-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--grad-brand); }
 .cta-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
 .cta-title {
   font-family: var(--font-display); font-size: clamp(1.7rem, 3.5vw, 2.4rem);
@@ -530,31 +624,31 @@
 }
 .cta-title .hl { background: var(--grad-brand); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .cta-sub { color: var(--ink-400); font-size: .95rem; line-height: 1.7; margin-bottom: 32px; }
+[data-theme="light"] .cta-sub { color: var(--ink-300); }
 .cta-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
 .cta-note { font-size: .78rem; color: var(--ink-500); }
+[data-theme="light"] .cta-note { color: var(--ink-400); }
 
-/* ── FOOTER ── */
-.footer-v4 {
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-  padding: 28px 0;
-}
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+.footer-v4 { border-top: 1px solid var(--border); background: var(--surface); padding: 28px 0; }
 .footer-v4-inner {
   max-width: 1100px; margin: 0 auto; padding: 0 24px;
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 12px;
 }
-.footer-brand {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-display); font-size: .9rem; font-weight: 700;
-  color: var(--ink-300);
-}
+.footer-brand { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: .9rem; font-weight: 700; color: var(--ink-300); }
+[data-theme="light"] .footer-brand { color: var(--ink-200); }
 .footer-links { display: flex; gap: 20px; }
 .footer-link { font-size: .8rem; color: var(--ink-500); transition: color var(--t); }
 .footer-link:hover { color: var(--indigo); }
 .footer-copy { font-size: .75rem; color: var(--ink-600); }
+[data-theme="light"] .footer-copy { color: var(--ink-400); }
 
-/* ── Responsive ── */
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
 @media (max-width: 1000px) {
   .hero-v4-inner { grid-template-columns: 1fr; }
   .hero-dashboard { display: none; }
@@ -641,28 +735,36 @@
               <span class="hd-match-name">💻 SDE</span>
               <span class="hd-match-pct" style="color:var(--emerald)">87%</span>
             </div>
-            <div class="hd-bar-bg"><div class="hd-bar" style="background:linear-gradient(90deg,var(--emerald),var(--cyan));--target:87"></div></div>
+            <div class="hd-bar-bg">
+              <div class="hd-bar" style="background:linear-gradient(90deg,var(--emerald),var(--cyan));--target:87"></div>
+            </div>
           </div>
           <div class="hd-match-row">
             <div class="hd-match-label">
               <span class="hd-match-name">🤖 ML Engineer</span>
               <span class="hd-match-pct" style="color:var(--indigo)">72%</span>
             </div>
-            <div class="hd-bar-bg"><div class="hd-bar" style="background:var(--grad-brand);--target:72"></div></div>
+            <div class="hd-bar-bg">
+              <div class="hd-bar" style="background:var(--grad-brand);--target:72"></div>
+            </div>
           </div>
           <div class="hd-match-row">
             <div class="hd-match-label">
               <span class="hd-match-name">☁️ DevOps</span>
               <span class="hd-match-pct" style="color:var(--cyan)">61%</span>
             </div>
-            <div class="hd-bar-bg"><div class="hd-bar" style="background:linear-gradient(90deg,var(--cyan),var(--indigo));--target:61"></div></div>
+            <div class="hd-bar-bg">
+              <div class="hd-bar" style="background:linear-gradient(90deg,var(--cyan),var(--indigo));--target:61"></div>
+            </div>
           </div>
           <div class="hd-match-row">
             <div class="hd-match-label">
               <span class="hd-match-name">📊 Data Analyst</span>
               <span class="hd-match-pct" style="color:var(--amber)">48%</span>
             </div>
-            <div class="hd-bar-bg"><div class="hd-bar" style="background:linear-gradient(90deg,var(--amber),var(--rose));--target:48"></div></div>
+            <div class="hd-bar-bg">
+              <div class="hd-bar" style="background:linear-gradient(90deg,var(--amber),var(--rose));--target:48"></div>
+            </div>
           </div>
         </div>
 
@@ -760,7 +862,7 @@
 </div>
 
 <!-- ══════════════════════════════════════════
-     INTERACTIVE CAREER QUIZ  ← NEW FEATURE
+     INTERACTIVE CAREER QUIZ
 ══════════════════════════════════════════ -->
 <section class="quiz-section">
   <div class="container">
@@ -771,118 +873,63 @@
     </div>
 
     <div class="quiz-card reveal" id="quizCard">
-      <!-- Progress -->
       <div class="quiz-progress-bar">
         <div class="quiz-progress-fill" id="quizProgress" style="width:0%"></div>
       </div>
 
-      <!-- Steps -->
       <div id="quizSteps">
-
         <!-- Step 1 -->
         <div class="quiz-step" id="qs-1">
           <div class="quiz-body">
             <div class="quiz-step-num">Question 1 of 4</div>
             <div class="quiz-question">What do you enjoy most when coding or working on a project?</div>
             <div class="quiz-options">
-              <div class="quiz-option" data-val="build" onclick="selectOption(this,1)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🏗️</span></div>
-                <span class="qo-text">Building features and shipping products quickly</span>
-              </div>
-              <div class="quiz-option" data-val="data" onclick="selectOption(this,1)">
-                <div class="qo-icon-wrap"><span class="qo-icon">📊</span></div>
-                <span class="qo-text">Digging into data and finding patterns</span>
-              </div>
-              <div class="quiz-option" data-val="security" onclick="selectOption(this,1)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🔐</span></div>
-                <span class="qo-text">Breaking things to make them more secure</span>
-              </div>
-              <div class="quiz-option" data-val="infra" onclick="selectOption(this,1)">
-                <div class="qo-icon-wrap"><span class="qo-icon">☁️</span></div>
-                <span class="qo-text">Making systems scale and run reliably</span>
-              </div>
+              <div class="quiz-option" data-val="build" onclick="selectOption(this,1)"><div class="qo-icon-wrap"><span class="qo-icon">🏗️</span></div><span class="qo-text">Building features and shipping products quickly</span></div>
+              <div class="quiz-option" data-val="data"  onclick="selectOption(this,1)"><div class="qo-icon-wrap"><span class="qo-icon">📊</span></div><span class="qo-text">Digging into data and finding patterns</span></div>
+              <div class="quiz-option" data-val="security" onclick="selectOption(this,1)"><div class="qo-icon-wrap"><span class="qo-icon">🔐</span></div><span class="qo-text">Breaking things to make them more secure</span></div>
+              <div class="quiz-option" data-val="infra" onclick="selectOption(this,1)"><div class="qo-icon-wrap"><span class="qo-icon">☁️</span></div><span class="qo-text">Making systems scale and run reliably</span></div>
             </div>
           </div>
         </div>
-
         <!-- Step 2 -->
         <div class="quiz-step" id="qs-2" style="display:none">
           <div class="quiz-body">
             <div class="quiz-step-num">Question 2 of 4</div>
             <div class="quiz-question">Which of these excites you the most?</div>
             <div class="quiz-options">
-              <div class="quiz-option" data-val="algo" onclick="selectOption(this,2)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🧮</span></div>
-                <span class="qo-text">Solving algorithmic puzzles and optimisation problems</span>
-              </div>
-              <div class="quiz-option" data-val="ai" onclick="selectOption(this,2)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🤖</span></div>
-                <span class="qo-text">Training models that predict or generate things</span>
-              </div>
-              <div class="quiz-option" data-val="design" onclick="selectOption(this,2)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🎨</span></div>
-                <span class="qo-text">Crafting interfaces that feel great to use</span>
-              </div>
-              <div class="quiz-option" data-val="system" onclick="selectOption(this,2)">
-                <div class="qo-icon-wrap"><span class="qo-icon">⚙️</span></div>
-                <span class="qo-text">Designing distributed systems and architectures</span>
-              </div>
+              <div class="quiz-option" data-val="algo"   onclick="selectOption(this,2)"><div class="qo-icon-wrap"><span class="qo-icon">🧮</span></div><span class="qo-text">Solving algorithmic puzzles and optimisation problems</span></div>
+              <div class="quiz-option" data-val="ai"     onclick="selectOption(this,2)"><div class="qo-icon-wrap"><span class="qo-icon">🤖</span></div><span class="qo-text">Training models that predict or generate things</span></div>
+              <div class="quiz-option" data-val="design" onclick="selectOption(this,2)"><div class="qo-icon-wrap"><span class="qo-icon">🎨</span></div><span class="qo-text">Crafting interfaces that feel great to use</span></div>
+              <div class="quiz-option" data-val="system" onclick="selectOption(this,2)"><div class="qo-icon-wrap"><span class="qo-icon">⚙️</span></div><span class="qo-text">Designing distributed systems and architectures</span></div>
             </div>
           </div>
         </div>
-
         <!-- Step 3 -->
         <div class="quiz-step" id="qs-3" style="display:none">
           <div class="quiz-body">
             <div class="quiz-step-num">Question 3 of 4</div>
             <div class="quiz-question">What's your current strongest skill area?</div>
             <div class="quiz-options">
-              <div class="quiz-option" data-val="dsa" onclick="selectOption(this,3)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🏆</span></div>
-                <span class="qo-text">DSA and competitive programming (LeetCode 150+)</span>
-              </div>
-              <div class="quiz-option" data-val="math" onclick="selectOption(this,3)">
-                <div class="qo-icon-wrap"><span class="qo-icon">📐</span></div>
-                <span class="qo-text">Mathematics, statistics and analytical reasoning</span>
-              </div>
-              <div class="quiz-option" data-val="web" onclick="selectOption(this,3)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🌐</span></div>
-                <span class="qo-text">Web technologies (HTML/CSS/JS/React/Node)</span>
-              </div>
-              <div class="quiz-option" data-val="linux" onclick="selectOption(this,3)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🐧</span></div>
-                <span class="qo-text">Linux, networking, and infrastructure tooling</span>
-              </div>
+              <div class="quiz-option" data-val="dsa"   onclick="selectOption(this,3)"><div class="qo-icon-wrap"><span class="qo-icon">🏆</span></div><span class="qo-text">DSA and competitive programming (LeetCode 150+)</span></div>
+              <div class="quiz-option" data-val="math"  onclick="selectOption(this,3)"><div class="qo-icon-wrap"><span class="qo-icon">📐</span></div><span class="qo-text">Mathematics, statistics and analytical reasoning</span></div>
+              <div class="quiz-option" data-val="web"   onclick="selectOption(this,3)"><div class="qo-icon-wrap"><span class="qo-icon">🌐</span></div><span class="qo-text">Web technologies (HTML/CSS/JS/React/Node)</span></div>
+              <div class="quiz-option" data-val="linux" onclick="selectOption(this,3)"><div class="qo-icon-wrap"><span class="qo-icon">🐧</span></div><span class="qo-text">Linux, networking, and infrastructure tooling</span></div>
             </div>
           </div>
         </div>
-
         <!-- Step 4 -->
         <div class="quiz-step" id="qs-4" style="display:none">
           <div class="quiz-body">
             <div class="quiz-step-num">Question 4 of 4</div>
             <div class="quiz-question">What's your preferred way to work?</div>
             <div class="quiz-options">
-              <div class="quiz-option" data-val="team" onclick="selectOption(this,4)">
-                <div class="qo-icon-wrap"><span class="qo-icon">👥</span></div>
-                <span class="qo-text">In a collaborative team, shipping products together</span>
-              </div>
-              <div class="quiz-option" data-val="solo" onclick="selectOption(this,4)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🔬</span></div>
-                <span class="qo-text">Deep research and experimentation, mostly solo</span>
-              </div>
-              <div class="quiz-option" data-val="startup" onclick="selectOption(this,4)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🚀</span></div>
-                <span class="qo-text">Fast-paced startup environment, many hats</span>
-              </div>
-              <div class="quiz-option" data-val="consult" onclick="selectOption(this,4)">
-                <div class="qo-icon-wrap"><span class="qo-icon">🏢</span></div>
-                <span class="qo-text">Large enterprise, clear structure and processes</span>
-              </div>
+              <div class="quiz-option" data-val="team"    onclick="selectOption(this,4)"><div class="qo-icon-wrap"><span class="qo-icon">👥</span></div><span class="qo-text">In a collaborative team, shipping products together</span></div>
+              <div class="quiz-option" data-val="solo"    onclick="selectOption(this,4)"><div class="qo-icon-wrap"><span class="qo-icon">🔬</span></div><span class="qo-text">Deep research and experimentation, mostly solo</span></div>
+              <div class="quiz-option" data-val="startup" onclick="selectOption(this,4)"><div class="qo-icon-wrap"><span class="qo-icon">🚀</span></div><span class="qo-text">Fast-paced startup environment, many hats</span></div>
+              <div class="quiz-option" data-val="consult" onclick="selectOption(this,4)"><div class="qo-icon-wrap"><span class="qo-icon">🏢</span></div><span class="qo-text">Large enterprise, clear structure and processes</span></div>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- Result panel -->
@@ -900,10 +947,7 @@
       <div class="quiz-nav" id="quizNav">
         <button class="quiz-btn quiz-btn-ghost" id="quizPrev" onclick="quizPrev()" disabled>← Back</button>
         <div style="display:flex;gap:6px;align-items:center;" id="quizDots">
-          <span class="qdot active"></span>
-          <span class="qdot"></span>
-          <span class="qdot"></span>
-          <span class="qdot"></span>
+          <span class="qdot active"></span><span class="qdot"></span><span class="qdot"></span><span class="qdot"></span>
         </div>
         <button class="quiz-btn quiz-btn-primary" id="quizNext" onclick="quizNext()" disabled>Next →</button>
       </div>
@@ -923,23 +967,20 @@
     </div>
 
     <div class="bento-grid">
-
-      <!-- Big card: Career Matching -->
       <div class="bento-card bc-1 reveal">
         <div class="bc-icon">🎯</div>
         <div class="bc-title">AI Career Matching</div>
         <div class="bc-desc">Weighted scoring engine across 5 career tracks using your CGPA, LeetCode streak, GitHub activity and skill stack. Get a ranked list with match percentages in seconds.</div>
-        <div class="bc-mini-chart" id="bentoChart">
-          <div class="bc-bar-mini" style="height:85%;background:linear-gradient(to top,var(--emerald),var(--cyan));" title="SDE 87%"></div>
-          <div class="bc-bar-mini" style="height:72%;background:var(--grad-brand);" title="ML 72%"></div>
-          <div class="bc-bar-mini" style="height:61%;background:linear-gradient(to top,var(--cyan),var(--indigo));" title="DevOps 61%"></div>
-          <div class="bc-bar-mini" style="height:48%;background:linear-gradient(to top,var(--amber),var(--rose));" title="Analytics 48%"></div>
-          <div class="bc-bar-mini" style="height:38%;background:linear-gradient(to top,var(--rose),var(--violet));" title="Security 38%"></div>
+        <div class="bc-mini-chart">
+          <div class="bc-bar-mini" style="height:85%;background:linear-gradient(to top,var(--emerald),var(--cyan));"></div>
+          <div class="bc-bar-mini" style="height:72%;background:var(--grad-brand);"></div>
+          <div class="bc-bar-mini" style="height:61%;background:linear-gradient(to top,var(--cyan),var(--indigo));"></div>
+          <div class="bc-bar-mini" style="height:48%;background:linear-gradient(to top,var(--amber),var(--rose));"></div>
+          <div class="bc-bar-mini" style="height:38%;background:linear-gradient(to top,var(--rose),var(--violet));"></div>
         </div>
         <span class="bc-tag">⚡ Instant results</span>
       </div>
 
-      <!-- Card: Skill Gap -->
       <div class="bento-card bc-2 reveal">
         <div class="bc-icon">🔍</div>
         <div class="bc-title">Skill Gap Analysis</div>
@@ -955,21 +996,18 @@
         <span class="bc-tag" style="background:var(--emerald-soft);color:var(--emerald);border-color:rgba(52,211,153,.25);">🎯 Personalised</span>
       </div>
 
-      <!-- Card: Roadmap -->
       <div class="bento-card bc-3 reveal">
         <div class="bc-icon">🗺️</div>
         <div class="bc-title">12-Week Roadmap</div>
         <div class="bc-desc">Week-by-week plan with curated free resources tailored to your chosen career track.</div>
       </div>
 
-      <!-- Card: Resume Screener -->
       <div class="bento-card bc-4 reveal">
         <div class="bc-icon">📄</div>
         <div class="bc-title">ATS Resume Screener</div>
         <div class="bc-desc">Upload resumes and get ATS compatibility scores, skill gap detection and improvement tips.</div>
       </div>
 
-      <!-- Card: Salary Insights (wider) -->
       <div class="bento-card bc-5 reveal">
         <div class="bc-icon">💰</div>
         <div class="bc-title">City-wise Salary Insights</div>
@@ -981,13 +1019,11 @@
         </div>
       </div>
 
-      <!-- Card: History -->
       <div class="bento-card bc-6 reveal">
         <div class="bc-icon">🗄️</div>
         <div class="bc-title">Saved History</div>
         <div class="bc-desc">Every analysis and screening session is saved. Review progress, share results with peers and mentors.</div>
       </div>
-
     </div>
   </div>
 </section>
@@ -1001,7 +1037,6 @@
       <div class="section-tag">✨ Simple Process</div>
       <h2>From Zero to Career Clarity<br>in Under 2 Minutes</h2>
     </div>
-
     <div class="how-steps">
       <div class="how-step reveal">
         <div class="how-step-num">1️⃣</div>
@@ -1035,20 +1070,11 @@
   <div class="container" style="position:relative;z-index:1;">
     <div class="cta-card reveal">
       <span class="cta-emoji">🚀</span>
-      <div class="cta-title">
-        Ready to Find Your <span class="hl">Dream Career</span>?
-      </div>
-      <div class="cta-sub">
-        Join 15,000+ engineering students who've used CareerCompass
-        to discover their path, fix their skill gaps, and land their first tech job.
-      </div>
+      <div class="cta-title">Ready to Find Your <span class="hl">Dream Career</span>?</div>
+      <div class="cta-sub">Join 15,000+ engineering students who've used CareerCompass to discover their path, fix their skill gaps, and land their first tech job.</div>
       <div class="cta-btns">
-        <a href="{% url 'profile_form' %}" class="btn-primary" style="font-size:.95rem;padding:14px 36px;">
-          🎯 Analyse My Profile — Free
-        </a>
-        <a href="{% url 'screener' %}" class="btn-outline">
-          📄 Screen My Resume
-        </a>
+        <a href="{% url 'profile_form' %}" class="btn-primary" style="font-size:.95rem;padding:14px 36px;">🎯 Analyse My Profile — Free</a>
+        <a href="{% url 'screener' %}" class="btn-outline">📄 Screen My Resume</a>
       </div>
       <div class="cta-note">✅ No account required &nbsp;·&nbsp; ✅ Instant results &nbsp;·&nbsp; ✅ Always free</div>
     </div>
@@ -1060,84 +1086,87 @@
 ══════════════════════════════════════════ -->
 <footer class="footer-v4">
   <div class="footer-v4-inner">
-    <div class="footer-brand">
-      <span>🧭</span> CareerCompass
-    </div>
+    <div class="footer-brand"><span>🧭</span> CareerCompass</div>
     <div class="footer-links">
-      <a href="{% url 'home' %}"           class="footer-link">Home</a>
-      <a href="{% url 'profile_form' %}"   class="footer-link">Analyse</a>
-      <a href="{% url 'careers_list' %}"   class="footer-link">Careers</a>
-      <a href="{% url 'skill_roadmap' %}"  class="footer-link">Roadmap</a>
-      <a href="{% url 'screener' %}"       class="footer-link">Resume</a>
-      <a href="{% url 'history' %}"        class="footer-link">History</a>
+      <a href="{% url 'home' %}"          class="footer-link">Home</a>
+      <a href="{% url 'profile_form' %}"  class="footer-link">Analyse</a>
+      <a href="{% url 'careers_list' %}"  class="footer-link">Careers</a>
+      <a href="{% url 'skill_roadmap' %}" class="footer-link">Roadmap</a>
+      <a href="{% url 'screener' %}"      class="footer-link">Resume</a>
+      <a href="{% url 'history' %}"       class="footer-link">History</a>
     </div>
     <div class="footer-copy">Built with ❤️ for engineering students · Free forever</div>
   </div>
 </footer>
 
-<style>
-/* Quiz dots */
-.qdot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--border-i); transition: all var(--t);
-}
-.qdot.active { background: var(--indigo); transform: scale(1.3); box-shadow: 0 0 6px var(--indigo); }
-</style>
-
 <script>
 /* ═══════════════════════════════════════
-   PARTICLE CANVAS (hero background)
+   AI NEURAL NETWORK CANVAS (dark only)
 ═══════════════════════════════════════ */
 (function() {
   const canvas = document.getElementById('hero-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let W, H, particles = [];
+  const NEON = [[129,140,248],[34,211,238],[192,132,252],[52,211,153]];
 
   function resize() {
     W = canvas.width  = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
+    particles = [];
+    const count = Math.min(72, Math.floor(W * H / 10000));
+    for (let i = 0; i < count; i++) {
+      const col = NEON[i % NEON.length];
+      particles.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - .5) * .5, vy: (Math.random() - .5) * .5,
+        r: Math.random() * 2 + .8, col,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.02 + Math.random() * 0.03,
+      });
+    }
   }
   resize();
   window.addEventListener('resize', resize);
 
   const isDark = () => document.documentElement.getAttribute('data-theme') !== 'light';
 
-  for (let i = 0; i < 55; i++) {
-    particles.push({
-      x: Math.random() * 1200, y: Math.random() * 700,
-      vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
-      r: Math.random() * 1.8 + .4,
-    });
-  }
-
   function drawFrame() {
     ctx.clearRect(0, 0, W, H);
-    const col = isDark() ? 'rgba(129,140,248,' : 'rgba(79,70,229,';
+    if (!isDark()) { requestAnimationFrame(drawFrame); return; }
 
     particles.forEach(p => {
       p.x += p.vx; p.y += p.vy;
       if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
       if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = col + '.8)';
-      ctx.fill();
+      p.pulse += p.pulseSpeed;
+      const glow = .6 + .4 * Math.sin(p.pulse);
+      const [r,g,b] = p.col;
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 7);
+      grad.addColorStop(0, `rgba(${r},${g},${b},${(glow * .5).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 7, 0, Math.PI * 2);
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${r},${g},${b},${glow.toFixed(2)})`; ctx.fill();
     });
 
-    // draw connections
     for (let i = 0; i < particles.length; i++) {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 120) {
+        if (dist < 145) {
+          const alpha = 0.3 * (1 - dist / 145);
+          const [r1,g1,b1] = particles[i].col;
+          const [r2,g2,b2] = particles[j].col;
+          const lg = ctx.createLinearGradient(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
+          lg.addColorStop(0, `rgba(${r1},${g1},${b1},${alpha.toFixed(3)})`);
+          lg.addColorStop(1, `rgba(${r2},${g2},${b2},${alpha.toFixed(3)})`);
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = col + (0.25 * (1 - dist/120)).toFixed(3) + ')';
-          ctx.lineWidth = .6;
-          ctx.stroke();
+          ctx.strokeStyle = lg; ctx.lineWidth = .85; ctx.stroke();
         }
       }
     }
@@ -1147,14 +1176,13 @@
 })();
 
 /* ═══════════════════════════════════════
-   TYPED TEXT ANIMATION (hero)
+   TYPED TEXT ANIMATION
 ═══════════════════════════════════════ */
 (function() {
   const words = ['Tech', 'AI / ML', 'DevOps', 'Full-Stack', 'Data Science', 'Security'];
   const el = document.getElementById('typed-target');
   if (!el) return;
   let wi = 0, ci = 0, deleting = false;
-
   function type() {
     const word = words[wi];
     if (!deleting) {
@@ -1170,36 +1198,40 @@
 })();
 
 /* ═══════════════════════════════════════
-   HERO DASHBOARD BARS
+   HERO DASHBOARD BARS + STAT COUNT-UP
 ═══════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', function() {
+  /* Animate bars after brief delay */
   setTimeout(() => {
-    document.querySelectorAll('.hd-bar').forEach(bar => {
-      bar.style.width = bar.style.getPropertyValue('--target') + '%';
+    document.querySelectorAll('.hd-bar[style*="--target"]').forEach(bar => {
+      const target = getComputedStyle(bar).getPropertyValue('--target').trim() ||
+                     bar.style.cssText.match(/--target\s*:\s*(\d+)/)?.[1];
+      if (target) bar.style.width = target + '%';
     });
   }, 600);
 
-  /* count-up for stats-v4 */
+  /* Stat count-up */
   const nums = document.querySelectorAll('.stat-v4-num[data-count]');
-  const io2 = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const el = e.target;
-      const target = parseFloat(el.dataset.count);
-      const suffix = el.dataset.suffix || '';
-      let start = null; const dur = 1200;
-      const step = ts => {
-        if (!start) start = ts;
-        const prog = Math.min((ts - start) / dur, 1);
-        const ease = 1 - Math.pow(1 - prog, 3);
-        el.textContent = Math.round(target * ease) + suffix;
-        if (prog < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-      io2.unobserve(el);
-    });
-  }, { threshold: .5 });
-  nums.forEach(n => io2.observe(n));
+  if (nums.length) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const target = parseFloat(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        let start = null; const dur = 1200;
+        const step = ts => {
+          if (!start) start = ts;
+          const prog = Math.min((ts - start) / dur, 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - prog, 3))) + suffix;
+          if (prog < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+        io.unobserve(el);
+      });
+    }, { threshold: .5 });
+    nums.forEach(n => io.observe(n));
+  }
 });
 
 /* ═══════════════════════════════════════
@@ -1211,23 +1243,14 @@ const totalSteps = 4;
 
 const CAREER_MAP = {
   result(ans) {
-    const scores = {
-      'SDE':        0,
-      'ML Engineer':0,
-      'DevOps':     0,
-      'Data Analyst':0,
-      'Cybersecurity':0,
-    };
+    const scores = { 'SDE':0, 'ML Engineer':0, 'DevOps':0, 'Data Analyst':0, 'Cybersecurity':0 };
     const map = {
-      build:['SDE',2],data:['Data Analyst',2],security:['Cybersecurity',2],infra:['DevOps',2],
-      algo:['SDE',2],ai:['ML Engineer',2],design:['SDE',1],system:['DevOps',2],
-      dsa:['SDE',2],math:['ML Engineer',2],web:['SDE',2],linux:['DevOps',2],
-      team:['SDE',1],solo:['ML Engineer',2],startup:['SDE',1],consult:['DevOps',1],
+      build:['SDE',2], data:['Data Analyst',2], security:['Cybersecurity',2], infra:['DevOps',2],
+      algo:['SDE',2],  ai:['ML Engineer',2],    design:['SDE',1],            system:['DevOps',2],
+      dsa:['SDE',2],   math:['ML Engineer',2],  web:['SDE',2],               linux:['DevOps',2],
+      team:['SDE',1],  solo:['ML Engineer',2],  startup:['SDE',1],           consult:['DevOps',1],
     };
-    Object.values(ans).forEach(v => {
-      const entry = map[v];
-      if (entry) scores[entry[0]] = (scores[entry[0]] || 0) + entry[1];
-    });
+    Object.values(ans).forEach(v => { const e = map[v]; if (e) scores[e[0]] += e[1]; });
     let best = 'SDE', bestScore = 0;
     Object.entries(scores).forEach(([k,v]) => { if (v > bestScore) { bestScore = v; best = k; } });
     return best;
@@ -1235,11 +1258,11 @@ const CAREER_MAP = {
 };
 
 const CAREER_INFO = {
-  'SDE':          { icon:'💻', skills:['Python','DSA','React','SQL'],   miss:['System Design','Docker'] },
-  'ML Engineer':  { icon:'🤖', skills:['Python','Statistics','NumPy'],  miss:['Deep Learning','PyTorch'] },
-  'DevOps':       { icon:'☁️', skills:['Linux','Docker','Git'],         miss:['Kubernetes','Terraform'] },
-  'Data Analyst': { icon:'📊', skills:['SQL','Excel','Python'],         miss:['Power BI','Statistics'] },
-  'Cybersecurity':{ icon:'🔐', skills:['Networking','Linux'],           miss:['Ethical Hacking','SIEM'] },
+  'SDE':          { icon:'💻', skills:['Python','DSA','React','SQL'],  miss:['System Design','Docker'] },
+  'ML Engineer':  { icon:'🤖', skills:['Python','Statistics','NumPy'], miss:['Deep Learning','PyTorch'] },
+  'DevOps':       { icon:'☁️', skills:['Linux','Docker','Git'],        miss:['Kubernetes','Terraform'] },
+  'Data Analyst': { icon:'📊', skills:['SQL','Excel','Python'],        miss:['Power BI','Statistics'] },
+  'Cybersecurity':{ icon:'🔐', skills:['Networking','Linux'],          miss:['Ethical Hacking','SIEM'] },
 };
 
 function selectOption(el, step) {
@@ -1259,9 +1282,7 @@ function quizNext() {
     document.getElementById('quizPrev').disabled = currentStep === 1;
     updateQuizProgress();
     if (currentStep === totalSteps) document.getElementById('quizNext').textContent = 'See Result →';
-  } else {
-    showQuizResult();
-  }
+  } else { showQuizResult(); }
 }
 
 function quizPrev() {
@@ -1278,24 +1299,20 @@ function quizPrev() {
 
 function updateQuizProgress() {
   document.getElementById('quizProgress').style.width = ((currentStep - 1) / totalSteps * 100) + '%';
-  document.querySelectorAll('.qdot').forEach((d, i) => {
-    d.classList.toggle('active', i === currentStep - 1);
-  });
+  document.querySelectorAll('.qdot').forEach((d, i) => d.classList.toggle('active', i === currentStep - 1));
 }
 
 function showQuizResult() {
   const career = CAREER_MAP.result(quizAnswers);
-  const info = CAREER_INFO[career];
-  document.getElementById('qrIcon').textContent = info.icon;
+  const info   = CAREER_INFO[career];
+  document.getElementById('qrIcon').textContent   = info.icon;
   document.getElementById('qrCareer').textContent = career;
-  document.getElementById('qrMatch').textContent = 'Based on your 4 answers — this is your strongest career fit 🎯';
-  const skillsEl = document.getElementById('qrSkills');
-  skillsEl.innerHTML =
+  document.getElementById('qrMatch').textContent  = 'Based on your 4 answers — this is your strongest career fit 🎯';
+  document.getElementById('qrSkills').innerHTML   =
     info.skills.map(s => `<span class="qr-skill">${s} ✓</span>`).join('') +
-    info.miss.map(s => `<span class="qr-skill miss">${s} — learn this</span>`).join('');
-
-  document.getElementById('quizSteps').style.display = 'none';
-  document.getElementById('quizNav').style.display = 'none';
+    info.miss.map(s   => `<span class="qr-skill miss">${s} — learn this</span>`).join('');
+  document.getElementById('quizSteps').style.display  = 'none';
+  document.getElementById('quizNav').style.display    = 'none';
   document.getElementById('quizResult').classList.add('show');
   document.getElementById('quizProgress').style.width = '100%';
   if (typeof showToast === 'function') showToast('🎯 Career match found: ' + career, 'success');
@@ -1307,14 +1324,20 @@ function restartQuiz() {
   document.querySelectorAll('.quiz-step').forEach((s, i) => s.style.display = i === 0 ? 'block' : 'none');
   document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
   document.getElementById('quizResult').classList.remove('show');
-  document.getElementById('quizSteps').style.display = 'block';
-  document.getElementById('quizNav').style.display = 'flex';
-  document.getElementById('quizNext').disabled = true;
-  document.getElementById('quizNext').textContent = 'Next →';
-  document.getElementById('quizPrev').disabled = true;
+  document.getElementById('quizSteps').style.display  = 'block';
+  document.getElementById('quizNav').style.display    = 'flex';
+  document.getElementById('quizNext').disabled        = true;
+  document.getElementById('quizNext').textContent     = 'Next →';
+  document.getElementById('quizPrev').disabled        = true;
   document.getElementById('quizProgress').style.width = '0%';
   document.querySelectorAll('.qdot').forEach((d, i) => d.classList.toggle('active', i === 0));
 }
+
+/* Expose quiz functions globally */
+window.selectOption  = selectOption;
+window.quizNext      = quizNext;
+window.quizPrev      = quizPrev;
+window.restartQuiz   = restartQuiz;
 </script>
 
 {% endblock %}
