@@ -1,0 +1,36 @@
+import uuid
+from django.db import models
+
+
+class StudentProfile(models.Model):
+    BRANCH_CHOICES = [
+        ('CSE', 'Computer Science Engineering'),
+        ('IT', 'Information Technology'),
+        ('ECE', 'Electronics & Communication'),
+        ('EE', 'Electrical Engineering'),
+        ('ME', 'Mechanical Engineering'),
+        ('DS', 'Data Science'),
+    ]
+    YEAR_CHOICES = [
+        ('1st Year', '1st Year'),
+        ('2nd Year', '2nd Year'),
+        ('3rd Year', '3rd Year'),
+        ('4th Year', '4th Year'),
+        ('Graduated', 'Graduated'),
+    ]
+
+    name = models.CharField(max_length=100)
+    branch = models.CharField(max_length=50, blank=True)
+    cgpa = models.FloatField(default=7.0)
+    year = models.CharField(max_length=20, blank=True)
+    leetcode = models.IntegerField(default=0)
+    github = models.IntegerField(default=0)
+    skills = models.JSONField(default=list)
+    share_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.branch} (CGPA: {self.cgpa})"
