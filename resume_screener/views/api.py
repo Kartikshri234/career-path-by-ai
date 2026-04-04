@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from . import screener_service as svc
+from .. import screener_service as svc
 
 
 def api_extract_skills(request):
