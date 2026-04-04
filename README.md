@@ -152,7 +152,19 @@ Open: `http://127.0.0.1:8000/`
 
 ## Environment Variables
 
-Use `.env` (copy from `.env.example`). Typical values:
+Yes, `.env.example` is needed and should stay in the repository.
+
+Create your local `.env` from `.env.example`:
+
+```bash
+# Windows (PowerShell)
+Copy-Item .env.example .env
+
+# Mac / Linux
+cp .env.example .env
+```
+
+Required keys (as used in `careercompass/settings.py`):
 
 - `SECRET_KEY`
 - `DEBUG`
@@ -160,6 +172,24 @@ Use `.env` (copy from `.env.example`). Typical values:
 - Database-related values (`DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`)
 - `LANGUAGE_CODE`
 - `TIME_ZONE`
+
+Reference values from `.env.example`:
+
+```env
+SECRET_KEY=django-insecure-change-me-before-going-to-production
+DEBUG=False
+ALLOWED_HOSTS=*
+
+DB_ENGINE=sqlite3
+DB_NAME=careercompass_db
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+DB_HOST=localhost
+DB_PORT=5432
+
+LANGUAGE_CODE=en-us
+TIME_ZONE=Asia/Kolkata
+```
 
 ## Production Notes
 
