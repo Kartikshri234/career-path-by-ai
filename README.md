@@ -21,7 +21,6 @@ careercompass/
 |- manage.py
 |- README.md
 |- requirements.txt
-|- .env
 |- db.sqlite3
 |- careercompass/
 |  |- settings.py
@@ -151,7 +150,7 @@ Open: `http://127.0.0.1:8000/`
 
 ## Environment Variables
 
-The project now keeps the main `.env` file in the repository.
+Create a local `.env` file in the project root and keep it out of Git.
 
 Required keys (as used in `careercompass/settings.py`):
 
@@ -162,7 +161,7 @@ Required keys (as used in `careercompass/settings.py`):
 - `LANGUAGE_CODE`
 - `TIME_ZONE`
 
-Current values in `.env`:
+Example local values:
 
 ```env
 SECRET_KEY=django-insecure-change-me-before-going-to-production
