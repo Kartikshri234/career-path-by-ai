@@ -22,7 +22,6 @@ careercompass/
 |- README.md
 |- requirements.txt
 |- .env
-|- .env.example
 |- db.sqlite3
 |- careercompass/
 |  |- settings.py
@@ -152,17 +151,7 @@ Open: `http://127.0.0.1:8000/`
 
 ## Environment Variables
 
-Yes, `.env.example` is needed and should stay in the repository.
-
-Create your local `.env` from `.env.example`:
-
-```bash
-# Windows (PowerShell)
-Copy-Item .env.example .env
-
-# Mac / Linux
-cp .env.example .env
-```
+The project now keeps the main `.env` file in the repository.
 
 Required keys (as used in `careercompass/settings.py`):
 
@@ -173,7 +162,7 @@ Required keys (as used in `careercompass/settings.py`):
 - `LANGUAGE_CODE`
 - `TIME_ZONE`
 
-Reference values from `.env.example`:
+Current values in `.env`:
 
 ```env
 SECRET_KEY=django-insecure-change-me-before-going-to-production
